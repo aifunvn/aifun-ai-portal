@@ -1,4 +1,4 @@
-// AIFUN AI Portal V2.0 — sheets.js
+// AIFUN AI Portal V2.1 — sheets.js
 // Google Sheets API v4 — Data fetching layer
 // Tier 1 trong kiến trúc 3 tầng: Sheets → JSON → Static
 
@@ -258,5 +258,114 @@ export function stopAutoRefresh() {
   if (_refreshTimer) {
     clearInterval(_refreshTimer);
     _refreshTimer = null;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// PUBLIC: fetchGoogleSheetsData(sheetName, schema?)
+// Hàm generic — fetch bất kỳ sheet nào theo tên + schema tùy chọn
+// Bỏ qua cache nếu forceRefresh = true
+// ═══════════════════════════════════════════════════════════════════
+export async function fetchGoogleSheetsData(sheetName, schema = {}, forceRefresh = false) {
+  const { SPREADSHEET_ID, API_KEY } = SHEETS_CONFIG;
+  if (!SPREADSHEET_ID || !API_KEY) {
+    throw new Error('Chưa cấu hình SPREADSHEET_ID và API_KEY');
+  }
+  if (forceRefresh) invalidateSheetsCache(sheetName);
+  return fetchSheet(sheetName, schema);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// INDIVIDUAL LOAD FUNCTIONS — mỗi hàm load 1 sheet cụ thể
+// Tự động dùng đúng COLUMN_SCHEMA và SHEET_NAMES từ config
+// ═══════════════════════════════════════════════════════════════════
+export async function loadPromptsFromSheet(forceRefresh = false) {
+  if (forceRefresh) invalidateSheetsCache(SHEETS_CONFIG.SHEET_NAMES.prompts);
+  const data = await fetchSheet(SHEETS_CONFIG.SHEET_NAMES.prompts, COLUMN_SCHEMA.PROMPTS);
+  console.log(`[Sheets] loadPromptsFromSheet: ${data.length} prompts`);
+  return data;
+}
+
+export async function loadSkillsFromSheet(forceRefresh = false) {
+  if (forceRefresh) invalidateSheetsCache(SHEETS_CONFIG.SHEET_NAMES.skills);
+  const data = await fetchSheet(SHEETS_CONFIG.SHEET_NAMES.skills, COLUMN_SCHEMA.SKILLS);
+  console.log(`[Sheets] loadSkillsFromSheet: ${data.length} skills`);
+  return data;
+}
+
+export async function loadSopsFromSheet(forceRefresh = false) {
+  if (forceRefresh) invalidateSheetsCache(SHEETS_CONFIG.SHEET_NAMES.sops);
+  const data = await fetchSheet(SHEETS_CONFIG.SHEET_NAMES.sops, COLUMN_SCHEMA.SOPS);
+  console.log(`[Sheets] loadSopsFromSheet: ${data.length} SOPs`);
+  return data;
+}
+
+export async function loadProjectsFromSheet(forceRefresh = false) {
+  if (forceRefresh) invalidateSheetsCache(SHEETS_CONFIG.SHEET_NAMES.projects);
+  const data = await fetchSheet(SHEETS_CONFIG.SHEET_NAMES.projects, COLUMN_SCHEMA.PROJECTS);
+  console.log(`[Sheets] loadProjectsFromSheet: ${data.length} projects`);
+  return data;
+}
+
+export async function loadWorkflowsFromSheet(forceRefresh = false) {
+  if (forceRefresh) invalidateSheetsCache(SHEETS_CONFIG.SHEET_NAMES.workflows);
+  const data = await fetchSheet(SHEETS_CONFIG.SHEET_NAMES.workflows, COLUMN_SCHEMA.WORKFLOWS);
+  console.log(`[Sheets] loadWorkflowsFromSheet: ${data.length} workflows`);
+  return data;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// PUBLIC: testConnection()
+// Kiểm tra kết nối bằng cách fetch metadata spreadsheet (nhẹ hơn fetch data)
+// Trả về { ok, title, sheetTabs, error }
+// ═══════════════════════════════════════════════════════════════════
+export async function testConnection() {
+  const { SPREADSHEET_ID, API_KEY, FETCH_TIMEOUT_MS } = SHEETS_CONFIG;
+
+  if (!SPREADSHEET_ID || !API_KEY) {
+    return {
+      ok:    false,
+      error: 'Chưa nhập Spreadsheet ID hoặc API Key',
+      title: null,
+      sheetTabs: [],
+    };
+  }
+
+  const url  = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}`
+             + `?key=${API_KEY}&fields=properties.title,sheets.properties.title`;
+  const ctrl    = new AbortController();
+  const timeout = setTimeout(() => ctrl.abort(), FETCH_TIMEOUT_MS);
+
+  try {
+    const res = await fetch(url, { signal: ctrl.signal });
+
+    if (!res.ok) {
+      let msg = `HTTP ${res.status}`;
+      try {
+        const body = await res.json();
+        msg = body?.error?.message || msg;
+        // Thông báo lỗi thân thiện hơn
+        if (res.status === 403) msg = 'API Key không hợp lệ hoặc chưa bật Sheets API';
+        if (res.status === 404) msg = 'Spreadsheet ID không tồn tại hoặc chưa được chia sẻ';
+      } catch {}
+      return { ok: false, error: msg, title: null, sheetTabs: [] };
+    }
+
+    const json      = await res.json();
+    const title     = json.properties?.title || 'Không có tên';
+    const sheetTabs = (json.sheets || []).map(s => s.properties?.title).filter(Boolean);
+
+    _status = 'connected';
+    _error  = null;
+
+    return { ok: true, title, sheetTabs, error: null };
+
+  } catch (err) {
+    const msg = err.name === 'AbortError'
+      ? `Timeout sau ${FETCH_TIMEOUT_MS / 1000}s — kiểm tra mạng`
+      : err.message;
+    return { ok: false, error: msg, title: null, sheetTabs: [] };
+  } finally {
+    clearTimeout(timeout);
   }
 }

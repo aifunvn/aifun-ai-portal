@@ -842,6 +842,143 @@ kbd { background: var(--border); border-radius: 4px; padding: 1px 6px; font-size
 .toast.out { animation: toastOut .2s ease forwards; }
 
 /* ════════════════════════════════════════════
+   SYNC STATUS — clickable button style
+════════════════════════════════════════════ */
+button.sync-status {
+  cursor: pointer;
+  border: none;
+  background: var(--surface2);
+  border-radius: var(--r-xs);
+  padding: 4px 9px;
+  border: 1px solid var(--border);
+  transition: all var(--ease);
+}
+button.sync-status:hover { filter: brightness(1.08); transform: translateY(-1px); }
+
+/* ════════════════════════════════════════════
+   SHEETS MANAGEMENT PANEL
+════════════════════════════════════════════ */
+.sheets-panel-modal { max-width: 560px; }
+.sheets-panel-version { font-size: .67rem; color: var(--text-f); font-weight: 500; letter-spacing: .03em; }
+
+.sheets-panel-body { padding: 0; }
+
+.sp-status-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 13px 20px; background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+}
+.sp-status-dot {
+  width: 9px; height: 9px; border-radius: 50%;
+  background: var(--text-f); flex-shrink: 0;
+  transition: background .3s;
+}
+.sp-status-dot.connected  { background: var(--green); box-shadow: 0 0 0 3px rgba(16,185,129,.2); }
+.sp-status-dot.partial    { background: var(--orange); box-shadow: 0 0 0 3px rgba(245,158,11,.2); }
+.sp-status-dot.error      { background: var(--red); box-shadow: 0 0 0 3px rgba(239,68,68,.2); }
+.sp-status-dot.connecting { background: var(--blue-500); animation: pulse 1.2s infinite; }
+.sp-status-text { font-size: .78rem; font-weight: 600; color: var(--text-b); flex: 1; }
+.sp-status-time { font-size: .68rem; color: var(--text-f); }
+
+.sp-section { padding: 16px 20px; border-bottom: 1px solid var(--border); }
+.sp-section:last-child { border-bottom: none; }
+.sp-section-title { font-size: .73rem; font-weight: 700; color: var(--text-m); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 12px; }
+
+.sp-field { margin-bottom: 12px; }
+.sp-label { display: block; font-size: .74rem; font-weight: 600; color: var(--text-b); margin-bottom: 5px; }
+.sp-input-wrap { position: relative; }
+.sp-input {
+  width: 100%; padding: 8px 11px; border-radius: var(--r-sm);
+  border: 1px solid var(--border); background: var(--surface);
+  color: var(--text-h); font-size: .78rem; font-family: 'Courier New', monospace;
+  transition: border-color var(--ease);
+}
+.sp-input:focus { outline: none; border-color: var(--blue-500); box-shadow: 0 0 0 3px rgba(59,130,246,.12); }
+.sp-input-wrap .sp-input { padding-right: 38px; }
+.sp-eye-btn {
+  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+  width: 26px; height: 26px; border-radius: 4px;
+  color: var(--text-f); display: flex; align-items: center; justify-content: center;
+  transition: color var(--ease);
+}
+.sp-eye-btn:hover { color: var(--text-h); }
+.sp-eye-btn svg { width: 14px; height: 14px; }
+.sp-hint { font-size: .67rem; color: var(--text-f); display: block; margin-top: 4px; }
+.sp-hint strong { color: var(--blue-500); }
+.sp-save-btn { width: 100%; justify-content: center; margin-top: 4px; gap: 6px; }
+.sp-save-btn svg { width: 13px; height: 13px; }
+
+/* 3 action buttons */
+.sp-actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+.sp-action-btn {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 6px; padding: 12px 8px; border-radius: var(--r-sm);
+  font-size: .73rem; font-weight: 600; cursor: pointer;
+  border: 1px solid var(--border); transition: all var(--ease);
+  background: var(--surface2);
+}
+.sp-action-btn svg { width: 20px; height: 20px; }
+.sp-action-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.12); }
+.sp-action-btn.primary { background: var(--blue-50); color: var(--blue-600); border-color: var(--blue-200); }
+.sp-action-btn.primary:hover { background: var(--blue-100); }
+.sp-action-btn.success { background: rgba(16,185,129,.08); color: #059669; border-color: rgba(16,185,129,.3); }
+.sp-action-btn.success:hover { background: rgba(16,185,129,.15); }
+.sp-action-btn.gray   { background: var(--surface2); color: var(--text-m); }
+.sp-action-btn.gray:hover { background: var(--border); color: var(--text-h); }
+.sp-action-btn.loading { opacity: .6; pointer-events: none; }
+[data-theme="dark"] .sp-action-btn.primary { background: rgba(59,130,246,.12); border-color: rgba(59,130,246,.3); }
+
+/* Test result box */
+.sp-test-result {
+  margin: 0 20px 0; padding: 12px 14px; border-radius: var(--r-sm);
+  font-size: .77rem; line-height: 1.6;
+  border: 1px solid var(--border); background: var(--surface2);
+}
+.sp-test-result.ok    { background: rgba(16,185,129,.08); border-color: rgba(16,185,129,.3); color: #065f46; }
+.sp-test-result.error { background: rgba(239,68,68,.08);  border-color: rgba(239,68,68,.3);  color: #7f1d1d; }
+[data-theme="dark"] .sp-test-result.ok    { color: #6ee7b7; }
+[data-theme="dark"] .sp-test-result.error { color: #fca5a5; }
+.sp-test-result-title { font-weight: 700; margin-bottom: 4px; }
+.sp-test-result-tabs  { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+.sp-test-result-tab   { padding: 2px 8px; border-radius: 99px; font-size: .67rem; font-weight: 600;
+  background: rgba(16,185,129,.15); color: #059669; }
+[data-theme="dark"] .sp-test-result-tab { background: rgba(16,185,129,.2); color: #6ee7b7; }
+
+/* Sheet status table */
+.sp-sheet-table { display: flex; flex-direction: column; gap: 5px; }
+.sp-sheet-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 7px 10px; border-radius: var(--r-xs);
+  background: var(--surface2); border: 1px solid var(--border);
+}
+.sp-sheet-name { font-size: .76rem; font-weight: 600; color: var(--text-b); flex: 1; }
+.sp-sheet-count { font-size: .71rem; color: var(--text-m); min-width: 60px; text-align: right; }
+.sp-sheet-badge {
+  font-size: .65rem; font-weight: 700; padding: 2px 7px; border-radius: 99px;
+  letter-spacing: .04em;
+}
+.sp-sheet-badge.active   { background: rgba(16,185,129,.12); color: #059669; }
+.sp-sheet-badge.cached   { background: rgba(59,130,246,.12); color: var(--blue-600); }
+.sp-sheet-badge.local    { background: var(--surface); color: var(--text-f); border: 1px solid var(--border); }
+.sp-sheet-badge.loading  { background: rgba(245,158,11,.12); color: #d97706; }
+
+/* Setup guide */
+.sp-guide {
+  padding: 12px 20px 16px; cursor: pointer;
+}
+.sp-guide summary {
+  font-size: .76rem; font-weight: 600; color: var(--text-m);
+  list-style: none; display: flex; align-items: center; gap: 6px;
+  cursor: pointer; user-select: none;
+}
+.sp-guide summary:hover { color: var(--text-h); }
+.sp-guide[open] summary { margin-bottom: 10px; color: var(--text-h); }
+.sp-guide-list { padding-left: 18px; margin: 0; }
+.sp-guide-list li { font-size: .74rem; color: var(--text-m); padding: 3px 0; line-height: 1.5; }
+.sp-guide-list strong { color: var(--text-b); }
+.sp-guide-list code { background: var(--surface2); padding: 1px 5px; border-radius: 4px; font-size: .7rem; color: var(--blue-600); }
+
+/* ════════════════════════════════════════════
    BACKUP BUTTON GROUP
 ════════════════════════════════════════════ */
 .backup-btn-group {

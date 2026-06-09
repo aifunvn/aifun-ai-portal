@@ -10,6 +10,13 @@
 
 import {
   fetchAllFromSheets,
+  fetchGoogleSheetsData,
+  loadPromptsFromSheet,
+  loadSkillsFromSheet,
+  loadSopsFromSheet,
+  loadProjectsFromSheet,
+  loadWorkflowsFromSheet,
+  testConnection,
   getSheetsStatus,
   startAutoRefresh,
   stopAutoRefresh,
@@ -17,6 +24,13 @@ import {
 } from './sheets.js';
 
 export {
+  fetchGoogleSheetsData,
+  loadPromptsFromSheet,
+  loadSkillsFromSheet,
+  loadSopsFromSheet,
+  loadProjectsFromSheet,
+  loadWorkflowsFromSheet,
+  testConnection,
   getSheetsStatus,
   startAutoRefresh,
   stopAutoRefresh,

@@ -140,11 +140,11 @@
       </div>
     </div>
     <div class="topbar-right">
-      <!-- Sheets sync status -->
-      <div class="sync-status" id="syncStatus" title="Google Sheets: chưa kết nối">
+      <!-- Sheets sync status — click để mở Sheets Panel -->
+      <button class="sync-status" id="syncStatus" title="Click để quản lý Google Sheets" onclick="App.openSheetsPanel()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
         <span id="syncLabel">Local</span>
-      </div>
+      </button>
       <!-- Backup button group -->
       <div class="backup-btn-group" id="backupGroup">
         <button class="backup-trigger-btn" id="backupTrigger" title="Backup dữ liệu">
@@ -441,6 +441,102 @@
       <button class="modal-close" id="modalClose">✕</button>
     </div>
     <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<!-- ══════════ SHEETS MANAGEMENT PANEL ══════════ -->
+<div class="modal-overlay" id="sheetsPanelOverlay">
+  <div class="modal sheets-panel-modal">
+    <div class="modal-header">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:1.2rem">📊</span>
+        <div>
+          <h3 style="margin:0">Google Sheets Integration</h3>
+          <span class="sheets-panel-version">AIFUN AI Portal V2.1</span>
+        </div>
+      </div>
+      <button class="modal-close" onclick="App.closeSheetsPanel()">✕</button>
+    </div>
+    <div class="modal-body sheets-panel-body">
+
+      <!-- STATUS ROW -->
+      <div class="sp-status-row" id="spStatusRow">
+        <div class="sp-status-dot" id="spStatusDot"></div>
+        <span class="sp-status-text" id="spStatusText">Chưa kết nối</span>
+        <span class="sp-status-time" id="spStatusTime"></span>
+      </div>
+
+      <!-- CONFIG INPUTS -->
+      <div class="sp-section">
+        <div class="sp-section-title">⚙️ Cấu hình kết nối</div>
+        <div class="sp-field">
+          <label class="sp-label">Spreadsheet ID</label>
+          <input class="sp-input" id="spSheetId" type="text"
+            placeholder="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms"
+            autocomplete="off" spellcheck="false" />
+          <span class="sp-hint">Lấy từ URL: docs.google.com/spreadsheets/d/<strong>[ID]</strong>/edit</span>
+        </div>
+        <div class="sp-field">
+          <label class="sp-label">API Key</label>
+          <div class="sp-input-wrap">
+            <input class="sp-input" id="spApiKey" type="password"
+              placeholder="AIzaSyD-9tSrke72PouQMnMX-a4eHs-FldMr8TU"
+              autocomplete="off" spellcheck="false" />
+            <button class="sp-eye-btn" id="spEyeBtn" onclick="App.toggleApiKeyVisibility()" title="Hiện/ẩn">
+              <svg id="spEyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <span class="sp-hint">Google Cloud Console → APIs → Credentials → API Key</span>
+        </div>
+        <button class="btn btn-primary sp-save-btn" onclick="App.saveSheetsConfig()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v14a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Lưu cấu hình
+        </button>
+      </div>
+
+      <!-- ACTION BUTTONS -->
+      <div class="sp-section">
+        <div class="sp-section-title">🚀 Hành động</div>
+        <div class="sp-actions">
+          <button class="sp-action-btn primary" id="btnTestConnection" onclick="App.testSheetsConnection()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <span>Test Connection</span>
+          </button>
+          <button class="sp-action-btn success" id="btnSyncSheets" onclick="App.syncGoogleSheets()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+            <span>Sync Google Sheets</span>
+          </button>
+          <button class="sp-action-btn gray" id="btnReloadLocal" onclick="App.reloadLocalData()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <span>Reload Local Data</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- TEST RESULT -->
+      <div class="sp-test-result" id="spTestResult" style="display:none"></div>
+
+      <!-- SHEET STATUS TABLE -->
+      <div class="sp-section">
+        <div class="sp-section-title">📋 Trạng thái 5 bảng dữ liệu</div>
+        <div class="sp-sheet-table" id="spSheetTable">
+          <!-- Render by JS -->
+        </div>
+      </div>
+
+      <!-- SETUP GUIDE -->
+      <details class="sp-guide">
+        <summary>📖 Hướng dẫn thiết lập (5 bước)</summary>
+        <ol class="sp-guide-list">
+          <li>Tạo Google Spreadsheet mới → đặt tên <strong>"AIFUN AI Portal Data"</strong></li>
+          <li>Tạo 5 tab: <code>PROMPTS</code> · <code>SKILLS</code> · <code>SOPS</code> · <code>PROJECTS</code> · <code>WORKFLOWS</code></li>
+          <li>Lấy <strong>Spreadsheet ID</strong> từ URL: <code>.../d/<em>[ID]</em>/edit</code></li>
+          <li>Tạo <strong>API Key</strong>: Google Cloud Console → Enable Sheets API → Credentials</li>
+          <li>Chia sẻ Spreadsheet: <strong>Share → Anyone with link → Viewer</strong></li>
+        </ol>
+      </details>
+
+    </div><!-- /modal-body -->
   </div>
 </div>
 

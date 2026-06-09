@@ -9,6 +9,7 @@ import {
   COURSES,
   getDashboardStats,
   loadData,
+  testConnection,
   getSheetsStatus,
   startAutoRefresh,
   invalidateSheetsCache,
@@ -672,6 +673,252 @@ function startCourse(id) {
 }
 
 /* ═══════════════════════════════════════════
+   SHEETS MANAGEMENT PANEL
+═══════════════════════════════════════════ */
+function openSheetsPanel() {
+  const overlay = document.getElementById('sheetsPanelOverlay');
+  if (!overlay) return;
+
+  // Điền sẵn config đã lưu
+  _fillSheetsPanelInputs();
+
+  // Cập nhật bảng trạng thái
+  _renderSheetStatusTable();
+
+  // Cập nhật status row
+  _updateSheetsPanelStatus();
+
+  overlay.classList.add('open');
+}
+
+function closeSheetsPanel() {
+  const overlay = document.getElementById('sheetsPanelOverlay');
+  if (overlay) overlay.classList.remove('open');
+}
+
+function _fillSheetsPanelInputs() {
+  // Lấy config hiện tại từ localStorage nếu có
+  try {
+    const saved = localStorage.getItem('aifun-sheets-config');
+    if (saved) {
+      const { sheetId, apiKey } = JSON.parse(saved);
+      const idInput  = document.getElementById('spSheetId');
+      const keyInput = document.getElementById('spApiKey');
+      if (idInput  && sheetId) idInput.value  = sheetId;
+      if (keyInput && apiKey)  keyInput.value  = apiKey;
+    }
+  } catch {}
+}
+
+function _updateSheetsPanelStatus() {
+  const status = getSheetsStatus();
+  const dot    = document.getElementById('spStatusDot');
+  const text   = document.getElementById('spStatusText');
+  const time   = document.getElementById('spStatusTime');
+
+  const labels = {
+    unconfigured: 'Chưa cấu hình',
+    connecting:   'Đang kết nối...',
+    connected:    'Đã kết nối Google Sheets ✓',
+    partial:      'Kết nối một phần',
+    error:        'Lỗi kết nối',
+    static:       'Đang dùng dữ liệu cục bộ',
+  };
+
+  if (dot)  { dot.className = `sp-status-dot ${_dataSource === 'sheets' ? 'connected' : _dataSource === 'static' ? '' : _dataSource}`; }
+  if (text) text.textContent = labels[status.status] || labels[_dataSource] || 'Local Mode';
+  if (time && status.lastFetchAt) time.textContent = `Cập nhật: ${status.lastFetchAt}`;
+}
+
+function _renderSheetStatusTable() {
+  const el = document.getElementById('spSheetTable');
+  if (!el) return;
+
+  const status = getSheetsStatus();
+  const sheets = [
+    { key: 'prompts',   label: 'PROMPTS',   count: PROMPTS.length },
+    { key: 'skills',    label: 'SKILLS',    count: SKILLS.length },
+    { key: 'sops',      label: 'SOPS',      count: SOPS.length },
+    { key: 'projects',  label: 'PROJECTS',  count: PROJECTS.length },
+    { key: 'workflows', label: 'WORKFLOWS', count: AUTOMATIONS.length },
+  ];
+
+  el.innerHTML = sheets.map(s => {
+    const isCached  = status.cachedSheets.includes(s.label);
+    const isFailed  = status.failedSheets.some(f => f.startsWith(s.key));
+    const badgeCls  = _dataSource === 'sheets' && isCached ? 'active'
+                    : _dataSource === 'sheets' && isFailed ? 'error'
+                    : _dataSource === 'json'               ? 'cached'
+                    : 'local';
+    const badgeTxt  = _dataSource === 'sheets' && isCached ? 'Sheets ✓'
+                    : _dataSource === 'json'               ? 'JSON'
+                    : 'Local';
+    return `
+      <div class="sp-sheet-row">
+        <span style="font-size:.9rem">📋</span>
+        <span class="sp-sheet-name">${s.label}</span>
+        <span class="sp-sheet-count">${s.count} rows</span>
+        <span class="sp-sheet-badge ${badgeCls}">${badgeTxt}</span>
+      </div>`;
+  }).join('');
+}
+
+async function saveSheetsConfig() {
+  const sheetId = document.getElementById('spSheetId')?.value?.trim() || '';
+  const apiKey  = document.getElementById('spApiKey')?.value?.trim()  || '';
+
+  // Import và gọi updateSheetsConfig từ config.js
+  const { updateSheetsConfig } = await import('./config.js');
+  updateSheetsConfig(sheetId, apiKey);
+
+  // Cập nhật status
+  _updateSheetsPanelStatus();
+
+  if (sheetId && apiKey) {
+    toast('Đã lưu cấu hình Sheets! Nhấn "Test Connection" để kiểm tra.', 'success', 4000);
+  } else if (!sheetId && !apiKey) {
+    toast('Đã xóa cấu hình Sheets — chuyển về Local Mode', 'info');
+  } else {
+    toast('Cần điền đủ cả Spreadsheet ID và API Key', 'error');
+  }
+}
+
+function toggleApiKeyVisibility() {
+  const input = document.getElementById('spApiKey');
+  const icon  = document.getElementById('spEyeIcon');
+  if (!input) return;
+  if (input.type === 'password') {
+    input.type = 'text';
+    if (icon) icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>';
+  } else {
+    input.type = 'password';
+    if (icon) icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+  }
+}
+
+/* ── Test Connection ─────────────────────────────────────────── */
+async function testSheetsConnection() {
+  const btn = document.getElementById('btnTestConnection');
+  const resultEl = document.getElementById('spTestResult');
+
+  if (btn) { btn.classList.add('loading'); btn.querySelector('span').textContent = 'Đang test...'; }
+  if (resultEl) { resultEl.style.display = 'none'; resultEl.className = 'sp-test-result'; }
+
+  try {
+    const result = await testConnection();
+
+    if (resultEl) {
+      resultEl.style.display = 'block';
+      if (result.ok) {
+        resultEl.className = 'sp-test-result ok';
+        resultEl.innerHTML = `
+          <div class="sp-test-result-title">✅ Kết nối thành công!</div>
+          <div>📊 Spreadsheet: <strong>${escHtml(result.title)}</strong></div>
+          <div>📋 Tìm thấy ${result.sheetTabs.length} tabs:</div>
+          <div class="sp-test-result-tabs">
+            ${result.sheetTabs.map(t => `<span class="sp-test-result-tab">${escHtml(t)}</span>`).join('')}
+          </div>`;
+        updateSyncStatus('sheets');
+        toast('Kết nối Google Sheets thành công! 🎉', 'success');
+      } else {
+        resultEl.className = 'sp-test-result error';
+        resultEl.innerHTML = `
+          <div class="sp-test-result-title">❌ Kết nối thất bại</div>
+          <div>${escHtml(result.error)}</div>`;
+        toast(`Lỗi kết nối: ${result.error}`, 'error', 5000);
+      }
+    }
+    _updateSheetsPanelStatus();
+    _renderSheetStatusTable();
+
+  } finally {
+    if (btn) { btn.classList.remove('loading'); btn.querySelector('span').textContent = 'Test Connection'; }
+  }
+}
+
+/* ── Sync Google Sheets ──────────────────────────────────────── */
+async function syncGoogleSheets() {
+  const btn = document.getElementById('btnSyncSheets');
+  if (btn) { btn.classList.add('loading'); btn.querySelector('span').textContent = 'Đang sync...'; }
+
+  try {
+    invalidateSheetsCache(); // xóa cache để force fetch mới
+    const loaded = await loadData();
+
+    if (loaded._source !== 'sheets') {
+      toast('Không thể sync — kiểm tra cấu hình Sheets hoặc kết nối mạng', 'error', 5000);
+      return;
+    }
+
+    if (Array.isArray(loaded.prompts)   && loaded.prompts.length)   PROMPTS     = loaded.prompts;
+    if (Array.isArray(loaded.skills)    && loaded.skills.length)    SKILLS      = loaded.skills;
+    if (Array.isArray(loaded.projects)  && loaded.projects.length)  PROJECTS    = loaded.projects;
+    if (Array.isArray(loaded.sops)      && loaded.sops.length)      SOPS        = loaded.sops;
+    if (Array.isArray(loaded.workflows) && loaded.workflows.length) AUTOMATIONS = loaded.workflows;
+
+    updateSyncStatus(loaded._partial ? 'partial' : 'sheets');
+    _updateNavBadges();
+    _renderSheetStatusTable();
+    _updateSheetsPanelStatus();
+
+    const ap = document.querySelector('.page.active');
+    if (ap) nav(ap.id.replace('page-', ''));
+
+    toast(
+      `Sync thành công! ${PROMPTS.length} prompts · ${SKILLS.length} skills · ${PROJECTS.length} projects · ${SOPS.length} SOPs`,
+      'success', 5000
+    );
+  } catch (err) {
+    toast(`Sync thất bại: ${err.message}`, 'error', 5000);
+  } finally {
+    if (btn) { btn.classList.remove('loading'); btn.querySelector('span').textContent = 'Sync Google Sheets'; }
+  }
+}
+
+/* ── Reload Local Data ───────────────────────────────────────── */
+async function reloadLocalData() {
+  const btn = document.getElementById('btnReloadLocal');
+  if (btn) { btn.classList.add('loading'); btn.querySelector('span').textContent = 'Đang tải...'; }
+
+  try {
+    // Tải từ JSON files (bỏ qua Sheets)
+    const base = './data';
+    const fetchJSON = async (name, fallback) => {
+      try {
+        const res = await fetch(`${base}/${name}.json?t=${Date.now()}`);
+        if (!res.ok) throw new Error();
+        const d = await res.json();
+        return Array.isArray(d) && d.length ? d : fallback;
+      } catch { return fallback; }
+    };
+
+    const [p, s, pr, so] = await Promise.all([
+      fetchJSON('prompts',  PROMPTS),
+      fetchJSON('skills',   SKILLS),
+      fetchJSON('projects', PROJECTS),
+      fetchJSON('sops',     SOPS),
+    ]);
+
+    PROMPTS  = p;
+    SKILLS   = s;
+    PROJECTS = pr;
+    SOPS     = so;
+
+    updateSyncStatus('json');
+    _updateNavBadges();
+    _renderSheetStatusTable();
+    _updateSheetsPanelStatus();
+
+    const ap = document.querySelector('.page.active');
+    if (ap) nav(ap.id.replace('page-', ''));
+
+    toast(`Đã tải lại từ JSON cục bộ — ${PROMPTS.length} prompts · ${SKILLS.length} skills`, 'info');
+  } finally {
+    if (btn) { btn.classList.remove('loading'); btn.querySelector('span').textContent = 'Reload Local Data'; }
+  }
+}
+
+/* ═══════════════════════════════════════════
    EXPORT BACKUP
 ═══════════════════════════════════════════ */
 function exportBackup() {
@@ -873,6 +1120,15 @@ window.App = {
   setPromptCat(cat) { promptFilter.cat = cat; renderPrompts(); },
   setSopDept(dept)   { sopFilter.dept = dept; renderSOPs(); },
   setProjectStatus(s){ projectFilter.status = s; renderProjects(); },
+
+  // Sheets Management Panel
+  openSheetsPanel,
+  closeSheetsPanel,
+  saveSheetsConfig,
+  testSheetsConnection,
+  syncGoogleSheets,
+  reloadLocalData,
+  toggleApiKeyVisibility,
 };
 
 /* ═══════════════════════════════════════════
@@ -881,6 +1137,20 @@ window.App = {
 document.addEventListener('DOMContentLoaded', async () => {
   initTheme();
   updateSyncStatus('local');
+
+  // Restore Sheets config từ localStorage (nếu user đã lưu trước đó)
+  try {
+    const { loadSheetsConfigFromStorage } = await import('./config.js');
+    loadSheetsConfigFromStorage();
+  } catch {}
+
+  // Đóng Sheets Panel khi click vào backdrop
+  const sheetsPanelOverlay = document.getElementById('sheetsPanelOverlay');
+  if (sheetsPanelOverlay) {
+    sheetsPanelOverlay.addEventListener('click', e => {
+      if (e.target === sheetsPanelOverlay) closeSheetsPanel();
+    });
+  }
 
   // Theme — HTML uses id="darkToggle"
   const themeBtn = document.getElementById('darkToggle') || document.getElementById('themeToggle');

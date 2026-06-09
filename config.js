@@ -1,4 +1,4 @@
-// AIFUN AI Portal V2.0 — config.js
+// AIFUN AI Portal V2.1 — config.js
 // ═══════════════════════════════════════════════════════════════════
 // HƯỚNG DẪN KẾT NỐI GOOGLE SHEETS (5 bước):
 //
@@ -122,3 +122,77 @@ export const COLUMN_SCHEMA = {
 //
 //   Ví dụ:
 //   auto-01 | Email Nurturing Sequence | [mô tả] | 📧 | #eff6ff | Make · Gmail | 1.245 lần/tháng | 48h | TRUE | Gmail,Make,CRM
+
+// ═══════════════════════════════════════════════════════════════════
+// GOOGLE_SHEETS_CONFIG — alias rõ ràng với sheetId, apiKey, ranges
+// Đây là object chính được dùng trong V2.1 UI (Sheets Panel)
+// Đồng bộ 2 chiều với SHEETS_CONFIG phía trên
+// ═══════════════════════════════════════════════════════════════════
+export const GOOGLE_SHEETS_CONFIG = {
+  // Điền vào đây HOẶC qua giao diện Sheets Panel trong ứng dụng
+  sheetId: SHEETS_CONFIG.SPREADSHEET_ID,
+  apiKey:  SHEETS_CONFIG.API_KEY,
+
+  // Range cho từng bảng (tab!startCell:endCell)
+  ranges: {
+    prompts:   `${SHEETS_CONFIG.SHEET_NAMES.prompts}!A1:ZZ`,
+    skills:    `${SHEETS_CONFIG.SHEET_NAMES.skills}!A1:ZZ`,
+    sops:      `${SHEETS_CONFIG.SHEET_NAMES.sops}!A1:ZZ`,
+    projects:  `${SHEETS_CONFIG.SHEET_NAMES.projects}!A1:ZZ`,
+    workflows: `${SHEETS_CONFIG.SHEET_NAMES.workflows}!A1:ZZ`,
+  },
+};
+
+// ═══════════════════════════════════════════════════════════════════
+// RUNTIME CONFIG UPDATE
+// Dùng khi người dùng nhập sheetId/apiKey qua UI → cập nhật ngay
+// Tự động lưu vào localStorage để nhớ qua các lần reload
+// ═══════════════════════════════════════════════════════════════════
+export function updateSheetsConfig(sheetId, apiKey) {
+  // Cập nhật cả hai object để đồng bộ
+  SHEETS_CONFIG.SPREADSHEET_ID = String(sheetId || '').trim();
+  SHEETS_CONFIG.API_KEY         = String(apiKey  || '').trim();
+  GOOGLE_SHEETS_CONFIG.sheetId  = SHEETS_CONFIG.SPREADSHEET_ID;
+  GOOGLE_SHEETS_CONFIG.apiKey   = SHEETS_CONFIG.API_KEY;
+
+  // Cập nhật ranges
+  const n = SHEETS_CONFIG.SHEET_NAMES;
+  GOOGLE_SHEETS_CONFIG.ranges = {
+    prompts:   `${n.prompts}!A1:ZZ`,
+    skills:    `${n.skills}!A1:ZZ`,
+    sops:      `${n.sops}!A1:ZZ`,
+    projects:  `${n.projects}!A1:ZZ`,
+    workflows: `${n.workflows}!A1:ZZ`,
+  };
+
+  // Lưu localStorage
+  try {
+    localStorage.setItem('aifun-sheets-config', JSON.stringify({
+      sheetId: SHEETS_CONFIG.SPREADSHEET_ID,
+      apiKey:  SHEETS_CONFIG.API_KEY,
+    }));
+  } catch {}
+
+  console.log('[Config] Sheets config updated:', {
+    sheetId: SHEETS_CONFIG.SPREADSHEET_ID ? '***set***' : '(empty)',
+    apiKey:  SHEETS_CONFIG.API_KEY         ? '***set***' : '(empty)',
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// LOAD CONFIG FROM LOCALSTORAGE
+// Gọi lúc khởi động app để khôi phục config đã lưu
+// ═══════════════════════════════════════════════════════════════════
+export function loadSheetsConfigFromStorage() {
+  try {
+    const saved = localStorage.getItem('aifun-sheets-config');
+    if (!saved) return false;
+    const { sheetId, apiKey } = JSON.parse(saved);
+    if (sheetId || apiKey) {
+      updateSheetsConfig(sheetId, apiKey);
+      console.log('[Config] Đã khôi phục Sheets config từ localStorage');
+      return true;
+    }
+  } catch {}
+  return false;
+}
