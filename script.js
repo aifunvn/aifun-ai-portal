@@ -716,18 +716,34 @@ function _updateSheetsPanelStatus() {
   const text   = document.getElementById('spStatusText');
   const time   = document.getElementById('spStatusTime');
 
-  const labels = {
-    unconfigured: 'Chưa cấu hình',
-    connecting:   'Đang kết nối...',
-    connected:    'Đã kết nối Google Sheets ✓',
-    partial:      'Kết nối một phần',
-    error:        'Lỗi kết nối',
-    static:       'Đang dùng dữ liệu cục bộ',
+  // Label theo _dataSource (trạng thái thực của UI) — ưu tiên hơn sheets.js status
+  const srcLabels = {
+    sheets:  status.status === 'partial' ? '⚡ Sheets — kết nối một phần' : '✅ Đã kết nối Google Sheets',
+    partial: '⚡ Google Sheets — một số bảng lỗi',
+    json:    '📁 JSON cục bộ (chưa kết nối Sheets)',
+    static:  '💾 Static data (offline)',
+    connecting: '🔄 Đang kết nối Google Sheets...',
+    error:   '❌ Lỗi kết nối — dùng fallback',
+    local:   '💾 Static data (offline)',
   };
 
-  if (dot)  { dot.className = `sp-status-dot ${_dataSource === 'sheets' ? 'connected' : _dataSource === 'static' ? '' : _dataSource}`; }
-  if (text) text.textContent = labels[status.status] || labels[_dataSource] || 'Local Mode';
-  if (time && status.lastFetchAt) time.textContent = `Cập nhật: ${status.lastFetchAt}`;
+  const dotClass = {
+    sheets:     'connected',
+    partial:    'partial',
+    json:       'cached',
+    static:     '',
+    connecting: 'connecting',
+    error:      'error',
+    local:      '',
+  };
+
+  if (dot)  dot.className  = `sp-status-dot ${dotClass[_dataSource] || ''}`;
+  if (text) text.textContent = srcLabels[_dataSource] || 'Local Mode';
+  if (time) {
+    if (status.lastFetchAt) time.textContent = `Cập nhật: ${status.lastFetchAt}`;
+    else if (_dataSource === 'json' || _dataSource === 'static') time.textContent = 'Dữ liệu cục bộ';
+    else time.textContent = '';
+  }
 }
 
 function _renderSheetStatusTable() {
@@ -744,14 +760,20 @@ function _renderSheetStatusTable() {
   ];
 
   el.innerHTML = sheets.map(s => {
-    const isCached  = status.cachedSheets.includes(s.label);
-    const isFailed  = status.failedSheets.some(f => f.startsWith(s.key));
-    const badgeCls  = _dataSource === 'sheets' && isCached ? 'active'
-                    : _dataSource === 'sheets' && isFailed ? 'error'
-                    : _dataSource === 'json'               ? 'cached'
+    // cachedSheets chứa tên tab từ SHEET_NAMES (VD: 'PROMPTS') — match với s.label
+    const isCached = status.cachedSheets.some(
+      c => c.toUpperCase() === s.label.toUpperCase()
+    );
+    const isFailed = status.failedSheets.some(f =>
+      f.toLowerCase().startsWith(s.key.toLowerCase())
+    );
+    const badgeCls  = _dataSource === 'sheets' && isFailed  ? 'loading'
+                    : _dataSource === 'sheets' && isCached  ? 'active'
+                    : _dataSource === 'json'                ? 'cached'
                     : 'local';
-    const badgeTxt  = _dataSource === 'sheets' && isCached ? 'Sheets ✓'
-                    : _dataSource === 'json'               ? 'JSON'
+    const badgeTxt  = _dataSource === 'sheets' && isFailed  ? '⚠ Lỗi'
+                    : _dataSource === 'sheets' && isCached  ? 'Sheets ✓'
+                    : _dataSource === 'json'                ? 'JSON'
                     : 'Local';
     return `
       <div class="sp-sheet-row">
@@ -892,17 +914,19 @@ async function reloadLocalData() {
       } catch { return fallback; }
     };
 
-    const [p, s, pr, so] = await Promise.all([
-      fetchJSON('prompts',  PROMPTS),
-      fetchJSON('skills',   SKILLS),
-      fetchJSON('projects', PROJECTS),
-      fetchJSON('sops',     SOPS),
+    const [p, s, pr, so, wf] = await Promise.all([
+      fetchJSON('prompts',   PROMPTS),
+      fetchJSON('skills',    SKILLS),
+      fetchJSON('projects',  PROJECTS),
+      fetchJSON('sops',      SOPS),
+      fetchJSON('workflows', AUTOMATIONS),
     ]);
 
-    PROMPTS  = p;
-    SKILLS   = s;
-    PROJECTS = pr;
-    SOPS     = so;
+    PROMPTS     = p;
+    SKILLS      = s;
+    PROJECTS    = pr;
+    SOPS        = so;
+    AUTOMATIONS = wf;
 
     updateSyncStatus('json');
     _updateNavBadges();
@@ -912,7 +936,10 @@ async function reloadLocalData() {
     const ap = document.querySelector('.page.active');
     if (ap) nav(ap.id.replace('page-', ''));
 
-    toast(`Đã tải lại từ JSON cục bộ — ${PROMPTS.length} prompts · ${SKILLS.length} skills`, 'info');
+    toast(
+      `📁 Tải từ JSON cục bộ — ${PROMPTS.length} prompts · ${SKILLS.length} skills · ${SOPS.length} SOPs`,
+      'info', 4000
+    );
   } finally {
     if (btn) { btn.classList.remove('loading'); btn.querySelector('span').textContent = 'Reload Local Data'; }
   }

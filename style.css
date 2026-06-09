@@ -877,6 +877,7 @@ button.sync-status:hover { filter: brightness(1.08); transform: translateY(-1px)
 .sp-status-dot.partial    { background: var(--orange); box-shadow: 0 0 0 3px rgba(245,158,11,.2); }
 .sp-status-dot.error      { background: var(--red); box-shadow: 0 0 0 3px rgba(239,68,68,.2); }
 .sp-status-dot.connecting { background: var(--blue-500); animation: pulse 1.2s infinite; }
+.sp-status-dot.cached     { background: var(--blue-500); box-shadow: 0 0 0 3px rgba(59,130,246,.2); }
 .sp-status-text { font-size: .78rem; font-weight: 600; color: var(--text-b); flex: 1; }
 .sp-status-time { font-size: .68rem; color: var(--text-f); }
 

@@ -1,0 +1,74 @@
+[
+  {
+    "id": "auto-01",
+    "name": "Email Nurturing Sequence",
+    "tools": "Make · Gmail",
+    "icon": "📧",
+    "iconBg": "#eff6ff",
+    "desc": "Tự động gửi chuỗi 7 email nurturing sau khi lead đăng ký. Cá nhân hóa theo segment.",
+    "runs": "1,245 lần/tháng",
+    "saved": "48h tiết kiệm",
+    "tags": ["Gmail", "Make", "CRM"],
+    "active": true
+  },
+  {
+    "id": "auto-02",
+    "name": "CRM Lead Scoring AI",
+    "tools": "Make · Claude API",
+    "icon": "🤝",
+    "iconBg": "#ecfdf5",
+    "desc": "Chấm điểm lead tự động với AI dựa trên hành vi, nguồn và mức độ tương tác.",
+    "runs": "284 lần/tháng",
+    "saved": "56h tiết kiệm",
+    "tags": ["AI", "CRM", "Make"],
+    "active": true
+  },
+  {
+    "id": "auto-03",
+    "name": "Zalo OA Auto Response",
+    "tools": "Zalo API · Make",
+    "icon": "📱",
+    "iconBg": "#f5f3ff",
+    "desc": "Tự động trả lời tin nhắn Zalo OA với AI. Chuyển hướng đến sales khi đủ điều kiện.",
+    "runs": "3,200 lần/tháng",
+    "saved": "160h tiết kiệm",
+    "tags": ["Zalo", "AI", "Chatbot"],
+    "active": true
+  },
+  {
+    "id": "auto-04",
+    "name": "Weekly KPI Report",
+    "tools": "Google Sheets · Gmail",
+    "icon": "📊",
+    "iconBg": "#fef3c7",
+    "desc": "Tổng hợp KPI tuần từ Google Sheets, tạo báo cáo PDF và gửi email cho CEO mỗi thứ Hai.",
+    "runs": "4 lần/tháng",
+    "saved": "8h tiết kiệm",
+    "tags": ["Google", "PDF", "Report"],
+    "active": true
+  },
+  {
+    "id": "auto-05",
+    "name": "Social Media Scheduler",
+    "tools": "Make · Buffer",
+    "icon": "🎬",
+    "iconBg": "#fce7f3",
+    "desc": "Lên lịch đăng bài tự động trên Facebook, TikTok, LinkedIn từ Google Drive.",
+    "runs": "90 lần/tháng",
+    "saved": "30h tiết kiệm",
+    "tags": ["Facebook", "TikTok", "LinkedIn"],
+    "active": true
+  },
+  {
+    "id": "auto-06",
+    "name": "Birthday Greeting Bot",
+    "tools": "CRM · Gmail · Zalo",
+    "icon": "🎂",
+    "iconBg": "#f1f5f9",
+    "desc": "Tự động gửi lời chúc sinh nhật cá nhân hóa qua email và Zalo cho khách hàng.",
+    "runs": "0 lần/tháng",
+    "saved": "0h tháng này",
+    "tags": ["CRM", "Email", "Zalo"],
+    "active": false
+  }
+]
