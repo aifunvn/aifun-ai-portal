@@ -521,7 +521,7 @@ export async function loadData() {
       _fetchedAt: sheetsData._fetchedAt,
     };
   } catch (sheetsErr) {
-    console.warn('[DataLoader] Tier 1 thất bại → thử Tier 2.', sheetsErr.message);
+    console.error('[DataLoader] FULL Tier 1 ERROR:', sheetsErr);
   }
 
   // ── Tier 2: JSON files ────────────────────────────────────
