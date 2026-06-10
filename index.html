@@ -554,26 +554,29 @@
   </div>
 </div>
 
-<!-- ══════════ ADD PROMPT MODAL ══════════ -->
-<div class="modal-overlay" id="addPromptModal">
-  <div class="modal" style="max-width:580px">
+<!-- ══════════ PROMPT MODAL (Add / Edit) ══════════ -->
+<div class="modal-overlay" id="promptModal">
+  <div class="modal" style="max-width:600px">
     <div class="modal-header">
-      <h3>➕ Thêm Prompt mới</h3>
-      <button class="modal-close" onclick="App.closeAddPromptModal()">✕</button>
+      <h3 id="promptModalTitle">➕ Thêm Prompt mới</h3>
+      <button class="modal-close" onclick="App.closePromptModal()">✕</button>
     </div>
     <div class="modal-body">
-      <form id="addPromptForm" onsubmit="App.submitAddPrompt(event)" autocomplete="off">
+      <form id="promptForm" onsubmit="App.submitPromptForm(event)" autocomplete="off">
+        <input type="hidden" id="pmEditId" value="" />
 
+        <!-- Title -->
         <div class="sp-field">
           <label class="sp-label">Tên Prompt <span style="color:#ef4444">*</span></label>
-          <input class="sp-input" id="apTitle" type="text"
+          <input class="sp-input" id="pmTitle" type="text"
             placeholder="VD: Viết email marketing chuyên nghiệp" required />
         </div>
 
+        <!-- Category + Platform row -->
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
           <div class="sp-field">
             <label class="sp-label">Danh mục <span style="color:#ef4444">*</span></label>
-            <select class="sp-input" id="apCategory" required>
+            <select class="sp-input" id="pmCategory" required>
               <option value="">-- Chọn danh mục --</option>
               <option value="marketing">Marketing</option>
               <option value="sales">Sales</option>
@@ -586,7 +589,7 @@
           </div>
           <div class="sp-field">
             <label class="sp-label">Nền tảng AI <span style="color:#ef4444">*</span></label>
-            <select class="sp-input" id="apTool" required>
+            <select class="sp-input" id="pmTool" required>
               <option value="">-- Chọn AI --</option>
               <option value="Claude">Claude</option>
               <option value="ChatGPT">ChatGPT</option>
@@ -596,36 +599,80 @@
           </div>
         </div>
 
-        <div class="sp-field">
-          <label class="sp-label">Tags</label>
-          <input class="sp-input" id="apTags" type="text"
-            placeholder="VD: email, marketing, B2B (phân cách bằng dấu phẩy)" />
+        <!-- Tags + Rating row -->
+        <div style="display:grid;grid-template-columns:1fr auto;gap:12px;align-items:end">
+          <div class="sp-field" style="margin-bottom:0">
+            <label class="sp-label">Tags <span class="sp-hint" style="display:inline">(phân cách bằng dấu phẩy)</span></label>
+            <input class="sp-input" id="pmTags" type="text"
+              placeholder="VD: email, marketing, B2B" />
+          </div>
+          <div class="sp-field" style="margin-bottom:0">
+            <label class="sp-label">Rating</label>
+            <div class="pm-rating-wrap" id="pmRatingWrap">
+              <input type="hidden" id="pmRating" value="5" />
+              <span class="pm-star active" data-v="1">★</span>
+              <span class="pm-star active" data-v="2">★</span>
+              <span class="pm-star active" data-v="3">★</span>
+              <span class="pm-star active" data-v="4">★</span>
+              <span class="pm-star active" data-v="5">★</span>
+            </div>
+          </div>
         </div>
 
+        <!-- Description -->
+        <div class="sp-field">
+          <label class="sp-label">Mô tả ngắn</label>
+          <input class="sp-input" id="pmDesc" type="text"
+            placeholder="VD: Prompt viết email B2B, tỷ lệ open rate cao" />
+        </div>
+
+        <!-- Content -->
         <div class="sp-field">
           <label class="sp-label">Nội dung Prompt <span style="color:#ef4444">*</span></label>
-          <textarea class="sp-input" id="apContent" rows="5" required
+          <textarea class="sp-input" id="pmContent" rows="5" required
             placeholder="Nhập nội dung prompt đầy đủ..."
-            style="resize:vertical;min-height:110px;font-family:inherit"></textarea>
+            style="resize:vertical;min-height:110px;font-family:inherit;line-height:1.6"></textarea>
         </div>
 
-        <!-- Sheets write status -->
-        <div id="apSheetsStatus" style="display:none;padding:8px 12px;border-radius:8px;font-size:.76rem;margin-bottom:4px"></div>
-
-        <div class="import-modal-actions" style="margin-top:18px">
-          <button type="button" class="btn btn-ghost" onclick="App.closeAddPromptModal()">Hủy</button>
-          <button type="submit" class="btn btn-primary" id="apSubmitBtn">
+        <div class="import-modal-actions" style="margin-top:20px">
+          <button type="button" class="btn btn-ghost" onclick="App.closePromptModal()">Hủy</button>
+          <button type="submit" class="btn btn-primary" id="pmSubmitBtn">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
               style="width:15px;height:15px;flex-shrink:0">
               <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v14a2 2 0 01-2 2z"/>
               <polyline points="17 21 17 13 7 13 7 21"/>
               <polyline points="7 3 7 8 15 8"/>
             </svg>
-            Lưu Prompt
+            <span id="pmSubmitLabel">Lưu Prompt</span>
           </button>
         </div>
-
       </form>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ DELETE PROMPT CONFIRM ══════════ -->
+<div class="modal-overlay" id="deletePromptModal">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-header">
+      <h3>🗑️ Xóa Prompt</h3>
+      <button class="modal-close" onclick="App.closeDeletePromptModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:.88rem;color:var(--text-m);margin-bottom:6px">Bạn có chắc muốn xóa prompt này?</p>
+      <p id="deletePromptName" style="font-weight:700;color:var(--text-h);font-size:.9rem;margin-bottom:18px"></p>
+      <div class="import-warning">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span>Hành động này không thể hoàn tác.</span>
+      </div>
+      <div class="import-modal-actions" style="margin-top:16px">
+        <button class="btn btn-ghost" onclick="App.closeDeletePromptModal()">Hủy</button>
+        <button class="btn btn-danger" id="confirmDeleteBtn" onclick="App.confirmDeletePrompt()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            style="width:15px;height:15px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+          Xóa Prompt
+        </button>
+      </div>
     </div>
   </div>
 </div>

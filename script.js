@@ -219,11 +219,18 @@ function renderPrompts() {
 
   setHTML('promptsGrid', filtered.map(p => `
     <div class="prompt-card">
-      <div class="prompt-meta">
-        <span class="prompt-cat ${p.category}">${escHtml(p.category)}</span>
-        <span class="prompt-tool">${escHtml(p.tool)}</span>
+      <div class="prompt-card-top">
+        <div class="prompt-meta">
+          <span class="prompt-cat ${escHtml(p.category)}">${escHtml(p.category)}</span>
+          <span class="prompt-tool">${escHtml(p.tool)}</span>
+        </div>
+        <div class="prompt-card-actions-top">
+          <button class="prompt-icon-btn edit"  title="Chỉnh sửa" onclick="App.editPrompt('${p.id}')">✏️</button>
+          <button class="prompt-icon-btn delete" title="Xóa"       onclick="App.deletePrompt('${p.id}')">🗑️</button>
+        </div>
       </div>
       <div class="prompt-title">${escHtml(p.title)}</div>
+      ${p.desc ? `<div class="prompt-desc">${escHtml(p.desc)}</div>` : ''}
       <div class="prompt-preview">${escHtml(p.content)}</div>
       <div class="prompt-stars" title="${p.rating}/5">${stars(p.rating)} ${p.rating}</div>
       <div class="prompt-actions">
@@ -615,32 +622,89 @@ function usePrompt(id) {
 }
 
 /* ═══════════════════════════════════════════
-   ADD PROMPT MODAL
+   PROMPT MODAL — Add / Edit (unified)
 ═══════════════════════════════════════════ */
-function openAddPromptModal() {
-  const overlay = document.getElementById('addPromptModal');
+let _editingPromptId = null; // null = add mode, string = edit mode
+
+function openAddPromptModal() { _openPromptModal(null); }
+function editPrompt(id)       { _openPromptModal(id);   }
+
+function _openPromptModal(id) {
+  _editingPromptId = id || null;
+  const overlay = document.getElementById('promptModal');
   if (!overlay) return;
-  const form = document.getElementById('addPromptForm');
+
+  const titleEl  = document.getElementById('promptModalTitle');
+  const labelEl  = document.getElementById('pmSubmitLabel');
+  const form     = document.getElementById('promptForm');
   if (form) form.reset();
-  const statusEl = document.getElementById('apSheetsStatus');
-  if (statusEl) statusEl.style.display = 'none';
+
+  if (id) {
+    // ── Edit mode: prefill fields ──────────────────────────────
+    const p = PROMPTS.find(p => p.id === String(id));
+    if (!p) return;
+    if (titleEl) titleEl.textContent = '✏️ Chỉnh sửa Prompt';
+    if (labelEl) labelEl.textContent = 'Cập nhật';
+    document.getElementById('pmEditId').value    = p.id;
+    document.getElementById('pmTitle').value     = p.title     || '';
+    document.getElementById('pmCategory').value  = p.category  || '';
+    document.getElementById('pmTool').value      = p.tool      || '';
+    document.getElementById('pmTags').value      = Array.isArray(p.tags) ? p.tags.join(', ') : (p.tags || '');
+    document.getElementById('pmDesc').value      = p.desc      || p.description || '';
+    document.getElementById('pmContent').value   = p.content   || '';
+    _setRating(p.rating || 5);
+  } else {
+    // ── Add mode ───────────────────────────────────────────────
+    if (titleEl) titleEl.textContent = '➕ Thêm Prompt mới';
+    if (labelEl) labelEl.textContent = 'Lưu Prompt';
+    document.getElementById('pmEditId').value = '';
+    _setRating(5);
+  }
+
   overlay.classList.add('open');
-  setTimeout(() => document.getElementById('apTitle')?.focus(), 80);
+  setTimeout(() => document.getElementById('pmTitle')?.focus(), 80);
 }
 
-function closeAddPromptModal() {
-  const overlay = document.getElementById('addPromptModal');
+function closePromptModal() {
+  const overlay = document.getElementById('promptModal');
   if (overlay) overlay.classList.remove('open');
+  _editingPromptId = null;
 }
 
-async function submitAddPrompt(e) {
+// ── Star rating helper ──────────────────────────────────────────
+function _setRating(val) {
+  document.getElementById('pmRating').value = val;
+  document.querySelectorAll('#pmRatingWrap .pm-star').forEach(s => {
+    s.classList.toggle('active', Number(s.dataset.v) <= val);
+  });
+}
+
+function _initRatingWidget() {
+  document.querySelectorAll('#pmRatingWrap .pm-star').forEach(star => {
+    star.addEventListener('click', () => _setRating(Number(star.dataset.v)));
+    star.addEventListener('mouseenter', () => {
+      const v = Number(star.dataset.v);
+      document.querySelectorAll('#pmRatingWrap .pm-star').forEach(s =>
+        s.classList.toggle('hover', Number(s.dataset.v) <= v));
+    });
+  });
+  document.getElementById('pmRatingWrap')?.addEventListener('mouseleave', () => {
+    document.querySelectorAll('#pmRatingWrap .pm-star').forEach(s => s.classList.remove('hover'));
+  });
+}
+
+// ── Submit (add OR edit) ────────────────────────────────────────
+async function submitPromptForm(e) {
   e.preventDefault();
 
-  const title    = document.getElementById('apTitle')?.value.trim()    || '';
-  const category = document.getElementById('apCategory')?.value        || '';
-  const tool     = document.getElementById('apTool')?.value            || '';
-  const tagsRaw  = document.getElementById('apTags')?.value.trim()     || '';
-  const content  = document.getElementById('apContent')?.value.trim()  || '';
+  const title    = document.getElementById('pmTitle')?.value.trim()    || '';
+  const category = document.getElementById('pmCategory')?.value        || '';
+  const tool     = document.getElementById('pmTool')?.value            || '';
+  const tagsRaw  = document.getElementById('pmTags')?.value.trim()     || '';
+  const desc     = document.getElementById('pmDesc')?.value.trim()     || '';
+  const content  = document.getElementById('pmContent')?.value.trim()  || '';
+  const rating   = Number(document.getElementById('pmRating')?.value)  || 5;
+  const editId   = document.getElementById('pmEditId')?.value          || '';
 
   if (!title || !category || !tool || !content) {
     toast('Vui lòng điền đầy đủ các trường bắt buộc!', 'error');
@@ -648,49 +712,90 @@ async function submitAddPrompt(e) {
   }
 
   const tags = tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean) : [];
-  const id   = 'p' + Date.now();
-  const newPrompt = { id, title, category, tool, content, tags, uses: 0, rating: 5 };
+  const btn  = document.getElementById('pmSubmitBtn');
+  if (btn) btn.disabled = true;
 
-  const btn      = document.getElementById('apSubmitBtn');
-  const statusEl = document.getElementById('apSheetsStatus');
+  const isEdit = !!editId;
 
-  if (btn) { btn.disabled = true; btn.textContent = 'Đang lưu...'; }
+  if (isEdit) {
+    // ── Update existing prompt ─────────────────────────────────
+    const idx = PROMPTS.findIndex(p => p.id === editId);
+    if (idx !== -1) {
+      PROMPTS[idx] = { ...PROMPTS[idx], title, category, tool, tags, desc, content, rating };
+    }
+    closePromptModal();
+    renderPrompts();
+    toast(`✏️ Đã cập nhật prompt "${title}"!`, 'success', 3500);
+    _sheetsWritePrompt('update', { id: editId, title, category, tool, tags, desc, content, rating });
+  } else {
+    // ── Add new prompt ─────────────────────────────────────────
+    const id = 'p' + Date.now();
+    PROMPTS.unshift({ id, title, category, tool, tags, desc, content, rating, uses: 0 });
+    _updateNavBadges();
+    closePromptModal();
+    renderPrompts();
+    toast(`✅ Đã thêm prompt "${title}" vào Prompt Library!`, 'success', 3500);
+    _sheetsWritePrompt('add', { id, title, category, tool, tags, desc, content, rating, uses: 0 });
+  }
 
-  // ── 1. Lưu local ────────────────────────────────────────────────
-  PROMPTS.unshift(newPrompt);
-  _updateNavBadges();
+  if (btn) btn.disabled = false;
+}
 
-  // ── 2. Thử ghi vào Google Sheets qua Apps Script ────────────────
-  let sheetsResult = 'skipped'; // 'ok' | 'error' | 'skipped'
+// ── Sheets write (fire-and-forget, no-cors) ─────────────────────
+async function _sheetsWritePrompt(action, data) {
   try {
     const { SHEETS_CONFIG } = await import('./config.js');
-    if (SHEETS_CONFIG.APPS_SCRIPT_URL) {
-      const row = [id, title, category, tool, content, tags.join(','), 0, 5];
-      const resp = await fetch(SHEETS_CONFIG.APPS_SCRIPT_URL, {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ action: 'addRow', sheet: 'PROMPTS', row }),
-      });
-      sheetsResult = resp.ok ? 'ok' : 'error';
-    }
-  } catch {
-    sheetsResult = 'error';
-  }
+    if (!SHEETS_CONFIG.APPS_SCRIPT_URL) return;
 
-  // ── 3. Đóng modal & re-render ───────────────────────────────────
-  closeAddPromptModal();
+    const row = [
+      data.id, data.title, data.category, data.tool, data.content,
+      Array.isArray(data.tags) ? data.tags.join(',') : (data.tags || ''),
+      data.uses ?? 0, data.rating ?? 5,
+    ];
+    const body = JSON.stringify({ action: action === 'add' ? 'addRow' : action === 'update' ? 'updateRow' : 'deleteRow', sheet: 'PROMPTS', id: data.id, row });
+
+    fetch(SHEETS_CONFIG.APPS_SCRIPT_URL, {
+      method: 'POST',
+      mode:   'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body,
+    }).catch(() => {});
+  } catch {}
+}
+
+/* ═══════════════════════════════════════════
+   DELETE PROMPT
+═══════════════════════════════════════════ */
+let _deletingPromptId = null;
+
+function deletePrompt(id) {
+  const p = PROMPTS.find(p => p.id === String(id));
+  if (!p) return;
+  _deletingPromptId = id;
+  const nameEl = document.getElementById('deletePromptName');
+  if (nameEl) nameEl.textContent = `"${p.title}"`;
+  const overlay = document.getElementById('deletePromptModal');
+  if (overlay) overlay.classList.add('open');
+}
+
+function closeDeletePromptModal() {
+  const overlay = document.getElementById('deletePromptModal');
+  if (overlay) overlay.classList.remove('open');
+  _deletingPromptId = null;
+}
+
+function confirmDeletePrompt() {
+  if (!_deletingPromptId) return;
+  const id  = _deletingPromptId;
+  const p   = PROMPTS.find(p => p.id === String(id));
+  const name = p?.title || 'prompt';
+
+  PROMPTS = PROMPTS.filter(p => p.id !== String(id));
+  _updateNavBadges();
+  closeDeletePromptModal();
   renderPrompts();
-
-  // ── 4. Thông báo kết quả ────────────────────────────────────────
-  if (sheetsResult === 'ok') {
-    toast(`✅ Đã lưu "${title}" vào Prompt Library & Google Sheets!`, 'success', 4000);
-  } else if (sheetsResult === 'error') {
-    toast(`⚠️ Đã thêm "${title}" nhưng ghi Sheets thất bại. Kiểm tra Apps Script URL.`, 'info', 5000);
-  } else {
-    toast(`✅ Đã thêm "${title}" vào Prompt Library!`, 'success', 3000);
-  }
-
-  if (btn) { btn.disabled = false; btn.textContent = 'Lưu Prompt'; }
+  toast(`🗑️ Đã xóa prompt "${name}"!`, 'success', 3000);
+  _sheetsWritePrompt('delete', { id });
 }
 
 /* ═══════════════════════════════════════════
@@ -1293,9 +1398,14 @@ window.App = {
   viewSOP,
   startCourse,
 
-  openAddPromptModal,
-  closeAddPromptModal,
-  submitAddPrompt,
+  openAddPromptModal,           // alias → kept for backward compat
+  openPromptModal: _openPromptModal,
+  closePromptModal,
+  submitPromptForm,
+  editPrompt,
+  deletePrompt,
+  confirmDeletePrompt,
+  closeDeletePromptModal,
 
   setPromptCat(cat) { promptFilter.cat = cat; renderPrompts(); },
   setSopDept(dept)   { sopFilter.dept = dept; renderSOPs(); },
@@ -1353,11 +1463,20 @@ document.addEventListener('DOMContentLoaded', async () => {
   const addPromptBtn = document.getElementById('addPromptBtn');
   if (addPromptBtn) addPromptBtn.addEventListener('click', openAddPromptModal);
 
-  // Close Add Prompt modal on backdrop click
-  const addPromptModal = document.getElementById('addPromptModal');
-  if (addPromptModal) addPromptModal.addEventListener('click', e => {
-    if (e.target === addPromptModal) closeAddPromptModal();
+  // Prompt modal backdrop close
+  const promptModal = document.getElementById('promptModal');
+  if (promptModal) promptModal.addEventListener('click', e => {
+    if (e.target === promptModal) closePromptModal();
   });
+
+  // Delete confirm modal backdrop close
+  const deletePromptModal = document.getElementById('deletePromptModal');
+  if (deletePromptModal) deletePromptModal.addEventListener('click', e => {
+    if (e.target === deletePromptModal) closeDeletePromptModal();
+  });
+
+  // Init star rating widget
+  _initRatingWidget();
 
   // Prompt search
   const promptSearch = document.getElementById('promptSearch');
