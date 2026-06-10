@@ -32,7 +32,7 @@ export const SHEETS_CONFIG = {
   // Spreadsheet: AIFUN DATA CENTER
   // URL: https://docs.google.com/spreadsheets/d/1hsD6pEqWmF7Z46SQrumip-wslTCOU1Jnb4f21hyuTyU
   SPREADSHEET_ID: '1hsD6pEqWmF7Z46SQrumip-wslTCOU1Jnb4f21hyuTyU',
-  API_KEY: 'AIzaSyDq5zGOLWQroCOeVKFrUmS5ufZ8sy008Uc',  // ← Điền API Key sau khi tạo trên Google Cloud Console
+  API_KEY: 'AIzaSyDq5zGOLWQroCOeVKFrUmS5ufZ8sy008Uc',
   // ────────────────────────────────────────────────────────────────
 
   // Tên tab trong Spreadsheet — phải khớp chính xác (case-sensitive)
@@ -43,6 +43,11 @@ export const SHEETS_CONFIG = {
     projects:  'PROJECTS',
     workflows: 'WORKFLOWS',
   },
+
+  // Google Apps Script Web App URL — dùng để GHI dữ liệu vào Sheets (append row)
+  // Deploy script tại: script.google.com → New Project → dán code Apps Script → Deploy → Web App
+  // Xem hướng dẫn trong README hoặc Sheets Panel
+  APPS_SCRIPT_URL:  '',              // ← Điền URL Apps Script sau khi deploy (tuỳ chọn)
 
   CACHE_TTL_MS:     5 * 60 * 1000,   // Cache 5 phút — không fetch lại quá nhiều
   FETCH_TIMEOUT_MS: 8000,             // Timeout 8s → fallback về JSON

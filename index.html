@@ -554,6 +554,82 @@
   </div>
 </div>
 
+<!-- ══════════ ADD PROMPT MODAL ══════════ -->
+<div class="modal-overlay" id="addPromptModal">
+  <div class="modal" style="max-width:580px">
+    <div class="modal-header">
+      <h3>➕ Thêm Prompt mới</h3>
+      <button class="modal-close" onclick="App.closeAddPromptModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="addPromptForm" onsubmit="App.submitAddPrompt(event)" autocomplete="off">
+
+        <div class="sp-field">
+          <label class="sp-label">Tên Prompt <span style="color:#ef4444">*</span></label>
+          <input class="sp-input" id="apTitle" type="text"
+            placeholder="VD: Viết email marketing chuyên nghiệp" required />
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="sp-field">
+            <label class="sp-label">Danh mục <span style="color:#ef4444">*</span></label>
+            <select class="sp-input" id="apCategory" required>
+              <option value="">-- Chọn danh mục --</option>
+              <option value="marketing">Marketing</option>
+              <option value="sales">Sales</option>
+              <option value="content">Content</option>
+              <option value="operations">Operations</option>
+              <option value="hr">HR</option>
+              <option value="analysis">Analysis</option>
+              <option value="automation">Automation</option>
+            </select>
+          </div>
+          <div class="sp-field">
+            <label class="sp-label">Nền tảng AI <span style="color:#ef4444">*</span></label>
+            <select class="sp-input" id="apTool" required>
+              <option value="">-- Chọn AI --</option>
+              <option value="Claude">Claude</option>
+              <option value="ChatGPT">ChatGPT</option>
+              <option value="Gemini">Gemini</option>
+              <option value="Perplexity">Perplexity</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="sp-field">
+          <label class="sp-label">Tags</label>
+          <input class="sp-input" id="apTags" type="text"
+            placeholder="VD: email, marketing, B2B (phân cách bằng dấu phẩy)" />
+        </div>
+
+        <div class="sp-field">
+          <label class="sp-label">Nội dung Prompt <span style="color:#ef4444">*</span></label>
+          <textarea class="sp-input" id="apContent" rows="5" required
+            placeholder="Nhập nội dung prompt đầy đủ..."
+            style="resize:vertical;min-height:110px;font-family:inherit"></textarea>
+        </div>
+
+        <!-- Sheets write status -->
+        <div id="apSheetsStatus" style="display:none;padding:8px 12px;border-radius:8px;font-size:.76rem;margin-bottom:4px"></div>
+
+        <div class="import-modal-actions" style="margin-top:18px">
+          <button type="button" class="btn btn-ghost" onclick="App.closeAddPromptModal()">Hủy</button>
+          <button type="submit" class="btn btn-primary" id="apSubmitBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              style="width:15px;height:15px;flex-shrink:0">
+              <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v14a2 2 0 01-2 2z"/>
+              <polyline points="17 21 17 13 7 13 7 21"/>
+              <polyline points="7 3 7 8 15 8"/>
+            </svg>
+            Lưu Prompt
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+
 <!-- ══════════ SKILL MODAL ══════════ -->
 <div class="modal-overlay" id="skillModal">
   <div class="modal" style="max-width:420px">

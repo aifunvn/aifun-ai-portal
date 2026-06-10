@@ -615,6 +615,85 @@ function usePrompt(id) {
 }
 
 /* ═══════════════════════════════════════════
+   ADD PROMPT MODAL
+═══════════════════════════════════════════ */
+function openAddPromptModal() {
+  const overlay = document.getElementById('addPromptModal');
+  if (!overlay) return;
+  const form = document.getElementById('addPromptForm');
+  if (form) form.reset();
+  const statusEl = document.getElementById('apSheetsStatus');
+  if (statusEl) statusEl.style.display = 'none';
+  overlay.classList.add('open');
+  setTimeout(() => document.getElementById('apTitle')?.focus(), 80);
+}
+
+function closeAddPromptModal() {
+  const overlay = document.getElementById('addPromptModal');
+  if (overlay) overlay.classList.remove('open');
+}
+
+async function submitAddPrompt(e) {
+  e.preventDefault();
+
+  const title    = document.getElementById('apTitle')?.value.trim()    || '';
+  const category = document.getElementById('apCategory')?.value        || '';
+  const tool     = document.getElementById('apTool')?.value            || '';
+  const tagsRaw  = document.getElementById('apTags')?.value.trim()     || '';
+  const content  = document.getElementById('apContent')?.value.trim()  || '';
+
+  if (!title || !category || !tool || !content) {
+    toast('Vui lòng điền đầy đủ các trường bắt buộc!', 'error');
+    return;
+  }
+
+  const tags = tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean) : [];
+  const id   = 'p' + Date.now();
+  const newPrompt = { id, title, category, tool, content, tags, uses: 0, rating: 5 };
+
+  const btn      = document.getElementById('apSubmitBtn');
+  const statusEl = document.getElementById('apSheetsStatus');
+
+  if (btn) { btn.disabled = true; btn.textContent = 'Đang lưu...'; }
+
+  // ── 1. Lưu local ────────────────────────────────────────────────
+  PROMPTS.unshift(newPrompt);
+  _updateNavBadges();
+
+  // ── 2. Thử ghi vào Google Sheets qua Apps Script ────────────────
+  let sheetsResult = 'skipped'; // 'ok' | 'error' | 'skipped'
+  try {
+    const { SHEETS_CONFIG } = await import('./config.js');
+    if (SHEETS_CONFIG.APPS_SCRIPT_URL) {
+      const row = [id, title, category, tool, content, tags.join(','), 0, 5];
+      const resp = await fetch(SHEETS_CONFIG.APPS_SCRIPT_URL, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ action: 'addRow', sheet: 'PROMPTS', row }),
+      });
+      sheetsResult = resp.ok ? 'ok' : 'error';
+    }
+  } catch {
+    sheetsResult = 'error';
+  }
+
+  // ── 3. Đóng modal & re-render ───────────────────────────────────
+  closeAddPromptModal();
+  renderPrompts();
+
+  // ── 4. Thông báo kết quả ────────────────────────────────────────
+  if (sheetsResult === 'ok') {
+    toast(`✅ Đã lưu "${title}" vào Prompt Library & Google Sheets!`, 'success', 4000);
+  } else if (sheetsResult === 'error') {
+    toast(`⚠️ Đã thêm "${title}" nhưng ghi Sheets thất bại. Kiểm tra Apps Script URL.`, 'info', 5000);
+  } else {
+    toast(`✅ Đã thêm "${title}" vào Prompt Library!`, 'success', 3000);
+  }
+
+  if (btn) { btn.disabled = false; btn.textContent = 'Lưu Prompt'; }
+}
+
+/* ═══════════════════════════════════════════
    AUTOMATION TOGGLE
 ═══════════════════════════════════════════ */
 function toggleWorkflow(id, el) {
@@ -1214,6 +1293,10 @@ window.App = {
   viewSOP,
   startCourse,
 
+  openAddPromptModal,
+  closeAddPromptModal,
+  submitAddPrompt,
+
   setPromptCat(cat) { promptFilter.cat = cat; renderPrompts(); },
   setSopDept(dept)   { sopFilter.dept = dept; renderSOPs(); },
   setProjectStatus(s){ projectFilter.status = s; renderProjects(); },
@@ -1264,6 +1347,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Nav
   qsa('.nav-item[data-page]').forEach(item => {
     item.addEventListener('click', () => nav(item.dataset.page));
+  });
+
+  // Add Prompt button
+  const addPromptBtn = document.getElementById('addPromptBtn');
+  if (addPromptBtn) addPromptBtn.addEventListener('click', openAddPromptModal);
+
+  // Close Add Prompt modal on backdrop click
+  const addPromptModal = document.getElementById('addPromptModal');
+  if (addPromptModal) addPromptModal.addEventListener('click', e => {
+    if (e.target === addPromptModal) closeAddPromptModal();
   });
 
   // Prompt search
