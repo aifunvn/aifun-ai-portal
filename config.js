@@ -47,7 +47,7 @@ export const SHEETS_CONFIG = {
   // Google Apps Script Web App URL — dùng để GHI dữ liệu vào Sheets (append row)
   // Deploy script tại: script.google.com → New Project → dán code Apps Script → Deploy → Web App
   // Xem hướng dẫn trong README hoặc Sheets Panel
-  APPS_SCRIPT_URL:  '',              // ← Điền URL Apps Script sau khi deploy (tuỳ chọn)
+  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbylB_9Yn_Q6825V2jFdXbMLrpp5A_pw_0jPlCl_Eg4Ou7mOFsibvdT0EP00gVMBC69myw/exec',
 
   CACHE_TTL_MS:     5 * 60 * 1000,   // Cache 5 phút — không fetch lại quá nhiều
   FETCH_TIMEOUT_MS: 8000,             // Timeout 8s → fallback về JSON
