@@ -1,0 +1,318 @@
+/* ═══════════════════════════════════════════════════════════════
+   AIFUN OS — skill-modal.css
+   Styles cho: modal, form, loading, result, dashboard stats
+   Thêm vào cuối file style.css hiện tại của bạn
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── BACKDROP ─────────────────────────────────────────────────── */
+#se-modal-container {
+  display: none;
+  position: fixed; inset: 0; z-index: 9000;
+}
+#se-modal-container.active { display: block; }
+
+#se-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  animation: se-fade-in .2s ease;
+}
+
+/* ── MODAL ────────────────────────────────────────────────────── */
+#se-modal {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(680px, 96vw);
+  max-height: 92vh;
+  overflow-y: auto;
+  background: #1E293B;
+  border: 1px solid #334155;
+  border-radius: 20px;
+  box-shadow: 0 32px 80px rgba(0,0,0,.7);
+  animation: se-slide-up .25s ease;
+  scrollbar-width: thin;
+  scrollbar-color: #475569 transparent;
+}
+#se-modal::-webkit-scrollbar { width: 5px; }
+#se-modal::-webkit-scrollbar-thumb { background: #475569; border-radius: 99px; }
+
+@keyframes se-fade-in  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes se-slide-up { from { opacity: 0; transform: translate(-50%,-46%); } to { opacity: 1; transform: translate(-50%,-50%); } }
+
+/* ── MODAL HEADER ─────────────────────────────────────────────── */
+.se-modal-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid #334155;
+  position: sticky; top: 0; background: #1E293B; z-index: 2;
+}
+.se-modal-title-wrap { display: flex; align-items: center; gap: 14px; }
+.se-modal-icon  { font-size: 32px; line-height: 1; }
+.se-modal-title { font-size: 20px; font-weight: 800; color: #F1F5F9; line-height: 1.2; }
+.se-modal-subtitle { font-size: 12px; color: #94A3B8; margin-top: 3px; }
+
+.se-close-btn {
+  background: none; border: none; cursor: pointer;
+  color: #64748B; font-size: 18px; padding: 4px 8px;
+  border-radius: 8px; line-height: 1; flex-shrink: 0;
+  transition: .15s;
+}
+.se-close-btn:hover { background: #334155; color: #F1F5F9; }
+
+/* ── STEP INDICATOR ───────────────────────────────────────────── */
+.se-steps {
+  display: flex; align-items: center; justify-content: center;
+  padding: 16px 24px; gap: 0;
+}
+.se-step {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  cursor: default; min-width: 72px;
+}
+.se-step span {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: #334155; color: #64748B;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 800; transition: .3s;
+}
+.se-step small { font-size: 10px; color: #64748B; transition: .3s; white-space: nowrap; }
+.se-step.active span  { background: #1A56DB; color: #fff; box-shadow: 0 0 0 3px rgba(26,86,219,.3); }
+.se-step.active small { color: #60A5FA; }
+.se-step.completed span  { background: #22C55E; color: #fff; }
+.se-step.completed small { color: #4ADE80; }
+
+.se-step-line {
+  flex: 1; height: 2px; background: #334155;
+  margin: 0 6px; margin-bottom: 14px; transition: .4s;
+}
+.se-step-line.completed { background: #22C55E; }
+
+/* ── MODAL BODY ───────────────────────────────────────────────── */
+.se-modal-body { padding: 20px 24px 24px; }
+
+/* ── FORM ─────────────────────────────────────────────────────── */
+.se-field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+@media (max-width: 560px) { .se-field-grid { grid-template-columns: 1fr; } }
+
+.se-field { display: flex; flex-direction: column; gap: 5px; }
+.se-field-full { grid-column: 1 / -1; }
+
+.se-label {
+  font-size: 12px; font-weight: 700; color: #94A3B8;
+  text-transform: uppercase; letter-spacing: .5px;
+}
+
+.se-input,
+.se-textarea,
+.se-select {
+  background: #0F172A; border: 1.5px solid #334155;
+  color: #F1F5F9; border-radius: 10px;
+  padding: 10px 14px; font-size: 14px; font-family: inherit;
+  outline: none; transition: .2s; width: 100%;
+}
+.se-textarea { resize: vertical; min-height: 80px; }
+.se-select   { cursor: pointer; }
+
+.se-input:focus,
+.se-textarea:focus,
+.se-select:focus {
+  border-color: #1A56DB;
+  box-shadow: 0 0 0 3px rgba(26,86,219,.2);
+}
+.se-input.se-input-error,
+.se-textarea.se-input-error,
+.se-select.se-input-error {
+  border-color: #EF4444;
+  box-shadow: 0 0 0 3px rgba(239,68,68,.15);
+}
+.se-input::placeholder,
+.se-textarea::placeholder { color: #475569; }
+
+/* Checkbox group */
+.se-checkbox-group {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-top: 2px;
+}
+.se-check-label {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 12px; background: #0F172A;
+  border: 1.5px solid #334155; border-radius: 8px;
+  font-size: 13px; color: #94A3B8; cursor: pointer; transition: .15s;
+}
+.se-check-label:hover { border-color: #1A56DB; color: #F1F5F9; }
+.se-checkbox { accent-color: #1A56DB; width: 14px; height: 14px; }
+
+/* Form error */
+.se-form-error {
+  background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.3);
+  color: #FCA5A5; border-radius: 8px; padding: 10px 14px;
+  font-size: 13px; margin-bottom: 14px; display: none;
+}
+
+/* ── BUTTONS ──────────────────────────────────────────────────── */
+.se-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 10px 20px; border-radius: 10px; font-size: 14px;
+  font-weight: 700; font-family: inherit; cursor: pointer;
+  border: none; text-decoration: none; transition: .2s;
+  white-space: nowrap; line-height: 1.4;
+}
+.se-btn-primary  { background: #1A56DB; color: #fff; }
+.se-btn-primary:hover  { background: #1649c0; transform: translateY(-1px); }
+.se-btn-secondary { background: #334155; color: #F1F5F9; }
+.se-btn-secondary:hover { background: #475569; }
+.se-btn-ghost    { background: transparent; color: #94A3B8; border: 1px solid #334155; }
+.se-btn-ghost:hover    { background: #334155; color: #F1F5F9; }
+.se-btn-success  { background: #22C55E; color: #0F172A; }
+.se-btn-success:hover  { background: #16a34a; }
+
+.se-form-actions {
+  display: flex; justify-content: flex-end; gap: 10px;
+  margin-top: 20px; padding-top: 16px;
+  border-top: 1px solid #334155;
+}
+
+/* ── LOADING STATE ────────────────────────────────────────────── */
+.se-loading {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 24px 0; gap: 14px; text-align: center;
+}
+.se-spinner {
+  width: 52px; height: 52px;
+  border: 4px solid #334155;
+  border-top-color: #1A56DB;
+  border-radius: 50%;
+  animation: se-spin 1s linear infinite;
+}
+@keyframes se-spin { to { transform: rotate(360deg); } }
+
+.se-loading-title { font-size: 18px; font-weight: 800; color: #F1F5F9; }
+.se-loading-sub   { font-size: 13px; color: #94A3B8; max-width: 360px; }
+
+.se-loading-steps {
+  width: 100%; max-width: 400px;
+  display: flex; flex-direction: column; gap: 8px;
+  margin: 6px 0;
+}
+.se-ls-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 14px; border-radius: 8px;
+  background: #0F172A; border: 1px solid #334155;
+  font-size: 13px; color: #64748B; transition: .3s;
+}
+.se-ls-item.active  { border-color: #1A56DB; color: #60A5FA; }
+.se-ls-item.done    { border-color: #22C55E; color: #4ADE80; }
+.se-ls-icon { font-size: 16px; width: 20px; text-align: center; }
+.se-loading-note {
+  font-size: 11px; color: #475569;
+  padding: 8px 14px; background: #0F172A;
+  border-radius: 8px; border: 1px solid #334155;
+  max-width: 400px;
+}
+
+/* ── RESULT STATE ─────────────────────────────────────────────── */
+.se-result { display: flex; flex-direction: column; gap: 16px; }
+
+.se-result-success {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 20px; background: rgba(34,197,94,.07);
+  border: 1px solid rgba(34,197,94,.25); border-radius: 14px;
+  text-align: center; gap: 6px;
+}
+.se-result-check { font-size: 36px; }
+.se-result-msg   { font-size: 16px; font-weight: 800; color: #4ADE80; }
+.se-result-file  { font-size: 12px; color: #64748B; font-family: monospace; }
+
+.se-result-actions {
+  display: flex; flex-wrap: wrap; gap: 8px;
+}
+.se-result-actions .se-btn { flex: 1; min-width: 130px; justify-content: center; }
+
+.se-result-preview {
+  background: #0F172A; border: 1px solid #334155;
+  border-radius: 12px; overflow: hidden;
+}
+.se-result-preview-label {
+  padding: 10px 14px; font-size: 12px; font-weight: 700;
+  color: #94A3B8; border-bottom: 1px solid #334155;
+  background: #1E293B;
+}
+.se-result-preview-body {
+  padding: 14px; font-size: 13px; color: #CBD5E1;
+  line-height: 1.75; max-height: 200px; overflow-y: auto;
+  white-space: pre-wrap; font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.se-result-meta {
+  display: flex; gap: 16px; font-size: 11px; color: #475569; flex-wrap: wrap;
+}
+.se-result-bottom {
+  display: flex; gap: 8px; justify-content: flex-end;
+  padding-top: 8px; border-top: 1px solid #334155;
+}
+
+/* ── ERROR STATE ──────────────────────────────────────────────── */
+.se-error {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 12px; padding: 24px 0; text-align: center;
+}
+.se-error-icon  { font-size: 40px; }
+.se-error-title { font-size: 18px; font-weight: 800; color: #FCA5A5; }
+.se-error-msg   { font-size: 13px; color: #94A3B8; max-width: 400px; line-height: 1.6; }
+
+/* ── TOAST ────────────────────────────────────────────────────── */
+.se-toast {
+  position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+  padding: 12px 20px; border-radius: 10px; font-size: 14px; font-weight: 600;
+  background: #1E293B; border: 1px solid #334155; color: #F1F5F9;
+  box-shadow: 0 8px 24px rgba(0,0,0,.5);
+  transform: translateY(80px); opacity: 0; transition: .3s; pointer-events: none;
+  max-width: 320px;
+}
+.se-toast.show { transform: translateY(0); opacity: 1; }
+.se-toast-success { border-color: rgba(34,197,94,.5); color: #4ADE80; }
+.se-toast-warn    { border-color: rgba(234,179,8,.5);  color: #FDE047; }
+.se-toast-info    { border-color: rgba(96,165,250,.5); color: #60A5FA; }
+
+/* ── DASHBOARD STATS WIDGET ───────────────────────────────────── */
+.se-stats-widget {
+  background: #1E293B; border: 1px solid #334155;
+  border-radius: 14px; padding: 20px;
+}
+.se-stats-title {
+  font-size: 12px; font-weight: 700; color: #94A3B8;
+  text-transform: uppercase; letter-spacing: .8px;
+  margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+}
+.se-stats-title::after { content: ''; flex: 1; height: 1px; background: #334155; }
+
+.se-stats-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
+}
+@media (min-width: 600px) { .se-stats-grid { grid-template-columns: repeat(4, 1fr); } }
+
+.se-stat-card {
+  background: #0F172A; border: 1px solid #334155;
+  border-radius: 10px; padding: 14px; display: flex; flex-direction: column; gap: 4px;
+}
+.se-stat-label { font-size: 10px; color: #64748B; text-transform: uppercase; letter-spacing: .5px; }
+.se-stat-value { font-size: 28px; font-weight: 900; color: #60A5FA; line-height: 1; }
+.se-stat-sub   { font-size: 11px; color: #475569; }
+
+/* ── SKILLS LIST additions: add data attributes for engine ───── */
+/* Add to your existing .skill-card or .skill-item: */
+/*
+  data-skill-id="sop-builder"   ← matches SKILL_FORMS key
+  data-skill-launch             ← triggers SkillEngine.launch()
+*/
+
+/* ── RESPONSIVE ───────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  #se-modal { border-radius: 16px 16px 0 0; top: auto; bottom: 0; transform: translate(-50%, 0); max-height: 95vh; width: 100%; }
+  @keyframes se-slide-up { from { opacity: 0; transform: translate(-50%, 40px); } to { opacity: 1; transform: translate(-50%, 0); } }
+  .se-form-actions { flex-direction: column-reverse; }
+  .se-btn { width: 100%; justify-content: center; }
+}
