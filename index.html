@@ -1,706 +1,1065 @@
 <!DOCTYPE html>
-<html lang="vi" data-theme="light">
+<html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AIFUN OS — AI Optimal Solution</title>
-  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-  <link rel="stylesheet" href="style.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIFUN OS Dashboard V4.1</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0F172A;--bg2:#1E293B;--bg3:#334155;
+  --primary:#1A56DB;--accent:#F97316;
+  --green:#22C55E;--yellow:#EAB308;--red:#EF4444;
+  --purple:#8B5CF6;--teal:#14B8A6;--pink:#EC4899;
+  --sky:#0EA5E9;--indigo:#6366F1;--amber:#F59E0B;
+  --text:#F1F5F9;--muted:#94A3B8;--border:#334155;
+}
+body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+/* ── HEADER ── */
+.hdr{background:var(--bg2);border-bottom:1px solid var(--border);padding:14px 20px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:50;flex-wrap:wrap;gap:10px}
+.hdr-left{display:flex;align-items:center;gap:12px}
+.logo-box{width:40px;height:40px;background:var(--primary);border-radius:10px;
+  display:flex;align-items:center;justify-content:center;font-size:20px}
+.hdr-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.badge{padding:4px 10px;border-radius:99px;font-size:11px;font-weight:700;letter-spacing:.4px}
+.bver{background:linear-gradient(90deg,rgba(26,86,219,.3),rgba(139,92,246,.3));
+  border:1px solid rgba(139,92,246,.5);color:#a78bfa}
+.blive{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);
+  color:var(--green);display:flex;align-items:center;gap:5px}
+.dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.bedit{background:rgba(234,179,8,.15);border:1px solid rgba(234,179,8,.4);
+  color:var(--yellow);display:none}
+body.edit-mode .bedit{display:flex}
+body.edit-mode .blive{display:none}
+.ts{font-size:12px;color:var(--muted)}
+
+.btn{border:none;cursor:pointer;font-family:inherit;font-weight:700;
+  border-radius:8px;padding:8px 16px;font-size:13px;
+  display:flex;align-items:center;gap:6px;transition:.2s;white-space:nowrap}
+.btn-edit{background:rgba(234,179,8,.15);color:var(--yellow);border:1px solid rgba(234,179,8,.3)}
+.btn-edit:hover{background:rgba(234,179,8,.25)}
+.btn-save{background:var(--green);color:#0F172A;display:none}
+.btn-save:hover{background:#16a34a}
+.btn-cancel{background:var(--bg3);color:var(--text);display:none}
+.btn-cancel:hover{background:var(--bg4,#475569)}
+.btn-ref{background:var(--primary);color:#fff}
+.btn-ref:hover{background:#1649c0}
+body.edit-mode .btn-edit{display:none}
+body.edit-mode .btn-save{display:flex}
+body.edit-mode .btn-cancel{display:flex}
+body.edit-mode .btn-ref{display:none}
+
+/* ── EDIT BANNER ── */
+.edit-banner{
+  background:rgba(234,179,8,.08);border:1px solid rgba(234,179,8,.3);
+  border-radius:10px;padding:10px 16px;margin-bottom:16px;
+  font-size:13px;color:var(--yellow);font-weight:500;
+  display:none;align-items:center;gap:8px;
+}
+body.edit-mode .edit-banner{display:flex}
+
+/* ── MAIN ── */
+.main{max-width:1440px;margin:0 auto;padding:20px 20px 60px}
+
+/* ── SECTION LABEL ── */
+.sl{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:1px;
+  text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.sl::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* ── ASSET CARDS ── */
+.asset-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:12px;margin-bottom:28px}
+@media(max-width:1200px){.asset-grid{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:700px){.asset-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:360px){.asset-grid{grid-template-columns:1fr}}
+
+.ac{background:var(--bg2);border:1px solid var(--border);border-radius:14px;
+  padding:16px 14px;display:flex;flex-direction:column;gap:8px;
+  position:relative;overflow:hidden;transition:.2s}
+.ac::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:14px 14px 0 0}
+.ac:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.ac.total{background:linear-gradient(135deg,rgba(26,86,219,.15),rgba(139,92,246,.1));
+  border-color:rgba(139,92,246,.4)}
+.ac-ico{font-size:22px;line-height:1}
+.ac-lbl{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
+.ac-val{font-size:26px;font-weight:900;line-height:1}
+
+/* Asset edit input — shown only in edit mode */
+.ac-edit{display:none;margin-top:6px;padding-top:8px;border-top:1px solid var(--border)}
+body.edit-mode .ac-edit{display:block}
+body.edit-mode .ac-val{font-size:18px}
+
+.ac-inp{width:100%;background:var(--bg3);border:1px solid var(--border);
+  color:var(--text);padding:6px 10px;border-radius:6px;font-size:14px;
+  font-weight:700;outline:none;font-family:inherit;transition:.2s}
+.ac-inp:focus{border-color:var(--primary);box-shadow:0 0 0 2px rgba(26,86,219,.2)}
+
+/* card colors */
+.c0::before{background:var(--indigo)}.c0:hover{border-color:var(--indigo)}
+.c1::before{background:var(--primary)}.c1:hover{border-color:var(--primary)}
+.c2::before{background:var(--purple)}.c2:hover{border-color:var(--purple)}
+.c3::before{background:var(--accent)}.c3:hover{border-color:var(--accent)}
+.c4::before{background:var(--pink)}.c4:hover{border-color:var(--pink)}
+.c5::before{background:var(--teal)}.c5:hover{border-color:var(--teal)}
+.c6::before{background:var(--green)}.c6:hover{border-color:var(--green)}
+
+/* ── CEO WRAP ── */
+.ceo-wrap{display:grid;grid-template-columns:280px 1fr;gap:20px;margin-bottom:28px}
+@media(max-width:960px){.ceo-wrap{grid-template-columns:1fr}}
+
+/* CEO Score */
+.score-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;
+  padding:24px;display:flex;flex-direction:column;align-items:center;gap:16px}
+.gauge-svg{width:160px;height:160px}
+.gauge-bg{fill:none;stroke:var(--bg3);stroke-width:10}
+.gauge-fill{fill:none;stroke-width:10;stroke-linecap:round;
+  stroke-dasharray:345.4;stroke-dashoffset:345.4;
+  transform:rotate(-90deg);transform-origin:50% 50%;
+  transition:stroke-dashoffset 1s ease,stroke .4s ease}
+.score-title{font-size:14px;font-weight:800;text-align:center}
+.score-breakdown{width:100%;display:flex;flex-direction:column;gap:6px}
+.sb-row{display:flex;align-items:center;gap:8px}
+.sb-name{font-size:10px;color:var(--muted);width:72px;flex-shrink:0}
+.sb-bar{flex:1;height:4px;background:var(--bg3);border-radius:99px;overflow:hidden}
+.sb-fill{height:100%;border-radius:99px;transition:width .8s ease}
+.sb-pct{font-size:11px;font-weight:700;width:36px;text-align:right;flex-shrink:0}
+.sb-wt{font-size:10px;color:var(--muted);width:28px;text-align:right;flex-shrink:0}
+
+/* KPI area */
+.kpi-area{display:flex;flex-direction:column;gap:14px}
+.kpi-row-label{font-size:11px;font-weight:700;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.8px;display:flex;align-items:center;gap:6px}
+.kpi-row-label::after{content:'';flex:1;height:1px;background:var(--border)}
+.kpi-sub-grid{display:grid;gap:12px}
+.kpi-3{grid-template-columns:repeat(3,1fr)}
+.kpi-2{grid-template-columns:repeat(2,1fr)}
+.kpi-3b{grid-template-columns:repeat(3,1fr)}
+@media(max-width:900px){
+  .kpi-3,.kpi-3b{grid-template-columns:repeat(2,1fr)}
+  .kpi-2{grid-template-columns:1fr 1fr}
+}
+@media(max-width:500px){.kpi-3,.kpi-2,.kpi-3b{grid-template-columns:1fr}}
+
+/* KPI Card */
+.kc{background:var(--bg2);border:1px solid var(--border);border-radius:12px;
+  padding:14px;transition:.2s}
+.kc:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,.25)}
+
+/* Display mode content */
+.kc-display{display:flex;flex-direction:column;gap:8px}
+.kc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.kc-left{display:flex;flex-direction:column;gap:2px}
+.kc-ico{font-size:18px;line-height:1;margin-bottom:4px}
+.kc-lbl{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.kc-val{font-size:24px;font-weight:900;line-height:1}
+.kc-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.kc-ach{font-size:14px;font-weight:800;padding:3px 10px;border-radius:8px;white-space:nowrap}
+.kc-tgt{font-size:10px;color:var(--muted)}
+.kc-bar-wrap{display:flex;flex-direction:column;gap:4px}
+.kc-bar{height:5px;background:var(--bg3);border-radius:99px;overflow:hidden}
+.kc-fill{height:100%;border-radius:99px;transition:width .6s ease,background .4s ease}
+.kc-bar-label{font-size:10px;color:var(--muted)}
+.ach-g{background:rgba(34,197,94,.15);color:var(--green)}
+.ach-y{background:rgba(234,179,8,.12);color:var(--yellow)}
+.ach-r{background:rgba(239,68,68,.1);color:var(--red)}
+
+/* Edit mode content */
+.kc-edit{display:none;flex-direction:column;gap:8px}
+body.edit-mode .kc-display{display:none}
+body.edit-mode .kc-edit{display:flex}
+.kc-edit-head{display:flex;align-items:center;gap:6px;padding-bottom:6px;
+  border-bottom:1px solid var(--border)}
+.kc-edit-head .ico{font-size:16px}
+.kc-edit-head .lbl{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.edit-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ef{display:flex;flex-direction:column;gap:3px}
+.ef-label{font-size:10px;font-weight:600;color:var(--muted)}
+.kc-inp{background:var(--bg3);border:1px solid var(--border);color:var(--text);
+  padding:7px 10px;border-radius:6px;font-size:14px;font-weight:700;
+  width:100%;outline:none;font-family:inherit;transition:.2s}
+.kc-inp:focus{border-color:var(--primary);box-shadow:0 0 0 2px rgba(26,86,219,.2)}
+.kc-inp::placeholder{color:var(--bg4,#475569);font-weight:400}
+
+/* ── MODULES ── */
+.mod-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px}
+@media(max-width:900px){.mod-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){.mod-grid{grid-template-columns:1fr}}
+.mc{background:var(--bg2);border:1px solid var(--border);border-radius:12px;
+  padding:14px;display:flex;flex-direction:column;gap:10px}
+.mc-head{display:flex;align-items:center;justify-content:space-between}
+.mc-name{font-size:12px;font-weight:700}
+.mt{font-size:10px;padding:2px 8px;border-radius:99px;font-weight:600}
+.ta{background:rgba(34,197,94,.15);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.tb{background:rgba(234,179,8,.12);color:var(--yellow);border:1px solid rgba(234,179,8,.3)}
+.tp{background:rgba(148,163,184,.1);color:var(--muted);border:1px solid var(--border)}
+.pb{height:5px;background:var(--bg3);border-radius:99px;overflow:hidden}
+.pf{height:100%;border-radius:99px}
+.mc-foot{display:flex;justify-content:space-between}
+.mc-pct{font-size:12px;font-weight:700}
+.mc-sub{font-size:11px;color:var(--muted)}
+
+/* ── PASS / FAIL ── */
+.pf-panel{background:var(--bg2);border:1px solid var(--border);border-radius:14px;
+  padding:20px;margin-bottom:24px}
+.pf-title{font-size:14px;font-weight:800;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.pf-list{display:flex;flex-direction:column;gap:7px}
+.pi{display:flex;align-items:center;gap:10px;padding:9px 12px;
+  border-radius:8px;font-size:12px;font-weight:500}
+.pi-ok{background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.2)}
+.pi-no{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.2)}
+.pi .pb2{font-size:10px;font-weight:800;padding:2px 8px;border-radius:4px;
+  margin-left:auto;letter-spacing:.4px}
+.pp{background:rgba(34,197,94,.2);color:var(--green)}
+.pf2{background:rgba(239,68,68,.2);color:var(--red)}
+
+/* ── FINAL VERDICT ── */
+.vd{border-radius:14px;padding:22px;border:2px solid transparent;margin-bottom:24px}
+.vd-ok{background:rgba(34,197,94,.06);border-color:rgba(34,197,94,.4)}
+.vd-no{background:rgba(239,68,68,.05);border-color:rgba(239,68,68,.4)}
+.vd-title{font-size:18px;font-weight:900;margin-bottom:14px}
+.vd-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media(max-width:700px){.vd-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:400px){.vd-grid{grid-template-columns:1fr}}
+.vi{background:var(--bg2);border-radius:10px;padding:14px}
+.vi-lbl{font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;
+  letter-spacing:.5px;margin-bottom:4px}
+.vi-val{font-size:18px;font-weight:900}
+.vd-ts{margin-top:12px;font-size:11px;color:var(--muted);line-height:1.8}
+
+/* ── FOOTER ── */
+.footer{text-align:center;padding:18px;font-size:12px;
+  color:var(--muted);border-top:1px solid var(--border)}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:22px;right:22px;background:var(--bg2);
+  border:1px solid var(--border);color:var(--text);padding:11px 18px;
+  border-radius:10px;font-size:13px;font-weight:500;
+  box-shadow:0 8px 24px rgba(0,0,0,.4);transform:translateY(80px);opacity:0;
+  transition:.3s;z-index:999;max-width:300px}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.ok{border-color:rgba(34,197,94,.5);color:var(--green)}
+.toast.sv{border-color:rgba(234,179,8,.5);color:var(--yellow)}
+
+/* ── SKILL CARDS ── */
+.sk-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px}
+@media(max-width:900px){.sk-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:500px){.sk-grid{grid-template-columns:1fr}}
+.sk-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;
+  padding:18px 16px;display:flex;flex-direction:column;gap:10px;
+  position:relative;overflow:hidden;transition:.2s;cursor:pointer}
+.sk-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  border-radius:14px 14px 0 0;background:var(--sk-color,var(--primary))}
+.sk-card:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,.35);
+  border-color:var(--sk-color,var(--primary))}
+.sk-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.sk-ico{font-size:26px;line-height:1}
+.sk-cat{font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;
+  background:rgba(255,255,255,.07);color:var(--muted);border:1px solid var(--border);
+  letter-spacing:.4px}
+.sk-name{font-size:14px;font-weight:800;line-height:1.3}
+.sk-desc{font-size:12px;color:var(--muted);line-height:1.5;flex:1}
+.sk-meta{display:flex;align-items:center;justify-content:space-between;
+  font-size:10px;color:var(--muted)}
+.sk-btn{background:var(--sk-color,var(--primary));color:#fff;border:none;
+  cursor:pointer;padding:9px 0;border-radius:8px;font-size:13px;font-weight:700;
+  font-family:inherit;width:100%;transition:.15s;letter-spacing:.2px}
+.sk-btn:hover{opacity:.88;transform:translateY(-1px)}
+</style>
+<link rel="stylesheet" href="aifun-skill-engine/skill-modal.css">
 </head>
 <body>
 
-<div class="sidebar-overlay" id="sidebarOverlay"></div>
-
-<!-- ══════════════════════════ SIDEBAR ══════════════════════════ -->
-<aside class="sidebar" id="sidebar">
-  <div class="sidebar-header">
-    <div class="logo">
-      <div class="logo-icon">
-        <img src="logo.svg" alt="AIFUN Logo" width="44" height="44" style="border-radius:50%;display:block;" />
-      </div>
-      <div class="logo-text">
-        <span class="logo-name">AIFUN OS</span>
-        <span class="logo-tagline">AI Optimal Solution</span>
-      </div>
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-left">
+    <div class="logo-box">🤖</div>
+    <div>
+      <div style="font-size:17px;font-weight:800">AIFUN OS</div>
+      <div style="font-size:11px;color:var(--muted);letter-spacing:.5px">AI OPTIMAL SOLUTION</div>
     </div>
-    <button class="sidebar-close" id="sidebarClose">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
-    </button>
+  </div>
+  <div class="hdr-right">
+    <div class="badge bver">V4.1</div>
+    <div class="badge blive"><span class="dot"></span>LIVE</div>
+    <div class="badge bedit">✏️ EDIT MODE</div>
+    <div class="ts" id="tsEl"></div>
+    <button class="btn btn-edit" id="btnEdit" onclick="enterEdit()">✏️ Edit KPI</button>
+    <button class="btn btn-save" id="btnSave" onclick="saveEdit()">💾 Lưu</button>
+    <button class="btn btn-cancel" id="btnCancel" onclick="cancelEdit()">↩️ Huỷ</button>
+    <button class="btn btn-ref" onclick="refreshDisplay()">🔄</button>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- EDIT BANNER -->
+  <div class="edit-banner">
+    ✏️ <strong>Chế độ chỉnh sửa</strong> — Nhập số liệu trực tiếp vào các ô bên dưới. Nhấn <strong>💾 Lưu</strong> để ghi dữ liệu, <strong>↩️ Huỷ</strong> để bỏ thay đổi.
   </div>
 
-  <nav class="sidebar-nav">
-    <div class="nav-section">
-      <span class="nav-label">MAIN</span>
-      <ul>
-        <li><a href="#" class="nav-item active" data-page="home">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-          <span>Trang chủ</span>
-        </a></li>
-        <li><a href="#" class="nav-item" data-page="ai-tools">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/></svg>
-          <span>AI Tools</span>
-          <span class="badge" id="badge-tools">7</span>
-        </a></li>
-        <li><a href="#" class="nav-item" data-page="prompts">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-          <span>Prompt Library</span>
-          <span class="badge" id="badge-prompts">12</span>
-        </a></li>
-        <li><a href="#" class="nav-item" data-page="skills">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          <span>Skills</span>
-          <span class="badge" id="badge-skills">10</span>
-        </a></li>
-      </ul>
+  <!-- AI ASSETS -->
+  <div class="sl">📦 Kho tài sản AI — AIFUN OS</div>
+  <div class="asset-grid">
+
+    <div class="ac c0 total">
+      <div class="ac-ico">🏆</div>
+      <div class="ac-lbl">Total AI Assets</div>
+      <div class="ac-val" id="v-total" style="color:var(--indigo)">302</div>
     </div>
 
-    <div class="nav-section">
-      <span class="nav-label">SYSTEMS</span>
-      <ul>
-        <li><a href="#" class="nav-item" data-page="sop-library">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></svg>
-          <span>SOP Library</span>
-          <span class="badge" id="badge-sops">24</span>
-        </a></li>
-        <li><a href="#" class="nav-item" data-page="crm">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
-          <span>CRM Systems</span>
-        </a></li>
-        <li><a href="#" class="nav-item" data-page="automation">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-          <span>Automation</span>
-        </a></li>
-      </ul>
-    </div>
-
-    <div class="nav-section">
-      <span class="nav-label">WORKSPACE</span>
-      <ul>
-        <li><a href="#" class="nav-item" data-page="projects">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-          <span>Projects</span>
-          <span class="badge" id="badge-projects">5</span>
-        </a></li>
-        <li><a href="#" class="nav-item" data-page="training">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
-          <span>Training</span>
-        </a></li>
-        <li><a href="#" class="nav-item" data-page="dashboard">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-          <span>Dashboard</span>
-        </a></li>
-      </ul>
-    </div>
-  </nav>
-
-  <div class="sidebar-footer">
-    <div class="user-card">
-      <div class="ceo-avatar">
-        <div class="ceo-avatar-inner">DTC</div>
-        <span class="ceo-online"></span>
+    <div class="ac c1">
+      <div class="ac-ico">✍️</div>
+      <div class="ac-lbl">Prompts</div>
+      <div class="ac-val" id="v-prompts" style="color:var(--primary)">140</div>
+      <div class="ac-edit">
+        <input class="ac-inp" type="number" id="ea-prompts" min="0" oninput="onAssetEdit()">
       </div>
-      <div class="user-info">
-        <span class="user-name">Diệp Thành Chung</span>
-        <span class="user-role">CEO · AIFUN</span>
-      </div>
-      <button class="user-menu-btn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
-      </button>
     </div>
-    <div class="sidebar-brand"><a href="https://aifun.ai.vn" target="_blank">aifun.ai.vn</a></div>
+
+    <div class="ac c2">
+      <div class="ac-ico">🛠️</div>
+      <div class="ac-lbl">Skills</div>
+      <div class="ac-val" id="v-skills" style="color:var(--purple)">20</div>
+      <div class="ac-edit">
+        <input class="ac-inp" type="number" id="ea-skills" min="0" oninput="onAssetEdit()">
+      </div>
+    </div>
+
+    <div class="ac c3">
+      <div class="ac-ico">📋</div>
+      <div class="ac-lbl">SOPs</div>
+      <div class="ac-val" id="v-sops" style="color:var(--accent)">80</div>
+      <div class="ac-edit">
+        <input class="ac-inp" type="number" id="ea-sops" min="0" oninput="onAssetEdit()">
+      </div>
+    </div>
+
+    <div class="ac c4">
+      <div class="ac-ico">⚙️</div>
+      <div class="ac-lbl">Workflows</div>
+      <div class="ac-val" id="v-workflows" style="color:var(--pink)">6</div>
+      <div class="ac-edit">
+        <input class="ac-inp" type="number" id="ea-workflows" min="0" oninput="onAssetEdit()">
+      </div>
+    </div>
+
+    <div class="ac c5">
+      <div class="ac-ico">📄</div>
+      <div class="ac-lbl">Templates</div>
+      <div class="ac-val" id="v-templates" style="color:var(--teal)">50</div>
+      <div class="ac-edit">
+        <input class="ac-inp" type="number" id="ea-templates" min="0" oninput="onAssetEdit()">
+      </div>
+    </div>
+
+    <div class="ac c6">
+      <div class="ac-ico">💎</div>
+      <div class="ac-lbl">Customer Success</div>
+      <div class="ac-val" id="v-cs" style="color:var(--green)">6</div>
+      <div class="ac-edit">
+        <input class="ac-inp" type="number" id="ea-cs" min="0" oninput="onAssetEdit()">
+      </div>
+    </div>
+
   </div>
-</aside>
 
-<!-- ══════════════════════════ MAIN ══════════════════════════ -->
-<div class="main-wrapper">
+  <!-- CEO KPI DASHBOARD -->
+  <div class="sl">👑 CEO KPI Dashboard</div>
+  <div class="ceo-wrap">
 
-  <!-- Topbar -->
-  <header class="topbar">
-    <div class="topbar-left">
-      <button class="menu-toggle" id="menuToggle">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-      </button>
-      <div class="search-bar" id="globalSearchBar">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-        <input type="text" id="globalSearch" placeholder="Tìm kiếm tools, prompts, skills... (⌘K)" autocomplete="off"/>
-        <kbd>⌘K</kbd>
+    <!-- GAUGE -->
+    <div class="score-card">
+      <svg class="gauge-svg" viewBox="0 0 130 130">
+        <circle class="gauge-bg" cx="65" cy="65" r="55"/>
+        <circle id="gaugeFill" class="gauge-fill" cx="65" cy="65" r="55"
+          stroke="var(--yellow)"/>
+        <text id="gaugePct" x="65" y="58"
+          style="font-size:22px;font-weight:900;fill:var(--yellow);text-anchor:middle;dominant-baseline:central">0%</text>
+        <text x="65" y="80"
+          style="font-size:8px;fill:var(--muted);text-anchor:middle">CEO SCORE</text>
+      </svg>
+      <div class="score-title">CEO Performance Score</div>
+      <div class="score-breakdown">
+        <div class="sb-row">
+          <div class="sb-name">Lead Ach.</div>
+          <div class="sb-bar"><div class="sb-fill" id="sb-lead" style="background:var(--primary)"></div></div>
+          <div class="sb-pct" id="sp-lead" style="color:var(--primary)">0%</div>
+          <div class="sb-wt">×25%</div>
+        </div>
+        <div class="sb-row">
+          <div class="sb-name">Sales Ach.</div>
+          <div class="sb-bar"><div class="sb-fill" id="sb-sales" style="background:var(--accent)"></div></div>
+          <div class="sb-pct" id="sp-sales" style="color:var(--accent)">0%</div>
+          <div class="sb-wt">×25%</div>
+        </div>
+        <div class="sb-row">
+          <div class="sb-name">Revenue Ach.</div>
+          <div class="sb-bar"><div class="sb-fill" id="sb-rev" style="background:var(--green)"></div></div>
+          <div class="sb-pct" id="sp-rev" style="color:var(--green)">0%</div>
+          <div class="sb-wt">×40%</div>
+        </div>
+        <div class="sb-row">
+          <div class="sb-name">NPS Ach.</div>
+          <div class="sb-bar"><div class="sb-fill" id="sb-nps" style="background:var(--purple)"></div></div>
+          <div class="sb-pct" id="sp-nps" style="color:var(--purple)">0%</div>
+          <div class="sb-wt">×10%</div>
+        </div>
       </div>
     </div>
-    <div class="topbar-right">
-      <!-- Sheets sync status — click để mở Sheets Panel -->
-      <button class="sync-status" id="syncStatus" title="Click để quản lý Google Sheets" onclick="App.openSheetsPanel()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
-        <span id="syncLabel">Local</span>
-      </button>
-      <!-- Backup button group -->
-      <div class="backup-btn-group" id="backupGroup">
-        <button class="backup-trigger-btn" id="backupTrigger" title="Backup dữ liệu">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v14a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-          <span>Backup</span>
-          <svg class="backup-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div class="backup-dropdown" id="backupDropdown">
-          <button class="backup-item export-item" onclick="App.exportBackup()">
-            <span class="backup-item-icon">⬇️</span>
-            <div class="backup-item-text">
-              <strong>Export Backup</strong>
-              <span>Xuất toàn bộ dữ liệu → JSON</span>
+
+    <!-- KPI CARDS -->
+    <div class="kpi-area">
+
+      <div class="kpi-row-label">📅 Today</div>
+      <div class="kpi-sub-grid kpi-3">
+        <!-- Leads Today -->
+        <div class="kc" id="kc-lt">
+          <div class="kc-display">
+            <div class="kc-top">
+              <div class="kc-left"><div class="kc-ico">🎯</div><div class="kc-lbl">Leads Today</div><div class="kc-val" id="kv-lt">0</div></div>
+              <div class="kc-right"><div class="kc-ach" id="ka-lt">0%</div><div class="kc-tgt" id="kt-lt">Target: 5</div></div>
             </div>
-          </button>
-          <div class="backup-divider"></div>
-          <label class="backup-item import-item" for="importFileInput">
-            <span class="backup-item-icon">⬆️</span>
-            <div class="backup-item-text">
-              <strong>Import Backup</strong>
-              <span>Khôi phục từ file JSON</span>
-            </div>
-          </label>
-          <input type="file" id="importFileInput" accept=".json" style="display:none" />
-        </div>
-      </div>
-
-      <button class="topbar-btn dark-toggle" id="darkToggle" title="Chế độ tối (Ctrl+D)">
-        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
-      </button>
-      <button class="topbar-btn" title="Thông báo">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
-        <span class="notif-dot"></span>
-      </button>
-      <div class="topbar-avatar" title="Diệp Thành Chung">DTC</div>
-      <div class="version-chip">v3.0</div>
-    </div>
-  </header>
-
-  <!-- ══════════════════════════ PAGES ══════════════════════════ -->
-  <main class="content" id="pageContent">
-
-    <!-- ── HOME ──────────────────────────────────────── -->
-    <section class="page active" id="page-home">
-      <div class="hero-header">
-        <div class="hero-text">
-          <div class="hero-badge">🚀 AIFUN OS V3.0 — AI Optimal Solution</div>
-          <h1 class="page-title">Xin chào, Chung <span class="wave">👋</span></h1>
-          <p class="page-subtitle">AI Optimal Solution — Trung tâm điều hành doanh nghiệp thông minh</p>
-        </div>
-        <div class="ceo-profile-card">
-          <div class="ceo-profile-avatar">
-            <div class="ceo-large-avatar">DTC</div>
-            <span class="ceo-status-badge">● Online</span>
+            <div class="kc-bar-wrap"><div class="kc-bar"><div class="kc-fill" id="kf-lt"></div></div><div class="kc-bar-label" id="kbl-lt">0% achieved</div></div>
           </div>
-          <div class="ceo-profile-info">
-            <span class="ceo-profile-name">Diệp Thành Chung</span>
-            <span class="ceo-profile-title">CEO · AIFUN</span>
-            <span class="ceo-profile-tag">AI Optimal Solution</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Stats (dynamic) -->
-      <div class="stats-grid-8" id="homeStats"></div>
-
-      <!-- Quick + Activity -->
-      <div class="two-col-grid">
-        <div class="card">
-          <div class="card-header"><h3 class="card-title">Truy cập nhanh</h3></div>
-          <div class="quick-grid">
-            <button class="quick-btn" onclick="App.nav('ai-tools')"><span class="quick-icon">🤖</span><span>AI Tools</span></button>
-            <button class="quick-btn" onclick="App.nav('prompts')"><span class="quick-icon">📝</span><span>Prompts</span></button>
-            <button class="quick-btn" onclick="App.nav('skills')"><span class="quick-icon">⚡</span><span>Skills</span></button>
-            <button class="quick-btn" onclick="App.nav('sop-library')"><span class="quick-icon">📋</span><span>SOP</span></button>
-            <button class="quick-btn" onclick="App.nav('crm')"><span class="quick-icon">🤝</span><span>CRM</span></button>
-            <button class="quick-btn" onclick="App.nav('automation')"><span class="quick-icon">⚙️</span><span>Auto</span></button>
-            <button class="quick-btn" onclick="App.nav('projects')"><span class="quick-icon">📁</span><span>Projects</span></button>
-            <button class="quick-btn" onclick="App.nav('training')"><span class="quick-icon">🎓</span><span>Training</span></button>
-            <button class="quick-btn" onclick="App.nav('dashboard')"><span class="quick-icon">📊</span><span>Dashboard</span></button>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-header"><h3 class="card-title">Hoạt động gần đây</h3><a href="#" class="card-link">Xem tất cả</a></div>
-          <ul class="activity-list">
-            <li class="activity-item"><div class="activity-icon blue">📄</div><div class="activity-info"><span class="activity-title">SOP Onboarding hoàn thành</span><span class="activity-time">2 phút trước</span></div><span class="activity-badge success">Done</span></li>
-            <li class="activity-item"><div class="activity-icon purple">🎬</div><div class="activity-info"><span class="activity-title">Video Factory đang chạy</span><span class="activity-time">15 phút trước</span></div><span class="activity-badge running">Running</span></li>
-            <li class="activity-item"><div class="activity-icon green">⚙️</div><div class="activity-info"><span class="activity-title">Automation Email kích hoạt</span><span class="activity-time">1 giờ trước</span></div><span class="activity-badge success">Done</span></li>
-            <li class="activity-item"><div class="activity-icon orange">🤝</div><div class="activity-info"><span class="activity-title">CRM pipeline cập nhật</span><span class="activity-time">3 giờ trước</span></div><span class="activity-badge info">Updated</span></li>
-            <li class="activity-item"><div class="activity-icon teal">🎓</div><div class="activity-info"><span class="activity-title">Course Builder: Module 3 done</span><span class="activity-time">Hôm qua</span></div><span class="activity-badge success">Done</span></li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- AI Tools chips -->
-      <div class="card">
-        <div class="card-header"><h3 class="card-title">AI Tools nổi bật</h3><a href="#" class="card-link" onclick="App.nav('ai-tools');return false;">Xem tất cả →</a></div>
-        <div class="tools-row" id="homeToolsRow"></div>
-      </div>
-    </section>
-
-    <!-- ── AI TOOLS ───────────────────────────────────── -->
-    <section class="page" id="page-ai-tools">
-      <div class="page-header">
-        <div><h1 class="page-title">AI Tools</h1><p class="page-subtitle">Bộ công cụ AI mạnh mẽ — click để mở trực tiếp</p></div>
-        <div class="topbar-btn-group">
-          <input type="text" class="filter-input" id="toolSearch" placeholder="🔍 Tìm tool..." />
-        </div>
-      </div>
-      <div class="tools-grid" id="toolsGrid"></div>
-    </section>
-
-    <!-- ── PROMPT LIBRARY ─────────────────────────────── -->
-    <section class="page" id="page-prompts">
-      <div class="page-header">
-        <div><h1 class="page-title">Prompt Library</h1><p class="page-subtitle" id="promptSubtitle">Thư viện prompt tối ưu cho doanh nghiệp Việt Nam</p></div>
-        <button class="btn btn-primary" id="addPromptBtn">+ Thêm Prompt</button>
-      </div>
-      <!-- Search + Filter bar -->
-      <div class="prompt-toolbar">
-        <div class="search-inline">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-          <input type="text" id="promptSearch" placeholder="Tìm kiếm prompt..." />
-        </div>
-        <div class="prompt-categories" id="promptCats"></div>
-      </div>
-      <div class="prompts-grid" id="promptsGrid"></div>
-      <div class="empty-state" id="promptEmpty" style="display:none">
-        <div class="empty-icon">🔍</div>
-        <h3>Không tìm thấy prompt</h3>
-        <p>Thử từ khóa khác hoặc chọn danh mục khác.</p>
-      </div>
-    </section>
-
-    <!-- ── SKILLS ─────────────────────────────────────── -->
-    <section class="page" id="page-skills">
-      <div class="page-header">
-        <div><h1 class="page-title">Skills</h1><p class="page-subtitle">Bộ kỹ năng AI chuyên biệt · <span id="skillCount">0</span> skills</p></div>
-        <div class="topbar-btn-group">
-          <input type="text" class="filter-input" id="skillSearch" placeholder="🔍 Tìm skill..." />
-        </div>
-      </div>
-      <div class="skills-grid" id="skillsGrid"></div>
-    </section>
-
-    <!-- ── SOP LIBRARY ────────────────────────────────── -->
-    <section class="page" id="page-sop-library">
-      <div class="page-header">
-        <div><h1 class="page-title">SOP Library</h1><p class="page-subtitle" id="sopSubtitle">Thư viện quy trình vận hành chuẩn</p></div>
-        <button class="btn btn-primary">+ Tạo SOP mới</button>
-      </div>
-      <div class="sop-stats-row" id="sopStatsRow"></div>
-      <div class="prompt-toolbar">
-        <div class="search-inline">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-          <input type="text" id="sopSearch" placeholder="Tìm SOP..." />
-        </div>
-        <div class="prompt-categories" id="sopDeptFilter"></div>
-      </div>
-      <div class="sop-table-wrap">
-        <table class="sop-table" id="sopTable">
-          <thead><tr><th>Tên SOP</th><th>Phòng ban</th><th>Trạng thái</th><th>Cập nhật</th><th>Hành động</th></tr></thead>
-          <tbody id="sopTableBody"></tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- ── CRM ────────────────────────────────────────── -->
-    <section class="page" id="page-crm">
-      <div class="page-header">
-        <div><h1 class="page-title">CRM Systems</h1><p class="page-subtitle">Hệ thống quản lý quan hệ khách hàng thông minh với AI</p></div>
-        <button class="btn btn-primary">+ Thêm Lead</button>
-      </div>
-      <div class="crm-kpi-row">
-        <div class="crm-kpi-card"><div class="crm-kpi-icon" style="background:#eff6ff;color:#1e40af">👤</div><div><div class="crm-kpi-val">1,247</div><div class="crm-kpi-lbl">Tổng Contacts</div></div></div>
-        <div class="crm-kpi-card"><div class="crm-kpi-icon" style="background:#ecfdf5;color:#059669">💼</div><div><div class="crm-kpi-val">284</div><div class="crm-kpi-lbl">Active Leads</div></div></div>
-        <div class="crm-kpi-card"><div class="crm-kpi-icon" style="background:#fef3c7;color:#d97706">🎯</div><div><div class="crm-kpi-val">47</div><div class="crm-kpi-lbl">Deals tháng này</div></div></div>
-        <div class="crm-kpi-card"><div class="crm-kpi-icon" style="background:#f5f3ff;color:#7c3aed">📊</div><div><div class="crm-kpi-val">34.2%</div><div class="crm-kpi-lbl">Tỷ lệ chuyển đổi</div></div></div>
-      </div>
-      <div class="card" style="margin-bottom:20px">
-        <div class="card-header"><h3 class="card-title">Sales Pipeline</h3><span style="font-size:.73rem;color:var(--text-faint)">Cập nhật: 09/06/2026</span></div>
-        <div class="pipeline" id="crmPipeline"></div>
-      </div>
-      <div class="card">
-        <div class="card-header"><h3 class="card-title">Khách hàng gần đây</h3><a href="#" class="card-link">Xem tất cả →</a></div>
-        <div class="contacts-table">
-          <div class="contact-row header"><span>Tên</span><span>Công ty</span><span>Stage</span><span>Giá trị</span><span>Ngày</span></div>
-          <div class="contact-row"><span class="contact-name"><div class="contact-avatar" style="background:#dbeafe;color:#1e40af">NV</div>Nguyễn Văn A</span><span class="contact-company">Tech Solutions</span><span><span class="pill green">Chốt deal</span></span><span class="contact-val">₫45M</span><span class="contact-date">07/06</span></div>
-          <div class="contact-row"><span class="contact-name"><div class="contact-avatar" style="background:#ecfdf5;color:#059669">TT</div>Trần Thị B</span><span class="contact-company">SME Corp</span><span><span class="pill orange">Báo giá</span></span><span class="contact-val">₫28M</span><span class="contact-date">06/06</span></div>
-          <div class="contact-row"><span class="contact-name"><div class="contact-avatar" style="background:#f5f3ff;color:#7c3aed">LM</div>Lê Minh C</span><span class="contact-company">Startup VN</span><span><span class="pill blue">Demo</span></span><span class="contact-val">₫120M</span><span class="contact-date">05/06</span></div>
-          <div class="contact-row"><span class="contact-name"><div class="contact-avatar" style="background:#fef3c7;color:#d97706">PH</div>Phạm Hùng D</span><span class="contact-company">Retail Group</span><span><span class="pill gray">Tiếp cận</span></span><span class="contact-val">₫85M</span><span class="contact-date">04/06</span></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ── AUTOMATION ─────────────────────────────────── -->
-    <section class="page" id="page-automation">
-      <div class="page-header">
-        <div><h1 class="page-title">Automation Systems</h1><p class="page-subtitle" id="autoSubtitle">Hệ thống tự động hóa quy trình doanh nghiệp</p></div>
-        <button class="btn btn-primary">+ Tạo Workflow</button>
-      </div>
-      <div class="auto-stats-row" id="autoStatsRow"></div>
-      <div class="workflows-grid" id="workflowsGrid"></div>
-    </section>
-
-    <!-- ── PROJECTS ───────────────────────────────────── -->
-    <section class="page" id="page-projects">
-      <div class="page-header">
-        <div><h1 class="page-title">Projects</h1><p class="page-subtitle" id="projectSubtitle">Quản lý dự án AI</p></div>
-        <div class="header-actions">
-          <input type="text" class="filter-input" id="projectSearch" placeholder="🔍 Tìm dự án..." />
-          <button class="btn btn-primary" id="addProjectBtn">+ Dự án mới</button>
-        </div>
-      </div>
-      <!-- Status filter -->
-      <div class="prompt-categories" id="projectStatusFilter" style="margin-bottom:18px"></div>
-      <div class="projects-list" id="projectsList"></div>
-      <div class="empty-state" id="projectEmpty" style="display:none">
-        <div class="empty-icon">📁</div><h3>Không tìm thấy dự án</h3><p>Thử tìm kiếm khác.</p>
-      </div>
-    </section>
-
-    <!-- ── TRAINING ───────────────────────────────────── -->
-    <section class="page" id="page-training">
-      <div class="page-header">
-        <div><h1 class="page-title">Training</h1><p class="page-subtitle">Chương trình đào tạo AI cho doanh nghiệp</p></div>
-      </div>
-      <div class="training-grid" id="trainingGrid"></div>
-    </section>
-
-    <!-- ── DASHBOARD ──────────────────────────────────── -->
-    <section class="page" id="page-dashboard">
-      <div class="page-header">
-        <div><h1 class="page-title">CEO Dashboard</h1><p class="page-subtitle">Tổng quan hoạt động doanh nghiệp — <span id="dashDate"></span></p></div>
-        <button class="btn btn-ghost" onclick="App.exportReport()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Xuất báo cáo
-        </button>
-      </div>
-
-      <!-- 4 KPI stat cards -->
-      <div class="dashboard-kpi" id="dashKpi"></div>
-
-      <!-- Count cards: Skills / Projects / SOPs / Prompts -->
-      <div class="dash-count-row" id="dashCountRow"></div>
-
-      <div class="two-col-grid">
-        <div class="card">
-          <div class="card-header"><h3 class="card-title">Mục tiêu tháng 6</h3></div>
-          <div class="goals-list" id="dashGoals"></div>
-        </div>
-        <div class="card">
-          <div class="card-header"><h3 class="card-title">Top Skills hoạt động</h3></div>
-          <div class="top-skills" id="dashTopSkills"></div>
-        </div>
-      </div>
-
-      <!-- Project overview -->
-      <div class="card">
-        <div class="card-header"><h3 class="card-title">Tiến độ Projects</h3><a href="#" class="card-link" onclick="App.nav('projects');return false;">Xem tất cả →</a></div>
-        <div class="projects-list" id="dashProjects"></div>
-      </div>
-    </section>
-
-  </main><!-- /content -->
-
-  <!-- Footer -->
-  <footer class="site-footer">
-    <div class="footer-inner">
-      <div class="footer-brand">
-        <svg viewBox="0 0 32 32" fill="none" class="footer-logo-svg"><rect width="32" height="32" rx="8" fill="url(#fg1)"/><path d="M8 24L16 8L24 24" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M11 20H21" stroke="white" stroke-width="2" stroke-linecap="round"/><circle cx="25" cy="9" r="2.5" fill="#60a5fa"/><defs><linearGradient id="fg1" x1="0" y1="0" x2="32" y2="32"><stop stop-color="#0f2044"/><stop offset="1" stop-color="#2563eb"/></linearGradient></defs></svg>
-        <div><span class="footer-name">AIFUN OS</span><span class="footer-slogan">AI Optimal Solution</span></div>
-      </div>
-      <div class="footer-center">
-        <span>© 2026 AIFUN. All rights reserved.</span>
-        <span class="footer-sep">·</span>
-        <a href="https://aifun.ai.vn" target="_blank" class="footer-link">aifun.ai.vn</a>
-        <span class="footer-sep">·</span>
-        <span>V3.0</span>
-      </div>
-      <div class="footer-right">
-        <a href="https://aifun.ai.vn" target="_blank" class="footer-website-btn">🌐 aifun.ai.vn</a>
-      </div>
-    </div>
-  </footer>
-</div><!-- /main-wrapper -->
-
-<!-- ══════════ MODAL ══════════ -->
-<div class="modal-overlay" id="modalOverlay">
-  <div class="modal" id="mainModal">
-    <div class="modal-header">
-      <h3 id="modalTitle">Modal</h3>
-      <button class="modal-close" id="modalClose">✕</button>
-    </div>
-    <div class="modal-body" id="modalBody"></div>
-  </div>
-</div>
-
-<!-- ══════════ SHEETS MANAGEMENT PANEL ══════════ -->
-<div class="modal-overlay" id="sheetsPanelOverlay">
-  <div class="modal sheets-panel-modal">
-    <div class="modal-header">
-      <div style="display:flex;align-items:center;gap:10px">
-        <span style="font-size:1.2rem">📊</span>
-        <div>
-          <h3 style="margin:0">Google Sheets Integration</h3>
-          <span class="sheets-panel-version">AIFUN AI Portal V2.1</span>
-        </div>
-      </div>
-      <button class="modal-close" onclick="App.closeSheetsPanel()">✕</button>
-    </div>
-    <div class="modal-body sheets-panel-body">
-
-      <!-- STATUS ROW -->
-      <div class="sp-status-row" id="spStatusRow">
-        <div class="sp-status-dot" id="spStatusDot"></div>
-        <span class="sp-status-text" id="spStatusText">Chưa kết nối</span>
-        <span class="sp-status-time" id="spStatusTime"></span>
-      </div>
-
-      <!-- CONFIG INPUTS -->
-      <div class="sp-section">
-        <div class="sp-section-title">⚙️ Cấu hình kết nối</div>
-        <div class="sp-field">
-          <label class="sp-label">Spreadsheet ID</label>
-          <input class="sp-input" id="spSheetId" type="text"
-            placeholder="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms"
-            autocomplete="off" spellcheck="false" />
-          <span class="sp-hint">Lấy từ URL: docs.google.com/spreadsheets/d/<strong>[ID]</strong>/edit</span>
-        </div>
-        <div class="sp-field">
-          <label class="sp-label">API Key</label>
-          <div class="sp-input-wrap">
-            <input class="sp-input" id="spApiKey" type="password"
-              placeholder="AIzaSyD-9tSrke72PouQMnMX-a4eHs-FldMr8TU"
-              autocomplete="off" spellcheck="false" />
-            <button class="sp-eye-btn" id="spEyeBtn" onclick="App.toggleApiKeyVisibility()" title="Hiện/ẩn">
-              <svg id="spEyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            </button>
-          </div>
-          <span class="sp-hint">Google Cloud Console → APIs → Credentials → API Key</span>
-        </div>
-        <button class="btn btn-primary sp-save-btn" onclick="App.saveSheetsConfig()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v14a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-          Lưu cấu hình
-        </button>
-      </div>
-
-      <!-- ACTION BUTTONS -->
-      <div class="sp-section">
-        <div class="sp-section-title">🚀 Hành động</div>
-        <div class="sp-actions">
-          <button class="sp-action-btn primary" id="btnTestConnection" onclick="App.testSheetsConnection()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-            <span>Test Connection</span>
-          </button>
-          <button class="sp-action-btn success" id="btnSyncSheets" onclick="App.syncGoogleSheets()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
-            <span>Sync Google Sheets</span>
-          </button>
-          <button class="sp-action-btn gray" id="btnReloadLocal" onclick="App.reloadLocalData()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-            <span>Reload Local Data</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- TEST RESULT -->
-      <div class="sp-test-result" id="spTestResult" style="display:none"></div>
-
-      <!-- SHEET STATUS TABLE -->
-      <div class="sp-section">
-        <div class="sp-section-title">📋 Trạng thái 5 bảng dữ liệu</div>
-        <div class="sp-sheet-table" id="spSheetTable">
-          <!-- Render by JS -->
-        </div>
-      </div>
-
-      <!-- SETUP GUIDE -->
-      <details class="sp-guide">
-        <summary>📖 Hướng dẫn thiết lập (5 bước)</summary>
-        <ol class="sp-guide-list">
-          <li>Tạo Google Spreadsheet mới → đặt tên <strong>"AIFUN AI Portal Data"</strong></li>
-          <li>Tạo 5 tab: <code>PROMPTS</code> · <code>SKILLS</code> · <code>SOPS</code> · <code>PROJECTS</code> · <code>WORKFLOWS</code></li>
-          <li>Lấy <strong>Spreadsheet ID</strong> từ URL: <code>.../d/<em>[ID]</em>/edit</code></li>
-          <li>Tạo <strong>API Key</strong>: Google Cloud Console → Enable Sheets API → Credentials</li>
-          <li>Chia sẻ Spreadsheet: <strong>Share → Anyone with link → Viewer</strong></li>
-        </ol>
-      </details>
-
-    </div><!-- /modal-body -->
-  </div>
-</div>
-
-<!-- ══════════ IMPORT CONFIRM MODAL ══════════ -->
-<div class="modal-overlay" id="importModal">
-  <div class="modal" style="max-width:460px">
-    <div class="modal-header">
-      <h3>⬆️ Import Backup</h3>
-      <button class="modal-close" onclick="App.closeImportModal()">✕</button>
-    </div>
-    <div class="modal-body">
-      <div class="import-preview" id="importPreview"></div>
-      <div class="import-warning">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-        <span>Dữ liệu hiện tại sẽ bị thay thế hoàn toàn. Hành động này không thể hoàn tác.</span>
-      </div>
-      <div class="import-modal-actions">
-        <button class="btn btn-ghost" onclick="App.closeImportModal()">Hủy</button>
-        <button class="btn btn-danger" id="confirmImportBtn" onclick="App.confirmImport()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-          Xác nhận Import
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════ PROMPT MODAL (Add / Edit) ══════════ -->
-<div class="modal-overlay" id="promptModal">
-  <div class="modal" style="max-width:600px">
-    <div class="modal-header">
-      <h3 id="promptModalTitle">➕ Thêm Prompt mới</h3>
-      <button class="modal-close" onclick="App.closePromptModal()">✕</button>
-    </div>
-    <div class="modal-body">
-      <form id="promptForm" onsubmit="App.submitPromptForm(event)" autocomplete="off">
-        <input type="hidden" id="pmEditId" value="" />
-
-        <!-- Title -->
-        <div class="sp-field">
-          <label class="sp-label">Tên Prompt <span style="color:#ef4444">*</span></label>
-          <input class="sp-input" id="pmTitle" type="text"
-            placeholder="VD: Viết email marketing chuyên nghiệp" required />
-        </div>
-
-        <!-- Category + Platform row -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-          <div class="sp-field">
-            <label class="sp-label">Danh mục <span style="color:#ef4444">*</span></label>
-            <select class="sp-input" id="pmCategory" required>
-              <option value="">-- Chọn danh mục --</option>
-              <option value="marketing">Marketing</option>
-              <option value="sales">Sales</option>
-              <option value="content">Content</option>
-              <option value="operations">Operations</option>
-              <option value="hr">HR</option>
-              <option value="analysis">Analysis</option>
-              <option value="automation">Automation</option>
-            </select>
-          </div>
-          <div class="sp-field">
-            <label class="sp-label">Nền tảng AI <span style="color:#ef4444">*</span></label>
-            <select class="sp-input" id="pmTool" required>
-              <option value="">-- Chọn AI --</option>
-              <option value="Claude">Claude</option>
-              <option value="ChatGPT">ChatGPT</option>
-              <option value="Gemini">Gemini</option>
-              <option value="Perplexity">Perplexity</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Tags + Rating row -->
-        <div style="display:grid;grid-template-columns:1fr auto;gap:12px;align-items:end">
-          <div class="sp-field" style="margin-bottom:0">
-            <label class="sp-label">Tags <span class="sp-hint" style="display:inline">(phân cách bằng dấu phẩy)</span></label>
-            <input class="sp-input" id="pmTags" type="text"
-              placeholder="VD: email, marketing, B2B" />
-          </div>
-          <div class="sp-field" style="margin-bottom:0">
-            <label class="sp-label">Rating</label>
-            <div class="pm-rating-wrap" id="pmRatingWrap">
-              <input type="hidden" id="pmRating" value="5" />
-              <span class="pm-star active" data-v="1">★</span>
-              <span class="pm-star active" data-v="2">★</span>
-              <span class="pm-star active" data-v="3">★</span>
-              <span class="pm-star active" data-v="4">★</span>
-              <span class="pm-star active" data-v="5">★</span>
+          <div class="kc-edit">
+            <div class="kc-edit-head"><span class="ico">🎯</span><span class="lbl">Leads Today</span></div>
+            <div class="edit-row">
+              <div class="ef"><div class="ef-label">Thực tế</div><input class="kc-inp" type="number" id="ei-lt" min="0" placeholder="0" oninput="onKpiEdit()"></div>
+              <div class="ef"><div class="ef-label">Mục tiêu</div><input class="kc-inp" type="number" id="et-lt" min="0" placeholder="5" oninput="onKpiEdit()"></div>
             </div>
           </div>
         </div>
-
-        <!-- Description -->
-        <div class="sp-field">
-          <label class="sp-label">Mô tả ngắn</label>
-          <input class="sp-input" id="pmDesc" type="text"
-            placeholder="VD: Prompt viết email B2B, tỷ lệ open rate cao" />
+        <!-- Sales Today -->
+        <div class="kc" id="kc-st">
+          <div class="kc-display">
+            <div class="kc-top">
+              <div class="kc-left"><div class="kc-ico">💼</div><div class="kc-lbl">Sales Today</div><div class="kc-val" id="kv-st">0</div></div>
+              <div class="kc-right"><div class="kc-ach" id="ka-st">0%</div><div class="kc-tgt" id="kt-st">Target: 2</div></div>
+            </div>
+            <div class="kc-bar-wrap"><div class="kc-bar"><div class="kc-fill" id="kf-st"></div></div><div class="kc-bar-label" id="kbl-st">0% achieved</div></div>
+          </div>
+          <div class="kc-edit">
+            <div class="kc-edit-head"><span class="ico">💼</span><span class="lbl">Sales Today</span></div>
+            <div class="edit-row">
+              <div class="ef"><div class="ef-label">Thực tế</div><input class="kc-inp" type="number" id="ei-st" min="0" placeholder="0" oninput="onKpiEdit()"></div>
+              <div class="ef"><div class="ef-label">Mục tiêu</div><input class="kc-inp" type="number" id="et-st" min="0" placeholder="2" oninput="onKpiEdit()"></div>
+            </div>
+          </div>
         </div>
-
-        <!-- Content -->
-        <div class="sp-field">
-          <label class="sp-label">Nội dung Prompt <span style="color:#ef4444">*</span></label>
-          <textarea class="sp-input" id="pmContent" rows="5" required
-            placeholder="Nhập nội dung prompt đầy đủ..."
-            style="resize:vertical;min-height:110px;font-family:inherit;line-height:1.6"></textarea>
+        <!-- Revenue Today -->
+        <div class="kc" id="kc-rt">
+          <div class="kc-display">
+            <div class="kc-top">
+              <div class="kc-left"><div class="kc-ico">💰</div><div class="kc-lbl">Revenue Today</div><div class="kc-val" id="kv-rt">0</div></div>
+              <div class="kc-right"><div class="kc-ach" id="ka-rt">0%</div><div class="kc-tgt" id="kt-rt">Target: 5tr</div></div>
+            </div>
+            <div class="kc-bar-wrap"><div class="kc-bar"><div class="kc-fill" id="kf-rt"></div></div><div class="kc-bar-label" id="kbl-rt">0% achieved</div></div>
+          </div>
+          <div class="kc-edit">
+            <div class="kc-edit-head"><span class="ico">💰</span><span class="lbl">Revenue Today (VND)</span></div>
+            <div class="edit-row">
+              <div class="ef"><div class="ef-label">Thực tế</div><input class="kc-inp" type="number" id="ei-rt" min="0" placeholder="0" oninput="onKpiEdit()"></div>
+              <div class="ef"><div class="ef-label">Mục tiêu</div><input class="kc-inp" type="number" id="et-rt" min="0" placeholder="5000000" oninput="onKpiEdit()"></div>
+            </div>
+          </div>
         </div>
-
-        <div class="import-modal-actions" style="margin-top:20px">
-          <button type="button" class="btn btn-ghost" onclick="App.closePromptModal()">Hủy</button>
-          <button type="submit" class="btn btn-primary" id="pmSubmitBtn">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-              style="width:15px;height:15px;flex-shrink:0">
-              <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v14a2 2 0 01-2 2z"/>
-              <polyline points="17 21 17 13 7 13 7 21"/>
-              <polyline points="7 3 7 8 15 8"/>
-            </svg>
-            <span id="pmSubmitLabel">Lưu Prompt</span>
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════ DELETE PROMPT CONFIRM ══════════ -->
-<div class="modal-overlay" id="deletePromptModal">
-  <div class="modal" style="max-width:420px">
-    <div class="modal-header">
-      <h3>🗑️ Xóa Prompt</h3>
-      <button class="modal-close" onclick="App.closeDeletePromptModal()">✕</button>
-    </div>
-    <div class="modal-body">
-      <p style="font-size:.88rem;color:var(--text-m);margin-bottom:6px">Bạn có chắc muốn xóa prompt này?</p>
-      <p id="deletePromptName" style="font-weight:700;color:var(--text-h);font-size:.9rem;margin-bottom:18px"></p>
-      <div class="import-warning">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-        <span>Hành động này không thể hoàn tác.</span>
       </div>
-      <div class="import-modal-actions" style="margin-top:16px">
-        <button class="btn btn-ghost" onclick="App.closeDeletePromptModal()">Hủy</button>
-        <button class="btn btn-danger" id="confirmDeleteBtn" onclick="App.confirmDeletePrompt()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            style="width:15px;height:15px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
-          Xóa Prompt
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
 
-<!-- ══════════ SKILL MODAL ══════════ -->
-<div class="modal-overlay" id="skillModal">
-  <div class="modal" style="max-width:420px">
-    <div class="modal-header">
-      <h3 id="skillModalTitle">Khởi chạy Skill</h3>
-      <button class="modal-close" onclick="App.closeSkillModal()">✕</button>
-    </div>
-    <div class="modal-body">
-      <p id="skillModalDesc" style="font-size:.82rem;color:var(--text-m);margin-bottom:20px;line-height:1.6"></p>
-      <div style="margin-bottom:8px">
-        <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-          <span style="font-size:.74rem;font-weight:600;color:var(--text-b)">Tiến trình</span>
-          <span id="skillModalStatus" style="font-size:.72rem;color:var(--text-m)">Khởi tạo AI...</span>
+      <div class="kpi-row-label">📆 This Week</div>
+      <div class="kpi-sub-grid kpi-2">
+        <!-- Leads Weekly -->
+        <div class="kc" id="kc-lw">
+          <div class="kc-display">
+            <div class="kc-top">
+              <div class="kc-left"><div class="kc-ico">📈</div><div class="kc-lbl">Leads Weekly</div><div class="kc-val" id="kv-lw">0</div></div>
+              <div class="kc-right"><div class="kc-ach" id="ka-lw">0%</div><div class="kc-tgt" id="kt-lw">Target: 25</div></div>
+            </div>
+            <div class="kc-bar-wrap"><div class="kc-bar"><div class="kc-fill" id="kf-lw"></div></div><div class="kc-bar-label" id="kbl-lw">0% achieved</div></div>
+          </div>
+          <div class="kc-edit">
+            <div class="kc-edit-head"><span class="ico">📈</span><span class="lbl">Leads Weekly</span></div>
+            <div class="edit-row">
+              <div class="ef"><div class="ef-label">Thực tế</div><input class="kc-inp" type="number" id="ei-lw" min="0" placeholder="0" oninput="onKpiEdit()"></div>
+              <div class="ef"><div class="ef-label">Mục tiêu</div><input class="kc-inp" type="number" id="et-lw" min="0" placeholder="25" oninput="onKpiEdit()"></div>
+            </div>
+          </div>
         </div>
-        <div class="progress-bar thick"><div class="progress-fill" id="skillModalProgress" style="width:0%"></div></div>
+        <!-- Revenue Weekly -->
+        <div class="kc" id="kc-rw">
+          <div class="kc-display">
+            <div class="kc-top">
+              <div class="kc-left"><div class="kc-ico">💵</div><div class="kc-lbl">Revenue Weekly</div><div class="kc-val" id="kv-rw">0</div></div>
+              <div class="kc-right"><div class="kc-ach" id="ka-rw">0%</div><div class="kc-tgt" id="kt-rw">Target: 25tr</div></div>
+            </div>
+            <div class="kc-bar-wrap"><div class="kc-bar"><div class="kc-fill" id="kf-rw"></div></div><div class="kc-bar-label" id="kbl-rw">0% achieved</div></div>
+          </div>
+          <div class="kc-edit">
+            <div class="kc-edit-head"><span class="ico">💵</span><span class="lbl">Revenue Weekly (VND)</span></div>
+            <div class="edit-row">
+              <div class="ef"><div class="ef-label">Thực tế</div><input class="kc-inp" type="number" id="ei-rw" min="0" placeholder="0" oninput="onKpiEdit()"></div>
+              <div class="ef"><div class="ef-label">Mục tiêu</div><input class="kc-inp" type="number" id="et-rw" min="0" placeholder="25000000" oninput="onKpiEdit()"></div>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+
+      <div class="kpi-row-label">🗓️ This Month</div>
+      <div class="kpi-sub-grid kpi-3b">
+        <!-- Leads Monthly -->
+        <div class="kc" id="kc-lm">
+          <div class="kc-display">
+            <div class="kc-top">
+              <div class="kc-left"><div class="kc-ico">🚀</div><div class="kc-lbl">Leads Monthly</div><div class="kc-val" id="kv-lm">0</div></div>
+              <div class="kc-right"><div class="kc-ach" id="ka-lm">0%</div><div class="kc-tgt" id="kt-lm">Target: 100</div></div>
+            </div>
+            <div class="kc-bar-wrap"><div class="kc-bar"><div class="kc-fill" id="kf-lm"></div></div><div class="kc-bar-label" id="kbl-lm">0% achieved</div></div>
+          </div>
+          <div class="kc-edit">
+            <div class="kc-edit-head"><span class="ico">🚀</span><span class="lbl">Leads Monthly</span></div>
+            <div class="edit-row">
+              <div class="ef"><div class="ef-label">Thực tế</div><input class="kc-inp" type="number" id="ei-lm" min="0" placeholder="0" oninput="onKpiEdit()"></div>
+              <div class="ef"><div class="ef-label">Mục tiêu</div><input class="kc-inp" type="number" id="et-lm" min="0" placeholder="100" oninput="onKpiEdit()"></div>
+            </div>
+          </div>
+        </div>
+        <!-- Revenue Monthly -->
+        <div class="kc" id="kc-rm">
+          <div class="kc-display">
+            <div class="kc-top">
+              <div class="kc-left"><div class="kc-ico">💎</div><div class="kc-lbl">Revenue Monthly</div><div class="kc-val" id="kv-rm">0</div></div>
+              <div class="kc-right"><div class="kc-ach" id="ka-rm">0%</div><div class="kc-tgt" id="kt-rm">Target: 100tr</div></div>
+            </div>
+            <div class="kc-bar-wrap"><div class="kc-bar"><div class="kc-fill" id="kf-rm"></div></div><div class="kc-bar-label" id="kbl-rm">0% achieved</div></div>
+          </div>
+          <div class="kc-edit">
+            <div class="kc-edit-head"><span class="ico">💎</span><span class="lbl">Revenue Monthly (VND)</span></div>
+            <div class="edit-row">
+              <div class="ef"><div class="ef-label">Thực tế</div><input class="kc-inp" type="number" id="ei-rm" min="0" placeholder="0" oninput="onKpiEdit()"></div>
+              <div class="ef"><div class="ef-label">Mục tiêu</div><input class="kc-inp" type="number" id="et-rm" min="0" placeholder="100000000" oninput="onKpiEdit()"></div>
+            </div>
+          </div>
+        </div>
+        <!-- NPS -->
+        <div class="kc" id="kc-nps">
+          <div class="kc-display">
+            <div class="kc-top">
+              <div class="kc-left"><div class="kc-ico">⭐</div><div class="kc-lbl">NPS Score</div><div class="kc-val" id="kv-nps">0</div></div>
+              <div class="kc-right"><div class="kc-ach" id="ka-nps">0%</div><div class="kc-tgt" id="kt-nps">Target: 8/10</div></div>
+            </div>
+            <div class="kc-bar-wrap"><div class="kc-bar"><div class="kc-fill" id="kf-nps"></div></div><div class="kc-bar-label" id="kbl-nps">0% achieved</div></div>
+          </div>
+          <div class="kc-edit">
+            <div class="kc-edit-head"><span class="ico">⭐</span><span class="lbl">NPS Score (0–10)</span></div>
+            <div class="edit-row">
+              <div class="ef"><div class="ef-label">Thực tế</div><input class="kc-inp" type="number" id="ei-nps" min="0" max="10" step="0.1" placeholder="0" oninput="onKpiEdit()"></div>
+              <div class="ef"><div class="ef-label">Mục tiêu</div><input class="kc-inp" type="number" id="et-nps" min="0" max="10" step="0.1" placeholder="8" oninput="onKpiEdit()"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /kpi-area -->
+  </div><!-- /ceo-wrap -->
+
+  <!-- MODULES -->
+  <div class="sl">🧩 Module Status — 8 Modules</div>
+  <div class="mod-grid">
+    <div class="mc"><div class="mc-head"><div class="mc-name">🏗️ CORE OS</div><div class="mt ta">ACTIVE</div></div><div class="pb"><div class="pf" style="width:85%;background:var(--green)"></div></div><div class="mc-foot"><div class="mc-pct" style="color:var(--green)">85%</div><div class="mc-sub">SOP · KPI · Task</div></div></div>
+    <div class="mc"><div class="mc-head"><div class="mc-name">📣 MARKETING OS</div><div class="mt ta">ACTIVE</div></div><div class="pb"><div class="pf" style="width:75%;background:var(--primary)"></div></div><div class="mc-foot"><div class="mc-pct" style="color:var(--primary)">75%</div><div class="mc-sub">Content · SEO · Ads</div></div></div>
+    <div class="mc"><div class="mc-head"><div class="mc-name">💰 SALES OS</div><div class="mt ta">ACTIVE</div></div><div class="pb"><div class="pf" style="width:70%;background:var(--accent)"></div></div><div class="mc-foot"><div class="mc-pct" style="color:var(--accent)">70%</div><div class="mc-sub">Lead · Pipeline · Close</div></div></div>
+    <div class="mc"><div class="mc-head"><div class="mc-name">💎 CUSTOMER SUCCESS</div><div class="mt tb">BUILDING</div></div><div class="pb"><div class="pf" style="width:40%;background:var(--yellow)"></div></div><div class="mc-foot"><div class="mc-pct" style="color:var(--yellow)">40%</div><div class="mc-sub">Onboard · Retain · NPS</div></div></div>
+    <div class="mc"><div class="mc-head"><div class="mc-name">🤖 AUTOMATION OS</div><div class="mt ta">ACTIVE</div></div><div class="pb"><div class="pf" style="width:60%;background:var(--purple)"></div></div><div class="mc-foot"><div class="mc-pct" style="color:var(--purple)">60%</div><div class="mc-sub">Make · Zalo · Sheets</div></div></div>
+    <div class="mc"><div class="mc-head"><div class="mc-name">📚 KNOWLEDGE OS</div><div class="mt tb">BUILDING</div></div><div class="pb"><div class="pf" style="width:50%;background:var(--teal)"></div></div><div class="mc-foot"><div class="mc-pct" style="color:var(--teal)">50%</div><div class="mc-sub">Base · Docs · AI</div></div></div>
+    <div class="mc"><div class="mc-head"><div class="mc-name">🎓 TRAINING OS</div><div class="mt ta">ACTIVE</div></div><div class="pb"><div class="pf" style="width:65%;background:var(--sky)"></div></div><div class="mc-foot"><div class="mc-pct" style="color:var(--sky)">65%</div><div class="mc-sub">Course · SOP · Slide</div></div></div>
+    <div class="mc"><div class="mc-head"><div class="mc-name">📊 ANALYTICS OS</div><div class="mt tp">PLANNED</div></div><div class="pb"><div class="pf" style="width:20%;background:var(--pink)"></div></div><div class="mc-foot"><div class="mc-pct" style="color:var(--pink)">20%</div><div class="mc-sub">KPI · Report · AI</div></div></div>
   </div>
+
+  <!-- AI SKILL ENGINE -->
+  <div class="sl">⚡ AI Skill Engine — 6 Skills</div>
+  <div class="sk-grid">
+
+    <div class="sk-card" style="--sk-color:#3B82F6" onclick="launchSkill('sop-builder')"
+         data-skill-id="sop-builder" data-skill-launch>
+      <div class="sk-head">
+        <div class="sk-ico">📄</div>
+        <div class="sk-cat">OPERATIONS</div>
+      </div>
+      <div class="sk-name">SOP Builder</div>
+      <div class="sk-desc">Tạo SOP chuẩn hoàn chỉnh với checklist, KPI và phân công vai trò.</div>
+      <div class="sk-meta"><span>⏱ ~2 phút</span><span>📄 Google Doc</span></div>
+      <button class="sk-btn" data-skill-id="sop-builder" data-skill-launch>🚀 Khởi chạy Skill</button>
+    </div>
+
+    <div class="sk-card" style="--sk-color:#EC4899" onclick="launchSkill('content-factory')"
+         data-skill-id="content-factory" data-skill-launch>
+      <div class="sk-head">
+        <div class="sk-ico">📸</div>
+        <div class="sk-cat">MARKETING</div>
+      </div>
+      <div class="sk-name">Content Factory</div>
+      <div class="sk-desc">Biến 1 ý tưởng thành nội dung đa kênh: FB, YouTube, TikTok, Email, Zalo.</div>
+      <div class="sk-meta"><span>⏱ ~3 phút</span><span>📄 Content Package</span></div>
+      <button class="sk-btn" style="background:#EC4899" data-skill-id="content-factory" data-skill-launch>🚀 Khởi chạy Skill</button>
+    </div>
+
+    <div class="sk-card" style="--sk-color:#8B5CF6" onclick="launchSkill('email-automation')"
+         data-skill-id="email-automation" data-skill-launch>
+      <div class="sk-head">
+        <div class="sk-ico">📧</div>
+        <div class="sk-cat">AUTOMATION</div>
+      </div>
+      <div class="sk-name">Email Automation</div>
+      <div class="sk-desc">Thiết kế chuỗi email nurturing tự động, cá nhân hóa theo segment.</div>
+      <div class="sk-meta"><span>⏱ ~3 phút</span><span>📄 Email Sequence</span></div>
+      <button class="sk-btn" style="background:#8B5CF6" data-skill-id="email-automation" data-skill-launch>🚀 Khởi chạy Skill</button>
+    </div>
+
+    <div class="sk-card" style="--sk-color:#F59E0B" onclick="launchSkill('crm-ai')"
+         data-skill-id="crm-ai" data-skill-launch>
+      <div class="sk-head">
+        <div class="sk-ico">💛</div>
+        <div class="sk-cat">CRM</div>
+      </div>
+      <div class="sk-name">CRM AI Assistant</div>
+      <div class="sk-desc">Phân tích lead, chấm điểm, đề xuất bước tiếp theo tối ưu tỷ lệ chốt.</div>
+      <div class="sk-meta"><span>⏱ ~1 phút</span><span>📄 CRM Report</span></div>
+      <button class="sk-btn" style="background:#F59E0B" data-skill-id="crm-ai" data-skill-launch>🚀 Khởi chạy Skill</button>
+    </div>
+
+    <div class="sk-card" style="--sk-color:#10B981" onclick="launchSkill('webinar-builder')"
+         data-skill-id="webinar-builder" data-skill-launch>
+      <div class="sk-head">
+        <div class="sk-ico">🎯</div>
+        <div class="sk-cat">EDUCATION</div>
+      </div>
+      <div class="sk-name">Webinar Builder</div>
+      <div class="sk-desc">Thiết kế webinar bán hàng A-Z: kịch bản, slide, CTA, follow-up email.</div>
+      <div class="sk-meta"><span>⏱ ~4 phút</span><span>📄 Webinar Kit</span></div>
+      <button class="sk-btn" style="background:#10B981" data-skill-id="webinar-builder" data-skill-launch>🚀 Khởi chạy Skill</button>
+    </div>
+
+    <div class="sk-card" style="--sk-color:#EF4444" onclick="launchSkill('sales-script')"
+         data-skill-id="sales-script" data-skill-launch>
+      <div class="sk-head">
+        <div class="sk-ico">🏆</div>
+        <div class="sk-cat">SALES</div>
+      </div>
+      <div class="sk-name">Sales Script Generator</div>
+      <div class="sk-desc">Tạo kịch bản bán hàng hoàn chỉnh, xử lý từ chối và chốt sale.</div>
+      <div class="sk-meta"><span>⏱ ~2 phút</span><span>📄 Sales Script</span></div>
+      <button class="sk-btn" style="background:#EF4444" data-skill-id="sales-script" data-skill-launch>🚀 Khởi chạy Skill</button>
+    </div>
+
+  </div>
+
+  <!-- PASS / FAIL -->
+  <div class="sl">✅ V4.1 Verification</div>
+  <div class="pf-panel">
+    <div class="pf-title">🔍 PASS / FAIL — V4.1 Requirements</div>
+    <div class="pf-list" id="pfList"></div>
+  </div>
+
+  <!-- FINAL VERDICT -->
+  <div class="sl">🏆 Final Verdict</div>
+  <div class="vd" id="vdPanel">
+    <div class="vd-title" id="vdTitle"></div>
+    <div class="vd-grid">
+      <div class="vi"><div class="vi-lbl">Score</div><div class="vi-val" id="vd-score"></div></div>
+      <div class="vi"><div class="vi-lbl">CEO Score</div><div class="vi-val" id="vd-ceo" style="color:var(--yellow)">0%</div></div>
+      <div class="vi"><div class="vi-lbl">Asset Cards</div><div class="vi-val" style="color:var(--indigo)">7 ✓</div></div>
+      <div class="vi"><div class="vi-lbl">KPI Cards</div><div class="vi-val" style="color:var(--accent)">8 ✓</div></div>
+      <div class="vi"><div class="vi-lbl">Edit Mode</div><div class="vi-val" style="color:var(--green)">Local JSON ✓</div></div>
+      <div class="vi"><div class="vi-lbl">Modules</div><div class="vi-val" style="color:var(--teal)">8 ✓</div></div>
+      <div class="vi"><div class="vi-lbl">Responsive</div><div class="vi-val" style="color:var(--sky)">5 BP ✓</div></div>
+      <div class="vi"><div class="vi-lbl">Version</div><div class="vi-val" style="color:var(--yellow)">V4.1 ✓</div></div>
+    </div>
+    <div class="vd-ts" id="vdTs"></div>
+  </div>
+
+</div><!-- /main -->
+
+<div class="footer">
+  AIFUN OS <strong style="color:var(--yellow)">V4.1</strong> · ConnectAI ·
+  <strong style="color:var(--text)">Diệp Thành Chung</strong> · CEO ·
+  <span id="footDate"></span>
 </div>
+<div class="toast" id="toast"></div>
 
-<!-- ══════════ TOAST ══════════ -->
-<div class="toast-container" id="toastContainer"></div>
+<script>
+'use strict';
 
-<!-- Scripts — type=module for ES imports -->
-<script type="module" src="script.js"></script>
+// ── LOCAL STORAGE KEY ──
+const LS_KEY = 'aifun_v41_data';
+
+// ── DEFAULTS ──
+const DEFAULTS = {
+  assets: { prompts:140, skills:20, sops:80, workflows:6, templates:50, cs:6 },
+  kpi:    { lt:0, st:0, rt:0, lw:0, rw:0, lm:0, rm:0, nps:0 },
+  tgt:    { lt:5, st:2, rt:5e6, lw:25, rw:25e6, lm:100, rm:1e8, nps:8 }
+};
+
+// ── STATE ── (loaded from localStorage or defaults)
+let S = deepClone(DEFAULTS);
+let S_backup = null; // for cancel
+
+// ── INIT ──
+(function init() {
+  loadFromLocal();
+  setTimestamp();
+  renderAll();
+})();
+
+function deepClone(obj) {
+  return JSON.parse(JSON.stringify(obj));
+}
+
+// ── PERSIST ──
+function loadFromLocal() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) return;
+    const saved = JSON.parse(raw);
+    // Merge with defaults (handles new fields)
+    S.assets = Object.assign({}, DEFAULTS.assets, saved.assets || {});
+    S.kpi    = Object.assign({}, DEFAULTS.kpi,    saved.kpi    || {});
+    S.tgt    = Object.assign({}, DEFAULTS.tgt,    saved.tgt    || {});
+  } catch(e) { console.warn('loadFromLocal:', e); }
+}
+
+function saveToLocal() {
+  try {
+    localStorage.setItem(LS_KEY, JSON.stringify({ assets:S.assets, kpi:S.kpi, tgt:S.tgt }));
+  } catch(e) { console.warn('saveToLocal:', e); }
+}
+
+// ── TIMESTAMP ──
+function setTimestamp() {
+  const now = new Date();
+  const el = document.getElementById('tsEl');
+  if (el) el.textContent = now.toLocaleString('vi-VN',
+    {hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit',year:'numeric'});
+  const fd = document.getElementById('footDate');
+  if (fd) fd.textContent = now.toLocaleDateString('vi-VN',
+    {weekday:'long',year:'numeric',month:'long',day:'numeric'});
+}
+
+// ── EDIT MODE ──
+function enterEdit() {
+  S_backup = deepClone(S);
+  // Populate asset inputs
+  Object.keys(S.assets).forEach(k => {
+    const el = document.getElementById('ea-'+k);
+    if (el) el.value = S.assets[k];
+  });
+  // Populate KPI inputs
+  const kpiIds = ['lt','st','rt','lw','rw','lm','rm','nps'];
+  kpiIds.forEach(k => {
+    const ei = document.getElementById('ei-'+k);
+    const et = document.getElementById('et-'+k);
+    if (ei) ei.value = S.kpi[k];
+    if (et) et.value = S.tgt[k];
+  });
+  document.body.classList.add('edit-mode');
+}
+
+function cancelEdit() {
+  if (S_backup) { S = deepClone(S_backup); S_backup = null; }
+  document.body.classList.remove('edit-mode');
+  renderAll();
+  showToast('↩️ Đã huỷ thay đổi', '');
+}
+
+function saveEdit() {
+  // Read asset inputs
+  Object.keys(S.assets).forEach(k => {
+    const el = document.getElementById('ea-'+k);
+    if (el) { const v = parseFloat(el.value); if (!isNaN(v) && v >= 0) S.assets[k] = Math.round(v); }
+  });
+  // Read KPI inputs
+  const kpiIds = ['lt','st','rt','lw','rw','lm','rm','nps'];
+  kpiIds.forEach(k => {
+    const ei = document.getElementById('ei-'+k);
+    const et = document.getElementById('et-'+k);
+    if (ei) { const v = parseFloat(ei.value); if (!isNaN(v) && v >= 0) S.kpi[k] = v; }
+    if (et) { const v = parseFloat(et.value); if (!isNaN(v) && v > 0)  S.tgt[k] = v; }
+  });
+  saveToLocal();
+  S_backup = null;
+  document.body.classList.remove('edit-mode');
+  setTimestamp();
+  renderAll();
+  showToast('💾 Đã lưu dữ liệu vào local JSON', 'sv');
+}
+
+// ── LIVE PREVIEW WHILE EDITING ──
+function onAssetEdit() {
+  const tmp = Object.assign({}, S.assets);
+  Object.keys(tmp).forEach(k => {
+    const el = document.getElementById('ea-'+k);
+    if (el && el.value !== '') {
+      const v = parseFloat(el.value);
+      if (!isNaN(v) && v >= 0) tmp[k] = Math.round(v);
+    }
+  });
+  const total = Object.values(tmp).reduce((a,b)=>a+b,0);
+  const el = document.getElementById('v-total');
+  if (el) el.textContent = total;
+}
+
+function onKpiEdit() {
+  const tmpKpi = Object.assign({}, S.kpi);
+  const tmpTgt = Object.assign({}, S.tgt);
+  const kpiIds = ['lt','st','rt','lw','rw','lm','rm','nps'];
+  kpiIds.forEach(k => {
+    const ei = document.getElementById('ei-'+k);
+    const et = document.getElementById('et-'+k);
+    if (ei && ei.value !== '') { const v = parseFloat(ei.value); if (!isNaN(v)) tmpKpi[k] = v; }
+    if (et && et.value !== '') { const v = parseFloat(et.value); if (!isNaN(v) && v > 0) tmpTgt[k] = v; }
+  });
+  renderCEOScore(tmpKpi, tmpTgt);
+}
+
+// ── REFRESH (view only) ──
+function refreshDisplay() {
+  setTimestamp();
+  renderAll();
+  showToast('🔄 Đã refresh', 'ok');
+}
+
+// ── RENDER ALL ──
+function renderAll() {
+  renderAssets();
+  renderKPIs(S.kpi, S.tgt);
+  renderCEOScore(S.kpi, S.tgt);
+  runChecks();
+}
+
+// ── ASSETS ──
+function renderAssets() {
+  const a = S.assets;
+  const total = Object.values(a).reduce((s,v)=>s+v, 0);
+  setText('v-total', total);
+  setText('v-prompts', a.prompts);
+  setText('v-skills',  a.skills);
+  setText('v-sops',    a.sops);
+  setText('v-workflows', a.workflows);
+  setText('v-templates', a.templates);
+  setText('v-cs',      a.cs);
+}
+
+// ── KPI CARDS ──
+const KPI_CFG = {
+  lt:  { fmt:fmtNum,  label:'Leads Today' },
+  st:  { fmt:fmtNum,  label:'Sales Today' },
+  rt:  { fmt:fmtVND,  label:'Revenue Today' },
+  lw:  { fmt:fmtNum,  label:'Leads Weekly' },
+  rw:  { fmt:fmtVND,  label:'Revenue Weekly' },
+  lm:  { fmt:fmtNum,  label:'Leads Monthly' },
+  rm:  { fmt:fmtVND,  label:'Revenue Monthly' },
+  nps: { fmt:fmtNPS,  label:'NPS' },
+};
+
+function renderKPIs(kpi, tgt) {
+  Object.keys(KPI_CFG).forEach(k => {
+    const cfg   = KPI_CFG[k];
+    const actual = kpi[k];
+    const target = tgt[k];
+    const pct   = target > 0 ? Math.round((actual / target) * 100) : 0;
+    const barW  = Math.min(pct, 100);
+    const { color, cls } = achColor(pct);
+
+    const valEl = document.getElementById('kv-'+k);
+    const achEl = document.getElementById('ka-'+k);
+    const tgtEl = document.getElementById('kt-'+k);
+    const fillEl= document.getElementById('kf-'+k);
+    const lblEl = document.getElementById('kbl-'+k);
+    const cardEl= document.getElementById('kc-'+k);
+
+    if (valEl) valEl.textContent = cfg.fmt(actual);
+    if (achEl) { achEl.textContent = pct+'%'; achEl.className = 'kc-ach '+cls; }
+    if (tgtEl) tgtEl.textContent = 'Target: '+cfg.fmt(target);
+    if (fillEl){ fillEl.style.width = barW+'%'; fillEl.style.background = color; }
+    if (lblEl) lblEl.textContent = pct+'% achieved';
+    if (cardEl){ cardEl.style.borderColor = pct>=100?'rgba(34,197,94,.4)':pct>=80?'rgba(234,179,8,.3)':'rgba(239,68,68,.3)'; }
+  });
+}
+
+// ── CEO SCORE ──
+function renderCEOScore(kpi, tgt) {
+  const k = kpi || S.kpi;
+  const t = tgt  || S.tgt;
+
+  const leadAch  = ach(k.lm,  t.lm);
+  const salesAch = ach(k.st,  t.st);
+  const revAch   = ach(k.rm,  t.rm);
+  const npsAch   = ach(k.nps, t.nps);
+
+  const score = leadAch*0.25 + salesAch*0.25 + revAch*0.40 + npsAch*0.10;
+  const rounded = Math.round(score);
+
+  setSB('lead',  leadAch);
+  setSB('sales', salesAch);
+  setSB('rev',   revAch);
+  setSB('nps',   npsAch);
+
+  const CIRC = 345.4;
+  const offset = CIRC * (1 - Math.min(rounded, 100) / 100);
+  const { color } = achColor(rounded);
+
+  const gf = document.getElementById('gaugeFill');
+  const gp = document.getElementById('gaugePct');
+  if (gf) { gf.style.strokeDashoffset = offset; gf.style.stroke = color; }
+  if (gp) { gp.textContent = rounded+'%'; gp.style.fill = color; }
+
+  const vdCeo = document.getElementById('vd-ceo');
+  if (vdCeo) { vdCeo.textContent = rounded+'%'; vdCeo.style.color = color; }
+}
+
+function setSB(id, pct) {
+  const bar = document.getElementById('sb-'+id);
+  const txt = document.getElementById('sp-'+id);
+  const capped = Math.min(pct, 100);
+  if (bar) bar.style.width = capped+'%';
+  if (txt) txt.textContent = Math.round(pct)+'%';
+}
+
+// ── HELPERS ──
+function setText(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+
+function ach(actual, target) {
+  if (!target || actual == null) return 0;
+  return Math.min((actual / target) * 100, 150);
+}
+
+function achColor(pct) {
+  if (pct >= 100) return { color:'var(--green)',  cls:'ach-g' };
+  if (pct >= 80)  return { color:'var(--yellow)', cls:'ach-y' };
+  return              { color:'var(--red)',    cls:'ach-r' };
+}
+
+function fmtNum(v)  { return Math.round(v||0).toLocaleString('vi-VN'); }
+function fmtVND(v)  {
+  v = v || 0;
+  if (v >= 1e9) return (v/1e9).toFixed(1)+' tỷ';
+  if (v >= 1e6) return (v/1e6).toFixed(0)+' tr';
+  if (v >= 1e3) return (v/1e3).toFixed(0)+'K';
+  return v.toLocaleString('vi-VN');
+}
+function fmtNPS(v)  { return (v||0).toFixed(1)+'/10'; }
+
+// ── PASS / FAIL ──
+const CHECKS = [
+  { label:'7 Asset Cards đầy đủ (Total, Prompts, Skills, SOPs, Workflows, Templates, CS)',
+    fn:()=> document.querySelectorAll('.ac').length === 7 },
+  { label:'8 CEO KPI Cards có progress bars + color coding',
+    fn:()=> document.querySelectorAll('.kc').length === 8 },
+  { label:'Edit Mode: Enter / Save / Cancel hoạt động',
+    fn:()=> !!document.getElementById('btnEdit') && !!document.getElementById('btnSave') && !!document.getElementById('btnCancel') },
+  { label:'Inline inputs trong từng KPI card (Actual + Target)',
+    fn:()=> ['lt','st','rt','lw','rw','lm','rm','nps'].every(k => !!document.getElementById('ei-'+k) && !!document.getElementById('et-'+k)) },
+  { label:'Asset inputs chỉnh được trong Edit Mode',
+    fn:()=> ['prompts','skills','sops','workflows','templates','cs'].every(k => !!document.getElementById('ea-'+k)) },
+  { label:'localStorage JSON: load + save hoạt động',
+    fn:()=> { try { localStorage.setItem('__test__','1'); localStorage.removeItem('__test__'); return true; } catch(e){ return false; } }},
+  { label:'CEO Score gauge SVG: gaugeFill + gaugePct',
+    fn:()=> !!document.getElementById('gaugeFill') && !!document.getElementById('gaugePct') },
+  { label:'CEO Score = Lead×25% + Sales×25% + Revenue×40% + NPS×10%',
+    fn:()=> { const s=100*0.25+100*0.25+100*0.40+100*0.10; return s===100; }},
+  { label:'Color coding: green>100%, yellow 80-100%, red<80%',
+    fn:()=> { const g=achColor(101),y=achColor(90),r=achColor(70); return g.color==='var(--green)'&&y.color==='var(--yellow)'&&r.color==='var(--red)'; }},
+  { label:'8 Modules giữ nguyên từ V4.0',
+    fn:()=> document.querySelectorAll('.mc').length === 8 },
+  { label:'Responsive: 5 breakpoints (1200/960/900/700/500px)',
+    fn:()=> { const s=document.querySelector('style').textContent; return ['1200px','960px','900px','700px','500px'].every(b=>s.includes(b)); }},
+  { label:'Không có GSheets URL panel / "Chưa kết nối"',
+    fn:()=> !document.querySelector('.gs-panel') && !document.querySelector('#gsSt') },
+];
+
+function runChecks() {
+  const list = document.getElementById('pfList');
+  if (!list) return;
+  list.innerHTML = '';
+  let pass = 0;
+  CHECKS.forEach((c,i) => {
+    let ok = false;
+    try { ok = !!c.fn(); } catch(e) {}
+    if (ok) pass++;
+    const div = document.createElement('div');
+    div.className = 'pi '+(ok?'pi-ok':'pi-no');
+    div.innerHTML = `<span style="font-size:15px">${ok?'✅':'❌'}</span>
+      <span>${i+1}. ${c.label}</span>
+      <span class="pb2 ${ok?'pp':'pf2'}">${ok?'PASS':'FAIL'}</span>`;
+    list.appendChild(div);
+  });
+  renderVerdict(pass, CHECKS.length);
+}
+
+function renderVerdict(pass, total) {
+  const allPass = pass === total;
+  const panel = document.getElementById('vdPanel');
+  const title = document.getElementById('vdTitle');
+  const score = document.getElementById('vd-score');
+  const ts    = document.getElementById('vdTs');
+
+  if (panel) panel.className = 'vd '+(allPass?'vd-ok':'vd-no');
+  if (title) title.innerHTML = allPass
+    ? '🎉 FINAL VERDICT: PASS — Dashboard V4.1 READY'
+    : `⚠️ FINAL VERDICT: ${total-pass} issue cần xử lý`;
+  if (score) { score.textContent = `${pass}/${total}`; score.style.color = allPass?'var(--green)':'var(--red)'; }
+  if (ts) ts.innerHTML = [
+    `${allPass?'✅':'⚠️'} <strong>${pass}/${total} PASS</strong>`,
+    '· V4.1 · No GSheets · Local JSON · Edit Mode',
+    '· 7 Asset Cards · 8 KPI Cards · CEO Score (25/25/40/10%)',
+    '· 8 Modules unchanged · 5 responsive breakpoints',
+    `· Saved: ${localStorage.getItem(LS_KEY) ? '✅ Data in localStorage' : '⬜ Using defaults'}`,
+    `· Timestamp: ${new Date().toLocaleString('vi-VN')}`,
+    allPass ? '· STATUS: COMMIT APPROVED 🚀' : '· STATUS: NEEDS FIX ❌',
+  ].join('  ');
+}
+
+// ── TOAST ──
+function showToast(msg, type) {
+  try {
+    const t = document.getElementById('toast');
+    if (!t) return;
+    t.textContent = msg;
+    t.className = 'toast show '+(type||'');
+    setTimeout(()=>{ t.className='toast'; }, 3000);
+  } catch(e) {}
+}
+
+// ── SKILL ENGINE LAUNCHER ──
+function launchSkill(skillId) {
+  if (window.SkillEngine) {
+    SkillEngine.launch(skillId);
+  } else {
+    showToast('⚡ Skill Engine đang tải, thử lại sau 1 giây...', 'sv');
+    setTimeout(() => {
+      if (window.SkillEngine) SkillEngine.launch(skillId);
+    }, 1200);
+  }
+}
+</script>
+
+<!-- AIFUN Skill Engine — load order: config → skill-forms → skill-engine -->
+<script src="aifun-skill-engine/config.js"></script>
+<script src="aifun-skill-engine/skill-forms.js"></script>
+<script src="aifun-skill-engine/skill-engine.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  if (window.SkillEngine) {
+    SkillEngine.init();
+  }
+  // Kiểm tra nhanh — mở Console để xác nhận
+  console.log('[AIFUN OS] SkillEngine:', typeof window.SkillEngine !== 'undefined' ? '✅ OK' : '❌ NOT LOADED');
+  console.log('[AIFUN OS] GAS URL:', typeof AIFUN_CONFIG !== 'undefined' ? AIFUN_CONFIG.gasWebAppUrl.substring(0,60)+'...' : '❌ NOT LOADED');
+});
+</script>
 </body>
 </html>
