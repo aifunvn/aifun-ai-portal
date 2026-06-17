@@ -99,11 +99,11 @@ const SkillEngine = (() => {
     }).join('');
 
     body.innerHTML = `
-      <form id="se-form" onsubmit="SkillEngine._onFormSubmit(event)" novalidate>
+      <form id="se-form" novalidate>
         <div class="se-field-grid">${fieldsHtml}</div>
         <div class="se-form-actions">
           <button type="button" class="se-btn se-btn-ghost" onclick="SkillEngine.close()">Huỷ</button>
-          <button type="submit" class="se-btn se-btn-primary">
+          <button type="button" class="se-btn se-btn-primary" onclick="SkillEngine._onFormSubmit()">
             🚀 Tạo tài liệu với AI
           </button>
         </div>
@@ -164,7 +164,7 @@ const SkillEngine = (() => {
 
   // ── Form submit handler ────────────────────────────────────────────────────
   async function _onFormSubmit(e) {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
 
     const form = document.getElementById('se-form');
     if (!validateForm(form)) return;
