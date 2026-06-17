@@ -257,6 +257,7 @@ const SkillEngine = (() => {
 
     const contentPreview = (content || '')
       .substring(0, 800)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
       .replace(/\n/g, '<br>')
       + (content && content.length > 800 ? '…' : '');
 
@@ -276,8 +277,8 @@ const SkillEngine = (() => {
           <button class="se-btn se-btn-secondary" onclick="SkillEngine._copyContent()">
             📋 Sao chép nội dung
           </button>
-          <button class="se-btn se-btn-ghost" onclick="SkillEngine._downloadDocx('${encodeURIComponent(content || '')}','${fileName || 'document'}')">
-            📎 Tải Word (.docx)
+          <button class="se-btn se-btn-ghost" onclick="SkillEngine._downloadDocx()">
+            📎 Tải Word (.doc)
           </button>
         </div>
 
@@ -302,8 +303,9 @@ const SkillEngine = (() => {
       </div>
     `;
 
-    // Store content for copy
-    window._seLastContent = content || '';
+    // Store content & filename globally for copy/download actions
+    window._seLastContent  = content || '';
+    window._seLastFileName = fileName || 'AIFUN_Document';
 
     showToast('✅ Tài liệu đã được tạo và lưu vào Google Drive!', 'success');
   }
@@ -473,19 +475,43 @@ const SkillEngine = (() => {
       });
   }
 
-  // ── Action: download as simple .docx (plain-text wrapped in docx) ─────────
-  function _downloadDocx(encodedContent, fileName) {
-    const content = decodeURIComponent(encodedContent);
-    // Simple RTF-wrapped approach for browser download
-    // For production, use the Google Docs export URL instead
-    const blob = new Blob([content], { type: 'application/msword' });
+  // ── Action: download as Word .doc (HTML-Word format) ─────────────────────
+  function _downloadDocx() {
+    const content  = window._seLastContent  || '';
+    const fileName = window._seLastFileName || 'AIFUN_Document';
+    if (!content) { showToast('Không có nội dung để tải', 'warn'); return; }
+
+    // Convert plain text → HTML paragraphs
+    const bodyHtml = content
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .split('\n')
+      .map(line => line.trim()
+        ? (line.match(/^#+\s/) ? `<h2>${line.replace(/^#+\s/, '')}</h2>` : `<p>${line}</p>`)
+        : '<p>&nbsp;</p>'
+      ).join('\n');
+
+    const wordHtml = `<html xmlns:o="urn:schemas-microsoft-com:office:office"
+xmlns:w="urn:schemas-microsoft-com:office:word"
+xmlns="http://www.w3.org/TR/REC-html40">
+<head><meta charset="UTF-8">
+<style>
+  body { font-family: Arial, sans-serif; font-size: 12pt; line-height: 1.6; margin: 2cm; }
+  h1 { font-size: 18pt; color: #1D4ED8; } h2 { font-size: 14pt; color: #1E40AF; }
+  p { margin: 6pt 0; } table { border-collapse: collapse; width: 100%; }
+  td, th { border: 1px solid #ccc; padding: 6pt; }
+</style></head>
+<body>${bodyHtml}</body></html>`;
+
+    const blob = new Blob(['﻿', wordHtml], { type: 'application/msword' });
     const url  = URL.createObjectURL(blob);
     const a    = document.createElement('a');
     a.href     = url;
-    a.download = `${fileName || 'AIFUN_Document'}.doc`;
+    a.download = `${fileName}.doc`;
+    document.body.appendChild(a);
     a.click();
+    document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    showToast('📎 Đang tải file...', 'info');
+    showToast('📎 Đang tải file Word...', 'info');
   }
 
   // ── Action: create new doc (go back to form) ──────────────────────────────

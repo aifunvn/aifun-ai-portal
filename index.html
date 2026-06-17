@@ -750,7 +750,121 @@ function openDataCenter() {
   }
 })();
 
-function refreshAll() { loadCEOStats(); loadDocuments(); showToast('🔄 Đang làm mới dữ liệu...'); }
+function refreshAll() { loadAllData(); showToast('🔄 Đang làm mới dữ liệu...'); }
+
+/*
+ * ════════════════════════════════════════════════════════
+ *  COLUMN MAPPING — GENERATED_DOCUMENTS sheet
+ *  A(0)=ID  B(1)=Skill  C(2)=User  D(3)=Prompt
+ *  E(4)=File Name  F(5)=Google Docs URL  G(6)=Status  H(7)=Created Date
+ *
+ *  GAS getDocuments trả về object với fields:
+ *  id, skill, user, prompt, title(=fileName), docUrl, status, date
+ *  → frontend map theo chuẩn này
+ * ════════════════════════════════════════════════════════
+ */
+
+// Cache toàn bộ docs để tránh gọi GAS nhiều lần
+var _allDocsCache = null;
+var _allDocsFetching = false;
+var _allDocsCbs = [];
+
+function _fetchAllDocs(cb) {
+  if (_allDocsCache) { cb(null, _allDocsCache); return; }
+  _allDocsCbs.push(cb);
+  if (_allDocsFetching) return;
+  _allDocsFetching = true;
+
+  fetch(AIFUN_CONFIG.gasWebAppUrl, {
+    method:'POST',
+    headers:{'Content-Type':'text/plain'},
+    body:JSON.stringify({action:'getDocuments', spreadsheetId:AIFUN_CONFIG.spreadsheetId, page:1, pageSize:500})
+  })
+  .then(function(r){ return r.text(); })
+  .then(function(txt){
+    var d = JSON.parse(txt);
+    if (d.error) throw new Error(d.error);
+    _allDocsCache = _normalizeDocs(d.docs || []);
+    _allDocsFetching = false;
+    _allDocsCbs.forEach(function(fn){ fn(null, _allDocsCache); });
+    _allDocsCbs = [];
+  })
+  .catch(function(e){
+    _allDocsFetching = false;
+    _allDocsCbs.forEach(function(fn){ fn(e, []); });
+    _allDocsCbs = [];
+  });
+}
+
+// Chuẩn hóa doc object theo đúng column layout
+function _normalizeDocs(docs) {
+  return docs.map(function(doc) {
+    // GAS Code.gs hiện trả về fields dựa theo thứ tự cột cũ (sai)
+    // Ta map lại: ưu tiên field đúng, fallback sang field sai nếu cần
+    // Quy tắc nhận biết: docUrl phải bắt đầu bằng "https://docs.google.com"
+    var id     = doc.id     || doc[0] || '';
+    var skill  = doc.skill  || doc[1] || '';
+    // title = File Name (cột E). GAS cũ có thể trả về "title" = cột C (user)
+    // Nếu doc.title trông như tên người (không chứa dấu '_') và doc.user trống,
+    // thì title thực sự là trong doc.docUrl (cột D theo mapping cũ)
+    var title  = doc.title  || doc.fileName || '';
+    var docUrl = doc.docUrl || doc.url || '';
+    var status = doc.status || 'active';
+    var date   = doc.date   || doc.createdAt || doc.created || '';
+    var user   = doc.user   || '';
+
+    // Nếu docUrl không hợp lệ, thử tìm url trong các field khác
+    if (docUrl && !docUrl.toString().startsWith('http')) {
+      // GAS map sai — tìm field nào có URL hợp lệ
+      var allVals = [doc.title, doc.user, doc.prompt, doc.docUrl, doc.date, doc.status];
+      for (var i=0; i<allVals.length; i++) {
+        if (allVals[i] && String(allVals[i]).startsWith('https://docs.google.com')) {
+          docUrl = allVals[i]; break;
+        }
+      }
+    }
+
+    // Parse date — thử các format VN và ISO
+    var dateObj = _parseDate(date);
+
+    return { id:id, skill:skill, title:title, docUrl:docUrl, status:status, date:date, dateObj:dateObj, user:user };
+  });
+}
+
+// Parse date từ nhiều format: DD/MM/YYYY HH:MM:SS, ISO, vv
+function _parseDate(s) {
+  if (!s) return null;
+  var str = String(s).trim();
+  // DD/MM/YYYY HH:MM:SS or DD/MM/YYYY
+  var m = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  if (m) return new Date(+m[3], +m[2]-1, +m[1]);
+  // ISO
+  var d = new Date(str);
+  return isNaN(d.getTime()) ? null : d;
+}
+
+// Tính stats từ mảng docs
+function _computeStats(docs) {
+  var now = new Date();
+  var todayStr = now.toDateString();
+  var weekStart = new Date(now); weekStart.setDate(now.getDate() - now.getDay());
+  var monthY = now.getFullYear(), monthM = now.getMonth();
+
+  var stats = { total:docs.length, today:0, week:0, month:0, bySkill:{} };
+
+  docs.forEach(function(doc) {
+    var sk = doc.skill || 'Unknown';
+    stats.bySkill[sk] = (stats.bySkill[sk] || 0) + 1;
+
+    var d = doc.dateObj;
+    if (!d) return;
+    if (d.toDateString() === todayStr) stats.today++;
+    if (d >= weekStart) stats.week++;
+    if (d.getFullYear() === monthY && d.getMonth() === monthM) stats.month++;
+  });
+
+  return stats;
+}
 
 /* ── CEO DASHBOARD ─────────────────────────────── */
 function loadCEOStats() {
@@ -761,34 +875,28 @@ function loadCEOStats() {
   document.getElementById('ceo-skill-bars').innerHTML = '<div class="empty"><div class="e-icon">⏳</div><div class="e-title">Đang tải...</div></div>';
   document.getElementById('ceo-recent').innerHTML = '<div class="empty"><div class="e-icon">⏳</div><div class="e-title">Đang tải...</div></div>';
 
-  fetch(AIFUN_CONFIG.gasWebAppUrl, {
-    method:'POST',
-    headers:{'Content-Type':'text/plain'},
-    body:JSON.stringify({action:'getStats', spreadsheetId:AIFUN_CONFIG.spreadsheetId})
-  })
-  .then(function(r){ return r.text(); })
-  .then(function(txt){
-    var d; try { d = JSON.parse(txt); } catch(e){ throw new Error('Invalid response'); }
-    if (d.error) throw new Error(d.error);
-    _renderCEO(d);
-    _updateDashStats(d);
-  })
-  .catch(function(e){
-    console.warn('[CEO] Error:', e.message);
-    _renderCEO({total:0,today:0,week:0,month:0,bySkill:{},recentDocs:[]});
+  _allDocsCache = null; // invalidate cache on manual refresh
+  _fetchAllDocs(function(err, docs) {
+    if (err) {
+      console.warn('[CEO] Error:', err.message);
+      docs = [];
+    }
+    var stats = _computeStats(docs);
+    _renderCEO(stats, docs);
+    _updateDashStats(stats, docs);
   });
 }
 
-function _renderCEO(d) {
+function _renderCEO(stats, docs) {
   var now = new Date();
   var months = ['Tháng 1','Tháng 2','Tháng 3','Tháng 4','Tháng 5','Tháng 6','Tháng 7','Tháng 8','Tháng 9','Tháng 10','Tháng 11','Tháng 12'];
-  var bs = d.bySkill || {};
+  var bs = stats.bySkill;
 
-  _setTxt('ceo-today', d.today||0);
+  _setTxt('ceo-today', stats.today);
   _setTxt('ceo-today-date', now.toLocaleDateString('vi-VN'));
-  _setTxt('ceo-week', d.week||0);
+  _setTxt('ceo-week', stats.week);
   _setTxt('ceo-week-lbl', 'Tuần ' + _weekNum(now));
-  _setTxt('ceo-month', d.month||0);
+  _setTxt('ceo-month', stats.month);
   _setTxt('ceo-month-lbl', months[now.getMonth()] + ' ' + now.getFullYear());
   _setTxt('ceo-sop',    _sumSkill(bs,['sop-builder','SOP Builder','SOP']));
   _setTxt('ceo-prompt', _sumSkill(bs,['prompt-builder','Prompt Builder']));
@@ -799,7 +907,7 @@ function _renderCEO(d) {
   var max = entries.length ? entries[0][1] : 1;
   var bHtml = entries.length === 0
     ? '<div class="empty"><div class="e-icon">📊</div><div class="e-title">Chưa có dữ liệu</div></div>'
-    : entries.slice(0,6).map(function(e){
+    : entries.slice(0,8).map(function(e){
         var pct = Math.round(e[1]/max*100);
         return '<div class="skill-bar-row">' +
           '<div class="sb-label">' + _esc(e[0]) + '</div>' +
@@ -808,26 +916,38 @@ function _renderCEO(d) {
       }).join('');
   document.getElementById('ceo-skill-bars').innerHTML = bHtml;
 
-  // Recent docs
-  var docs = d.recentDocs || [];
-  var dHtml = docs.length === 0
+  // 10 tài liệu gần nhất
+  var recent = docs.slice().sort(function(a,b){
+    return (b.dateObj||new Date(0)) - (a.dateObj||new Date(0));
+  }).slice(0,10);
+
+  var dHtml = recent.length === 0
     ? '<div class="empty"><div class="e-icon">📂</div><div class="e-title">Chưa có tài liệu</div></div>'
-    : docs.slice(0,5).map(function(doc){
-        return '<div class="doc-row"><span class="doc-ico">' + _skillIcon(doc.skill||'') + '</span>' +
-          '<span class="doc-name">' + _esc(doc.title||'') + '</span>' +
-          '<span class="doc-date">' + _esc(doc.date||'') + '</span></div>';
+    : recent.map(function(doc){
+        var link = doc.docUrl && doc.docUrl.startsWith('http')
+          ? '<a href="' + _esc(doc.docUrl) + '" target="_blank" style="color:var(--primary);font-size:10px;">↗</a>' : '';
+        return '<div class="doc-row"><span class="doc-ico">' + _skillIcon(doc.skill) + '</span>' +
+          '<span class="doc-name">' + _esc(doc.title || doc.id || '—') + '</span>' +
+          '<span class="doc-date" style="margin-right:4px;">' + _fmtDate(doc.dateObj) + '</span>' +
+          link + '</div>';
       }).join('');
   document.getElementById('ceo-recent').innerHTML = dHtml;
 }
 
-function _updateDashStats(d) {
-  var bs = d.bySkill || {};
+function _updateDashStats(stats, docs) {
+  var bs = stats.bySkill;
   var top = Object.entries(bs).sort(function(a,b){return b[1]-a[1];})[0];
-  _setTxt('ds-total', d.total||0);
-  _setTxt('ds-today-txt', '↑ +' + (d.today||0) + ' hôm nay');
+  _setTxt('ds-total', stats.total);
+  _setTxt('ds-today-txt', stats.today > 0 ? '↑ +' + stats.today + ' hôm nay' : 'Cập nhật hôm nay');
   _setTxt('ds-sop',  _sumSkill(bs,['sop-builder','SOP Builder','SOP']));
-  _setTxt('ds-week', d.week||0);
-  _setTxt('ds-top',  top ? top[0].replace(' Builder','').replace(' Generator','') : '—');
+  _setTxt('ds-week', stats.week);
+  _setTxt('ds-top',  top ? top[0].replace(' Builder','').replace(' Generator','').replace(' Assistant','') : '—');
+
+  // Render recent docs on Dashboard
+  var recent = docs.slice().sort(function(a,b){
+    return (b.dateObj||new Date(0)) - (a.dateObj||new Date(0));
+  }).slice(0,5);
+  _renderRecentDocs(recent);
 }
 
 /* ── DOCUMENTS PAGE ────────────────────────────── */
@@ -835,20 +955,27 @@ function loadDocuments() {
   if (!window.AIFUN_CONFIG || !AIFUN_CONFIG.gasWebAppUrl) return;
   document.getElementById('docs-tbody').innerHTML = '<tr><td colspan="6"><div class="empty"><div class="e-icon">⏳</div><div class="e-title">Đang tải...</div></div></td></tr>';
 
-  fetch(AIFUN_CONFIG.gasWebAppUrl, {
-    method:'POST',
-    headers:{'Content-Type':'text/plain'},
-    body:JSON.stringify({action:'getDocuments', spreadsheetId:AIFUN_CONFIG.spreadsheetId, page:1, pageSize:50})
-  })
-  .then(function(r){ return r.text(); })
-  .then(function(txt){
-    var d = JSON.parse(txt);
-    if (d.error) throw new Error(d.error);
-    _renderDocsTable(d.docs || []);
-    _renderRecentDocs(d.docs || []);
-  })
-  .catch(function(e){
-    document.getElementById('docs-tbody').innerHTML = '<tr><td colspan="6" style="color:var(--error);text-align:center;padding:20px;">Lỗi tải tài liệu: ' + e.message + '</td></tr>';
+  _allDocsCache = null;
+  _fetchAllDocs(function(err, docs) {
+    if (err) {
+      document.getElementById('docs-tbody').innerHTML = '<tr><td colspan="6" style="color:var(--error);text-align:center;padding:20px;">Lỗi: ' + _esc(err.message) + '</td></tr>';
+      return;
+    }
+    _renderDocsTable(docs);
+  });
+}
+
+function loadAllData() {
+  _allDocsCache = null;
+  _fetchAllDocs(function(err, docs) {
+    if (err) { console.warn('[loadAllData]', err.message); docs = []; }
+    var stats = _computeStats(docs);
+    _updateDashStats(stats, docs);
+    // Re-render CEO if open
+    var ceoPage = document.getElementById('page-ceo');
+    if (ceoPage && ceoPage.classList.contains('active')) _renderCEO(stats, docs);
+    var docsPage = document.getElementById('page-documents');
+    if (docsPage && docsPage.classList.contains('active')) _renderDocsTable(docs);
   });
 }
 
@@ -857,14 +984,18 @@ function _renderDocsTable(docs) {
     document.getElementById('docs-tbody').innerHTML = '<tr><td colspan="6"><div class="empty"><div class="e-icon">📂</div><div class="e-title">Chưa có tài liệu</div><div class="e-desc">Tạo tài liệu đầu tiên với AI Builders</div></div></td></tr>';
     return;
   }
-  document.getElementById('docs-tbody').innerHTML = docs.map(function(doc){
-    var sc = doc.status === 'active' ? 's-active' : 's-gen';
-    var link = doc.docUrl ? '<a href="' + _esc(doc.docUrl) + '" target="_blank" rel="noopener">📄 Mở ↗</a>' : '—';
-    return '<tr><td style="font-family:monospace;font-size:11px;">' + _esc(doc.id||'') + '</td>' +
-      '<td>' + _esc(doc.skill||'') + '</td>' +
-      '<td>' + _esc((doc.title||'').substring(0,50)) + '</td>' +
+  // Sort newest first
+  var sorted = docs.slice().sort(function(a,b){ return (b.dateObj||new Date(0))-(a.dateObj||new Date(0)); });
+  document.getElementById('docs-tbody').innerHTML = sorted.map(function(doc){
+    var sc = (doc.status||'').toLowerCase() === 'active' ? 's-active' : 's-gen';
+    var hasUrl = doc.docUrl && doc.docUrl.startsWith('http');
+    var link = hasUrl ? '<a href="' + _esc(doc.docUrl) + '" target="_blank" rel="noopener">📄 Mở ↗</a>' : '—';
+    return '<tr>' +
+      '<td style="font-family:monospace;font-size:10px;">' + _esc(doc.id) + '</td>' +
+      '<td>' + _esc(doc.skill) + '</td>' +
+      '<td>' + _esc((doc.title||doc.id||'—').substring(0,55)) + '</td>' +
       '<td>' + link + '</td>' +
-      '<td>' + _esc(doc.date||'') + '</td>' +
+      '<td>' + _esc(_fmtDate(doc.dateObj) || doc.date || '—') + '</td>' +
       '<td><span class="s-badge ' + sc + '">' + _esc(doc.status||'active') + '</span></td></tr>';
   }).join('');
 }
@@ -873,31 +1004,38 @@ function _renderRecentDocs(docs) {
   var el = document.getElementById('recent-docs');
   if (!el) return;
   if (!docs.length) {
-    el.innerHTML = '<div class="empty"><div class="e-icon">📂</div><div class="e-title">Chưa có tài liệu</div></div>';
+    el.innerHTML = '<div class="empty"><div class="e-icon">📂</div><div class="e-title">Chưa có tài liệu</div><div class="e-desc">Tạo tài liệu đầu tiên với AI Builders</div></div>';
     return;
   }
-  el.innerHTML = docs.slice(0,5).map(function(doc){
-    return '<div class="doc-row"><span class="doc-ico">' + _skillIcon(doc.skill||'') + '</span>' +
-      '<span class="doc-name">' + _esc(doc.title||'') + '</span>' +
+  el.innerHTML = docs.map(function(doc){
+    return '<div class="doc-row"><span class="doc-ico">' + _skillIcon(doc.skill) + '</span>' +
+      '<span class="doc-name">' + _esc(doc.title || doc.id || '—') + '</span>' +
       '<span class="doc-skill">' + _esc((doc.skill||'').substring(0,14)) + '</span>' +
-      '<span class="doc-date">' + _esc(doc.date||'') + '</span></div>';
+      '<span class="doc-date">' + _fmtDate(doc.dateObj) + '</span></div>';
   }).join('');
 }
 
 /* ── Helpers ───────────────────────────────────── */
 function _setTxt(id,v){ var e=document.getElementById(id); if(e) e.textContent=v; }
-function _esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function _esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function _weekNum(d){ var j=new Date(d.getFullYear(),0,1); return Math.ceil((((d-j)/86400000)+j.getDay()+1)/7); }
 function _sumSkill(bs,keys){ var t=0; keys.forEach(function(k){ if(bs[k]) t+=bs[k]; }); return t||0; }
+function _fmtDate(d){
+  if (!d) return '';
+  return d.toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit',year:'numeric'});
+}
 function _skillIcon(s){
-  var m={'SOP Builder':'📋','Prompt Builder':'💡','Report Builder':'📊','Content Factory':'📸','Email Automation':'📧','CRM Assistant':'💛','Webinar Builder':'🎯','Sales Script':'🏆','Sales Script Generator':'🏆'};
+  var m={'SOP Builder':'📋','sop-builder':'📋','Prompt Builder':'💡','prompt-builder':'💡',
+    'Report Builder':'📊','report-builder':'📊','Content Factory':'📸','content-factory':'📸',
+    'Email Automation':'📧','email-automation':'📧','CRM AI Assistant':'💛','crm-ai-assistant':'💛',
+    'CRM Assistant':'💛','Webinar Builder':'🎯','webinar-builder':'🎯',
+    'Sales Script Generator':'🏆','sales-script-generator':'🏆','Sales Script':'🏆'};
   return m[s]||'📄';
 }
 
 /* ── Init ──────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', function(){
-  loadCEOStats();
-  loadDocuments();
+  loadAllData();
 });
 </script>
 </body>
