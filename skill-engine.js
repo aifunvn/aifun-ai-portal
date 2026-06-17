@@ -209,7 +209,7 @@ const SkillEngine = (() => {
   // ── Step 2: Loading / Processing ──────────────────────────────────────────
   function renderLoadingStep() {
     const form    = SKILL_FORMS[_currentSkillId];
-    const steps   = form ? form.aiOutputSections : ['Phân tích', 'Tạo nội dung', 'Tạo tài liệu'];
+    const steps   = (form && form.aiOutputSections) ? form.aiOutputSections : ['Phân tích', 'Tạo nội dung', 'Tạo tài liệu'];
 
     document.getElementById('se-modal-body').innerHTML = `
       <div class="se-loading">
