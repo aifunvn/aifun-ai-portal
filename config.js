@@ -1,7 +1,7 @@
 const AIFUN_CONFIG = {
   gasWebAppUrl: 'https://script.google.com/macros/s/AKfycbwzivpm_ora4NdhsVxSV4_u3DJW9Xyfh2H_QPcrJMRJvvUQ4yriwZnDl-bbHEj01_vlBw/exec',
   driveFolderId: '1NthsP7JrOCrT5nGeU2j3annqLLDiHBJZ',
-  spreadsheetId: '1hsD6pEqWmF7Z46SQrumip-wsITCOU1Jnb',
+  spreadsheetId: '1hsD6pEqWmF7Z46SQrumip-wsITCOU1Jnb4f21hyuTyU',
   generatedDocsSheet: 'GENERATED_DOCUMENTS',
   defaultProvider: 'claude',
   requestTimeout: 90000,
