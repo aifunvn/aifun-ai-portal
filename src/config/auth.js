@@ -1,6 +1,6 @@
 export const AUTH_CONFIG = {
-  supabaseUrl: 'https://REPLACE_WITH_PROJECT_URL.supabase.co',
-  supabaseAnonKey: 'REPLACE_WITH_ANON_KEY',
+  supabaseUrl: 'https://ogfuduavlgpdwqzcaqfy.supabase.co',
+  supabaseAnonKey: 'sb_publishable_PodcQnXUqVsjr_MEaTlXpg_xCAieqgN',
   redirectBase: window.location.origin,
   sessionKey: 'aifun_session',
   accessTokenTtl: 900,
