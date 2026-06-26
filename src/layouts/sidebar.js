@@ -1,5 +1,6 @@
 import { router } from '../router/router.js';
-import { supabase } from '../lib/supabase.js';
+import { render as renderWS, init as initWS } from '../components/workspace-switcher.js';
+import { render as renderUM, init as initUM } from '../components/user-menu.js';
 
 const NAV_ITEMS = [
   {
@@ -10,7 +11,7 @@ const NAV_ITEMS = [
   {
     path: '/builders',
     label: 'AI Builders',
-    icon: `<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2l1.5 4.5L15 8l-4.5 1.5L9 14 7.5 9.5 3 8l4.5-1.5L9 2z"/><path d="M14 13l.75 2.25L17 16l-2.25.75L14 19l-.75-2.25L11 16l2.25-.75L14 13z" opacity=".5"/></svg>`,
+    icon: `<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2l1.5 4.5L15 8l-4.5 1.5L9 14 7.5 9.5 3 8l4.5-1.5L9 2z"/></svg>`,
   },
   {
     path: '/documents',
@@ -50,61 +51,20 @@ export function renderSidebar() {
         <span class="sb-logo-badge">V4</span>
       </div>
 
-      <div class="sb-ws">
-        <button class="sb-ws-trigger" id="ws-trigger" aria-expanded="false" aria-haspopup="listbox">
-          <span class="sb-ws-avatar">A</span>
-          <span class="sb-ws-name" id="ws-name">AIFUN Workspace</span>
-          <svg class="sb-ws-chevron" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 5 7 9 11 5"/></svg>
-        </button>
-        <div class="sb-ws-dropdown" id="ws-dropdown" role="listbox">
-          <button class="sb-ws-option is-active" role="option" aria-selected="true">
-            <span class="sb-ws-avatar">A</span>
-            <span>AIFUN Workspace</span>
-          </button>
-          <div class="sb-ws-divider"></div>
-          <button class="sb-ws-option" data-nav-to="/settings" role="option" aria-selected="false">
-            + Tạo workspace mới
-          </button>
-        </div>
-      </div>
+      ${renderWS()}
 
       <nav class="sb-nav" aria-label="Menu chính">
         <span class="sb-section-label">Chính</span>
         ${navHtml}
       </nav>
 
-      <div class="sb-footer">
-        <button class="sb-user" id="sb-user-trigger" aria-expanded="false" aria-haspopup="menu">
-          <div class="sb-avatar" id="sb-avatar">?</div>
-          <div class="sb-user-info">
-            <div class="sb-user-name" id="sb-user-name">Đang tải...</div>
-            <div class="sb-user-email" id="sb-user-email"></div>
-          </div>
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 5 7 9 11 5"/></svg>
-        </button>
-
-        <div class="sb-user-menu" id="sb-user-menu" role="menu">
-          <button class="sb-user-menu-item" data-nav-to="/settings" role="menuitem">
-            <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="7.5" cy="5" r="2.5"/><path d="M2 13c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/></svg>
-            Hồ sơ cá nhân
-          </button>
-          <button class="sb-user-menu-item" data-nav-to="/settings" role="menuitem">
-            <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="7.5" cy="7.5" r="1.5"/><path d="M7.5 1v1.5M7.5 12.5V14M2.4 2.4l1.06 1.06M11.54 11.54l1.06 1.06M1 7.5h1.5M12.5 7.5H14M2.4 12.6l1.06-1.06M11.54 3.46l1.06-1.06"/></svg>
-            Cài đặt
-          </button>
-          <div class="sb-user-menu-divider"></div>
-          <button class="sb-user-menu-item is-danger" id="sb-sign-out" role="menuitem">
-            <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M5.5 13H2.5a1 1 0 01-1-1V3a1 1 0 011-1h3"/><polyline points="10 10 13 7.5 10 5"/><line x1="13" y1="7.5" x2="5.5" y2="7.5"/></svg>
-            Đăng xuất
-          </button>
-        </div>
-      </div>
+      ${renderUM()}
     </aside>
   `;
 }
 
 export function updateActiveNav(path) {
-  document.querySelectorAll('.sb-item').forEach((btn) => {
+  document.querySelectorAll('.sb-item[data-nav-to]').forEach((btn) => {
     btn.classList.toggle('is-active', btn.dataset.navTo === path);
   });
 }
@@ -119,67 +79,27 @@ function openSidebar() {
   document.getElementById('sb-overlay')?.classList.add('is-visible');
 }
 
-function closeAllDropdowns() {
-  document.getElementById('ws-dropdown')?.classList.remove('is-open');
-  document.getElementById('ws-trigger')?.setAttribute('aria-expanded', 'false');
-  document.getElementById('sb-user-menu')?.classList.remove('is-open');
-  document.getElementById('sb-user-trigger')?.setAttribute('aria-expanded', 'false');
-}
-
-export async function initSidebar() {
-  // Nav item clicks
-  document.querySelectorAll('[data-nav-to]').forEach((btn) => {
+export function initSidebar() {
+  // Nav item clicks only — components handle their own buttons
+  document.querySelectorAll('.sb-nav .sb-item[data-nav-to]').forEach((btn) => {
     btn.addEventListener('click', () => {
       closeSidebar();
-      closeAllDropdowns();
       router.navigate(btn.dataset.navTo);
     });
   });
 
-  // Workspace switcher
-  const wsTrigger = document.getElementById('ws-trigger');
-  const wsDropdown = document.getElementById('ws-dropdown');
-  wsTrigger?.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const open = wsDropdown.classList.toggle('is-open');
-    wsTrigger.setAttribute('aria-expanded', String(open));
-  });
-
-  // User menu
-  const userTrigger = document.getElementById('sb-user-trigger');
-  const userMenu = document.getElementById('sb-user-menu');
-  userTrigger?.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const open = userMenu.classList.toggle('is-open');
-    userTrigger.setAttribute('aria-expanded', String(open));
-  });
-
-  // Sign out
-  document.getElementById('sb-sign-out')?.addEventListener('click', () => {
-    supabase.auth.signOut();
-  });
-
-  // Mobile overlay close
+  // Mobile overlay
   document.getElementById('sb-overlay')?.addEventListener('click', closeSidebar);
 
-  // Close dropdowns on outside click
-  document.addEventListener('click', closeAllDropdowns);
-
-  // Keyboard: Esc closes dropdowns and sidebar
+  // Escape key
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') { closeAllDropdowns(); closeSidebar(); }
+    if (e.key === 'Escape') closeSidebar();
   });
 
-  // Expose openSidebar for topbar hamburger
+  // Expose open for topbar hamburger
   window._sbOpen = openSidebar;
 
-  // Load user info
-  const { data: { user } } = await supabase.auth.getUser();
-  if (user) {
-    const name = user.user_metadata?.full_name || user.email?.split('@')[0] || 'Người dùng';
-    const initials = name.split(' ').map((w) => w[0]).join('').toUpperCase().slice(0, 2);
-    document.getElementById('sb-avatar').textContent = initials;
-    document.getElementById('sb-user-name').textContent = name;
-    document.getElementById('sb-user-email').textContent = user.email || '';
-  }
+  // Init sub-components (they subscribe to stores internally)
+  initWS();
+  initUM();
 }

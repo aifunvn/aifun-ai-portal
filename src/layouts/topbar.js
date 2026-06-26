@@ -1,4 +1,6 @@
 import { supabase } from '../lib/supabase.js';
+import { userStore } from '../stores/user-store.js';
+import { workspaceStore } from '../stores/workspace-store.js';
 
 const THEME_KEY = 'aifun_theme';
 
@@ -7,11 +9,9 @@ function isDark() {
 }
 
 function applyTheme(dark) {
-  if (dark) {
-    document.documentElement.setAttribute('data-dark', '');
-  } else {
-    document.documentElement.removeAttribute('data-dark');
-  }
+  dark
+    ? document.documentElement.setAttribute('data-dark', '')
+    : document.documentElement.removeAttribute('data-dark');
   updateThemeIcon(dark);
   localStorage.setItem(THEME_KEY, dark ? 'dark' : 'light');
 }
@@ -58,10 +58,10 @@ export function renderTopbar() {
           <button class="tb-user-avatar" id="tb-user-trigger" aria-label="Menu tài khoản" aria-expanded="false" aria-haspopup="true">?</button>
           <div class="tb-dropdown tb-user-dropdown" id="tb-user-dropdown" role="menu">
             <div class="tb-user-info">
-              <div class="tb-user-info-name" id="tb-user-name">Đang tải...</div>
+              <div class="tb-user-info-name"  id="tb-user-name">Đang tải...</div>
               <div class="tb-user-info-email" id="tb-user-email"></div>
             </div>
-            <button class="tb-dropdown-item" data-nav-to="/settings" role="menuitem">
+            <button class="tb-dropdown-item" id="tb-nav-settings" role="menuitem">
               <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="7.5" cy="7.5" r="1.5"/><path d="M7.5 1v1.5M7.5 12.5V14M2.4 2.4l1.06 1.06M11.54 11.54l1.06 1.06M1 7.5h1.5M12.5 7.5H14M2.4 12.6l1.06-1.06M11.54 3.46l1.06-1.06"/></svg>
               Cài đặt
             </button>
@@ -80,6 +80,8 @@ export function renderTopbar() {
 export function updatePageTitle(title) {
   const el = document.getElementById('tb-page-title');
   if (el) el.textContent = title;
+  const ws = workspaceStore.getWorkspace();
+  document.title = ws ? `${title} — ${ws.name} | AIFUN OS` : `${title} | AIFUN OS`;
 }
 
 function closeAllDropdowns() {
@@ -90,23 +92,19 @@ function closeAllDropdowns() {
   document.getElementById('tb-user-trigger')?.setAttribute('aria-expanded', 'false');
 }
 
-export async function initTopbar() {
-  // Restore theme from localStorage
-  const saved = localStorage.getItem(THEME_KEY);
-  if (saved === 'dark') applyTheme(true);
+export function initTopbar() {
+  // Theme — restore from localStorage
+  if (localStorage.getItem(THEME_KEY) === 'dark') applyTheme(true);
 
-  // Theme toggle
-  document.getElementById('theme-toggle')?.addEventListener('click', () => {
-    applyTheme(!isDark());
-  });
+  document.getElementById('theme-toggle')?.addEventListener('click', () => applyTheme(!isDark()));
 
-  // Hamburger (mobile)
+  // Hamburger
   document.getElementById('tb-hamburger')?.addEventListener('click', () => {
     if (typeof window._sbOpen === 'function') window._sbOpen();
   });
 
-  // Notification menu
-  const notifTrigger = document.getElementById('notif-trigger');
+  // Notification dropdown
+  const notifTrigger  = document.getElementById('notif-trigger');
   const notifDropdown = document.getElementById('notif-dropdown');
   notifTrigger?.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -117,7 +115,7 @@ export async function initTopbar() {
   });
 
   // User dropdown
-  const userTrigger = document.getElementById('tb-user-trigger');
+  const userTrigger  = document.getElementById('tb-user-trigger');
   const userDropdown = document.getElementById('tb-user-dropdown');
   userTrigger?.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -127,32 +125,32 @@ export async function initTopbar() {
     document.getElementById('notif-trigger')?.setAttribute('aria-expanded', 'false');
   });
 
-  // Settings nav from topbar dropdown
-  document.querySelectorAll('[data-nav-to="/settings"]').forEach((btn) => {
-    if (btn.closest('.topbar')) {
-      btn.addEventListener('click', () => {
-        closeAllDropdowns();
-        window.location.hash = '/settings';
-      });
-    }
+  document.getElementById('tb-nav-settings')?.addEventListener('click', () => {
+    closeAllDropdowns();
+    window.location.hash = '/settings';
   });
 
-  // Sign out
   document.getElementById('tb-sign-out')?.addEventListener('click', () => {
     supabase.auth.signOut();
   });
 
-  // Close on outside click
   document.addEventListener('click', closeAllDropdowns);
 
-  // Load user info
-  const { data: { user } } = await supabase.auth.getUser();
-  if (user) {
-    const name = user.user_metadata?.full_name || user.email?.split('@')[0] || 'Người dùng';
-    const initials = name.split(' ').map((w) => w[0]).join('').toUpperCase().slice(0, 2);
-    const avatarBtn = document.getElementById('tb-user-trigger');
-    if (avatarBtn) avatarBtn.textContent = initials;
-    document.getElementById('tb-user-name').textContent = name;
-    document.getElementById('tb-user-email').textContent = user.email || '';
-  }
+  // Subscribe to user-store — update topbar avatar/name/email
+  userStore.subscribe(({ profile }) => {
+    const avatar = document.getElementById('tb-user-trigger');
+    const name   = document.getElementById('tb-user-name');
+    const email  = document.getElementById('tb-user-email');
+    if (avatar) avatar.textContent = profile?.initials ?? '?';
+    if (name)   name.textContent   = profile?.fullName ?? 'Người dùng';
+    if (email)  email.textContent  = profile?.email    ?? '';
+  });
+
+  // Subscribe to workspace-store — keep document.title in sync on workspace switch
+  workspaceStore.subscribe(({ workspace }) => {
+    const currentPage = document.getElementById('tb-page-title')?.textContent ?? 'AIFUN OS';
+    document.title = workspace
+      ? `${currentPage} — ${workspace.name} | AIFUN OS`
+      : `${currentPage} | AIFUN OS`;
+  });
 }
