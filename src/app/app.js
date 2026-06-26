@@ -1,34 +1,35 @@
 import { supabase } from '../lib/supabase.js';
 import { router } from '../router/router.js';
-import { render as renderLogin, init as initLogin } from '../auth/login.js';
+import { mountPage } from '../layouts/main-layout.js';
+import { render as renderLogin,    init as initLogin    } from '../auth/login.js';
 import { render as renderRegister, init as initRegister } from '../auth/register.js';
-import { render as renderForgot, init as initForgot } from '../auth/forgot-password.js';
-import { render as renderReset, init as initReset } from '../auth/reset-password.js';
-import { render as renderVerify, init as initVerify } from '../auth/verify-email.js';
+import { render as renderForgot,   init as initForgot   } from '../auth/forgot-password.js';
+import { render as renderReset,    init as initReset    } from '../auth/reset-password.js';
+import { render as renderVerify,   init as initVerify   } from '../auth/verify-email.js';
+import { render as renderDashboard    } from '../pages/dashboard.js';
+import { render as renderBuilders     } from '../pages/builders.js';
+import { render as renderDocuments    } from '../pages/documents.js';
+import { render as renderMarketplace  } from '../pages/marketplace.js';
+import { render as renderReports      } from '../pages/reports.js';
+import { render as renderSettings     } from '../pages/settings.js';
 
-function mount(html, initFn) {
+function mountAuth(html, initFn) {
   const root = document.getElementById('v4-root');
   if (!root) return;
   root.innerHTML = html;
   if (initFn) initFn();
 }
 
-async function onAuthStateChange(event, session) {
-  if (event === 'PASSWORD_RECOVERY') {
-    router.navigate('/auth/reset-password');
-    return;
-  }
+async function requireAuth() {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) { router.navigate('/auth/login'); return false; }
+  return true;
+}
 
-  if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-    if (router.current()?.startsWith('/auth')) {
-      router.navigate('/dashboard');
-    }
-    return;
-  }
-
-  if (event === 'SIGNED_OUT') {
-    router.navigate('/auth/login');
-  }
+async function onAuthStateChange(event) {
+  if (event === 'PASSWORD_RECOVERY') { router.navigate('/auth/reset-password'); return; }
+  if (event === 'SIGNED_IN')         { if (router.current()?.startsWith('/auth')) router.navigate('/dashboard'); return; }
+  if (event === 'SIGNED_OUT')        { router.navigate('/auth/login'); }
 }
 
 async function init() {
@@ -36,24 +37,23 @@ async function init() {
 
   const { data: { session } } = await supabase.auth.getSession();
 
-  router.register('/auth/login',            () => mount(renderLogin(),    initLogin));
-  router.register('/auth/register',         () => mount(renderRegister(), initRegister));
-  router.register('/auth/forgot-password',  () => mount(renderForgot(),   initForgot));
-  router.register('/auth/reset-password',   () => mount(renderReset(),    initReset));
-  router.register('/auth/verify-email',     () => mount(renderVerify(),   initVerify));
+  // Auth routes
+  router.register('/auth/login',           () => mountAuth(renderLogin(),    initLogin));
+  router.register('/auth/register',        () => mountAuth(renderRegister(), initRegister));
+  router.register('/auth/forgot-password', () => mountAuth(renderForgot(),   initForgot));
+  router.register('/auth/reset-password',  () => mountAuth(renderReset(),    initReset));
+  router.register('/auth/verify-email',    () => mountAuth(renderVerify(),   initVerify));
 
-  router.register('/dashboard', () => {
-    const root = document.getElementById('v4-root');
-    if (root) root.innerHTML = '<p style="padding:2rem">Dashboard — Sprint 2</p>';
-  });
+  // App routes
+  router.register('/dashboard',   async () => { if (!(await requireAuth())) return; mountPage('/dashboard',   'Dashboard',   renderDashboard()); });
+  router.register('/builders',    async () => { if (!(await requireAuth())) return; mountPage('/builders',    'AI Builders', renderBuilders()); });
+  router.register('/documents',   async () => { if (!(await requireAuth())) return; mountPage('/documents',   'Tài liệu',    renderDocuments()); });
+  router.register('/marketplace', async () => { if (!(await requireAuth())) return; mountPage('/marketplace', 'Marketplace', renderMarketplace()); });
+  router.register('/reports',     async () => { if (!(await requireAuth())) return; mountPage('/reports',     'Báo cáo',     renderReports()); });
+  router.register('/settings',    async () => { if (!(await requireAuth())) return; mountPage('/settings',    'Cài đặt',     renderSettings()); });
 
-  router.register('*', () => {
-    if (session) {
-      router.navigate('/dashboard');
-    } else {
-      router.navigate('/auth/login');
-    }
-  });
+  // Fallback
+  router.register('*', () => { session ? router.navigate('/dashboard') : router.navigate('/auth/login'); });
 
   router.init();
 }

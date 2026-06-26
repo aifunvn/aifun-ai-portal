@@ -1,0 +1,71 @@
+/* ── App shell ────────────────────────────────────────── */
+
+.app-shell {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.app-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.page-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 28px 32px;
+}
+
+.page-content::-webkit-scrollbar       { width: 5px; }
+.page-content::-webkit-scrollbar-track { background: transparent; }
+.page-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+
+/* ── Sidebar overlay (mobile) ─────────────────────────── */
+
+.sb-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .5);
+  z-index: 90;
+  backdrop-filter: blur(2px);
+}
+
+.sb-overlay.is-visible {
+  display: block;
+}
+
+/* ── Page stub (Sprint 2 placeholders) ────────────────── */
+
+.page-stub {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 12px;
+  color: var(--text-3);
+}
+
+.page-stub-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-2);
+}
+
+.page-stub-desc {
+  font-size: 14px;
+}
+
+/* ── Responsive ───────────────────────────────────────── */
+
+@media (max-width: 767px) {
+  .page-content {
+    padding: 20px 16px;
+  }
+}
