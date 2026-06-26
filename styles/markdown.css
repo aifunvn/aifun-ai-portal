@@ -1,0 +1,62 @@
+/* Markdown renderer styles — shared by builder output and document viewer */
+
+.md-content {
+  font-size: 13.5px;
+  line-height: 1.75;
+  color: var(--text-1);
+  word-break: break-word;
+}
+
+.md-h2 {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-1);
+  margin: 20px 0 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.md-h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--c-primary);
+  margin: 16px 0 6px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.md-p {
+  margin: 4px 0;
+}
+
+.md-ul {
+  margin: 6px 0 6px 4px;
+  padding-left: 18px;
+  list-style: disc;
+}
+
+.md-ul li {
+  margin-bottom: 4px;
+  color: var(--text-1);
+}
+
+.md-hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 16px 0;
+}
+
+.md-code {
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 5px;
+  color: var(--c-primary);
+}
+
+/* Dark mode */
+[data-dark] .md-h2 { border-color: var(--border); }
+[data-dark] .md-hr { border-color: var(--border); }
+[data-dark] .md-code { background: var(--bg); border-color: var(--border); }
