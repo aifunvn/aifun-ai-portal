@@ -67,7 +67,7 @@
 
 .bld-card-body { flex: 1; min-width: 0; }
 
-.bld-card-meta { margin-bottom: 4px; }
+.bld-card-meta { margin-bottom: 4px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
 
 .bld-tag {
   display: inline-block;
@@ -77,6 +77,30 @@
   font-weight: 600;
   background: var(--c-primary-l);
   color: var(--c-primary);
+}
+
+.bld-plan-badge {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 99px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  background: var(--c-warning);
+  color: #fff;
+}
+
+.bld-loading {
+  display: flex;
+  justify-content: center;
+  padding: 48px 24px;
+}
+
+.bld-load-error {
+  font-size: 14px;
+  color: var(--c-danger);
+  text-align: center;
 }
 
 .bld-card-name {

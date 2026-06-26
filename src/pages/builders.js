@@ -1,11 +1,7 @@
-import { BUILDERS, getBuilder } from '../builders/index.js';
-import { render as renderCard } from '../components/builder-card.js';
-import { render as renderForm, initForm, validate, getData } from '../components/builder-form.js';
-import { render as chatOutput, initChatOutput } from '../components/chat-output.js';
-import { runBuilder } from '../services/runtime-service.js';
+import { getBuilders, getBuilder } from '../services/builder-registry-service.js';
+import { render as launcherRender, initLauncher, getIcon } from '../components/builder-launcher.js';
 
-const ICON_BACK = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="10 13 5 8 10 3"/></svg>`;
-const ICON_GEN  = `<svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 1l1.5 4.5L13.5 7l-4.5 1.5L7.5 13l-1.5-4.5L1.5 7l4.5-1.5L7.5 1z"/></svg>`;
+const ICON_ARR = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 11 9 7 5 3"/></svg>`;
 
 let _unsub = null;
 
@@ -15,7 +11,7 @@ export function render() {
 
 // ─── Grid view ────────────────────────────────────────────────────────────────
 
-function showGrid() {
+async function showGrid() {
   const root = document.getElementById('bld-content');
   if (!root) return;
 
@@ -24,8 +20,25 @@ function showGrid() {
       <h2 class="bld-page-title">AI Builders</h2>
       <p class="bld-page-subtitle">Chon mot Builder de tao tai lieu bang AI</p>
     </div>
+    <div class="bld-loading"><div class="spinner"></div></div>
+  `;
+
+  let schemas;
+  try {
+    schemas = await getBuilders();
+  } catch (err) {
+    root.querySelector('.bld-loading').innerHTML =
+      `<p class="bld-load-error">Khong the tai danh sach Builders. Vui long thu lai.</p>`;
+    return;
+  }
+
+  root.innerHTML = `
+    <div class="bld-page-header">
+      <h2 class="bld-page-title">AI Builders</h2>
+      <p class="bld-page-subtitle">Chon mot Builder de tao tai lieu bang AI</p>
+    </div>
     <div class="bld-grid">
-      ${BUILDERS.map(renderCard).join('')}
+      ${schemas.map(renderSchemaCard).join('')}
     </div>
   `;
 
@@ -37,80 +50,34 @@ function showGrid() {
   });
 }
 
+function renderSchemaCard(schema) {
+  return `
+    <div class="bld-card" data-builder-id="${schema.id}" role="button" tabindex="0" aria-label="Mo ${schema.name}">
+      <div class="bld-card-icon" aria-hidden="true">${getIcon(schema.icon)}</div>
+      <div class="bld-card-body">
+        <div class="bld-card-meta">
+          <span class="bld-tag">${schema.category}</span>
+          ${schema.plan !== 'free' ? `<span class="bld-plan-badge">${schema.plan}</span>` : ''}
+        </div>
+        <h3 class="bld-card-name">${schema.name}</h3>
+        <p class="bld-card-desc">${schema.description}</p>
+      </div>
+      <span class="bld-card-arrow" aria-hidden="true">${ICON_ARR}</span>
+    </div>
+  `;
+}
+
 // ─── Builder detail view ──────────────────────────────────────────────────────
 
-function showBuilder(builderId) {
-  const builder = getBuilder(builderId);
-  if (!builder) return;
+async function showBuilder(builderId) {
+  const schema = await getBuilder(builderId);
+  if (!schema) return;
 
   const root = document.getElementById('bld-content');
   if (!root) return;
 
-  root.innerHTML = `
-    <button class="bld-back" id="bld-back" aria-label="Quay lai danh sach">
-      ${ICON_BACK} Tat ca Builders
-    </button>
-
-    <div class="bld-detail-header">
-      <div class="bld-detail-icon" aria-hidden="true">${builder.iconSvg}</div>
-      <div>
-        <h2 class="bld-detail-name">${builder.name}</h2>
-        <p class="bld-detail-desc">${builder.description}</p>
-      </div>
-    </div>
-
-    <div class="bld-body">
-      <div class="bld-form-panel">
-        ${renderForm(builder)}
-        <div class="bld-form-actions">
-          <button class="btn btn-primary" id="bld-generate">
-            ${ICON_GEN} Tao ngay
-          </button>
-        </div>
-      </div>
-      <div class="bld-output-panel" id="bld-output-panel">
-        ${chatOutput('idle')}
-      </div>
-    </div>
-  `;
-
-  document.getElementById('bld-back')?.addEventListener('click', showGrid);
-  initForm(builder);
-  document.getElementById('bld-generate')?.addEventListener('click', () => handleGenerate(builder));
-}
-
-// ─── Generate ─────────────────────────────────────────────────────────────────
-
-async function handleGenerate(builder) {
-  const { valid } = validate(builder);
-  if (!valid) return;
-
-  const formData    = getData(builder);
-  const generateBtn = document.getElementById('bld-generate');
-
-  if (generateBtn) { generateBtn.innerHTML = 'Dang tao...'; generateBtn.disabled = true; }
-  updateOutput('thinking');
-
-  try {
-    const result = await runBuilder(builder, formData);
-    updateOutput(result);
-  } catch (err) {
-    updateOutput({ error: err.message ?? 'Loi khong xac dinh' });
-  } finally {
-    if (generateBtn) {
-      generateBtn.innerHTML = `${ICON_GEN} Tao ngay`;
-      generateBtn.disabled  = false;
-    }
-  }
-}
-
-function updateOutput(state) {
-  const panel = document.getElementById('bld-output-panel');
-  if (!panel) return;
-  panel.innerHTML = chatOutput(state);
-  if (state !== 'idle' && state !== 'thinking' && !state?.error) {
-    initChatOutput(state.content);
-  }
+  root.innerHTML = launcherRender(schema);
+  initLauncher(schema, { onBack: showGrid });
 }
 
 // ─── Page lifecycle ───────────────────────────────────────────────────────────

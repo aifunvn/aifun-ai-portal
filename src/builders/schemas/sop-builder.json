@@ -1,0 +1,64 @@
+{
+  "id": "sop-builder",
+  "name": "SOP Builder",
+  "description": "Tao quy trinh chuan (Standard Operating Procedure) chuyen nghiep cho doanh nghiep",
+  "category": "Van ban",
+  "icon": "document",
+  "version": "1.0.0",
+  "status": "active",
+  "provider": "mock",
+  "plan": "free",
+  "fields": [
+    {
+      "id": "process_name",
+      "label": "Ten quy trinh",
+      "type": "text",
+      "required": true,
+      "placeholder": "Vi du: Quy trinh onboard nhan vien moi",
+      "validation": { "maxLength": 150 }
+    },
+    {
+      "id": "department",
+      "label": "Phong ban ap dung",
+      "type": "text",
+      "required": false,
+      "placeholder": "Vi du: Phong Nhan su, Phong Marketing",
+      "validation": { "maxLength": 100 }
+    },
+    {
+      "id": "objective",
+      "label": "Muc tieu quy trinh",
+      "type": "textarea",
+      "required": true,
+      "placeholder": "Mo ta muc tieu va ket qua mong doi cua quy trinh nay",
+      "rows": 3,
+      "validation": { "maxLength": 500 }
+    },
+    {
+      "id": "steps",
+      "label": "Cac buoc chinh",
+      "type": "textarea",
+      "required": true,
+      "placeholder": "Mo ta cac buoc chinh, moi buoc tren mot dong",
+      "rows": 5,
+      "validation": { "maxLength": 1500 }
+    },
+    {
+      "id": "responsible",
+      "label": "Nguoi chiu trach nhiem",
+      "type": "text",
+      "required": false,
+      "placeholder": "Vi du: Truong phong Nhan su",
+      "validation": { "maxLength": 100 }
+    },
+    {
+      "id": "frequency",
+      "label": "Tan suat thuc hien",
+      "type": "select",
+      "required": true,
+      "options": ["Hang ngay", "Hang tuan", "Hang thang", "Hang quy", "Khi can thiet", "Mot lan"]
+    }
+  ],
+  "prompt_template": "Hay tao mot tai lieu SOP (Standard Operating Procedure) chuyen nghiep bang tieng Viet.\n\nTHONG TIN QUY TRINH:\nTen: {{process_name}}\nPhong ban: {{department}}\nNguoi chiu trach nhiem: {{responsible}}\nTan suat: {{frequency}}\n\nMUC TIEU:\n{{objective}}\n\nCAC BUOC CHINH:\n{{steps}}\n\nWorkspace: {{workspace_name}} | Nguoi tao: {{user_name}}\n\nYEU CAU FORMAT:\n- Viet theo cau truc SOP chuan: Muc dich, Pham vi, Dinh nghia, Quy trinh chi tiet (co danh so)\n- Moi buoc phai co mo ta ro rang va cu the\n- Them bang checklist kiem tra cuoi tai lieu\n\nTao tai lieu SOP day du, chuyen nghiep:",
+  "output_type": "document"
+}

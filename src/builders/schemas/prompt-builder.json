@@ -1,0 +1,56 @@
+{
+  "id": "prompt-builder",
+  "name": "Prompt Builder",
+  "description": "Tao prompt AI chuyen nghiep de dung voi Claude, GPT va Gemini",
+  "category": "Nang suat",
+  "icon": "sparkle",
+  "version": "1.0.0",
+  "status": "active",
+  "provider": "mock",
+  "plan": "free",
+  "fields": [
+    {
+      "id": "role",
+      "label": "Vai tro",
+      "type": "text",
+      "required": true,
+      "placeholder": "Vi du: Chuyen gia marketing B2B voi 10 nam kinh nghiem",
+      "validation": { "maxLength": 200 }
+    },
+    {
+      "id": "goal",
+      "label": "Muc tieu can dat",
+      "type": "text",
+      "required": true,
+      "placeholder": "Vi du: Viet email cold outreach cho khach hang doanh nghiep SME",
+      "validation": { "maxLength": 300 }
+    },
+    {
+      "id": "context",
+      "label": "Ngu canh",
+      "type": "textarea",
+      "required": false,
+      "placeholder": "Them thong tin ngu canh giup AI hieu ro hon...",
+      "rows": 4,
+      "validation": { "maxLength": 1000 }
+    },
+    {
+      "id": "constraints",
+      "label": "Rang buoc",
+      "type": "textarea",
+      "required": false,
+      "placeholder": "Vi du: Khong qua 200 tu, giong van than thien, tranh thuat ngu ky thuat",
+      "rows": 3,
+      "validation": { "maxLength": 500 }
+    },
+    {
+      "id": "output_format",
+      "label": "Dinh dang output",
+      "type": "select",
+      "required": true,
+      "options": ["Doan van", "Bullet points", "Co danh so", "Bang", "Markdown"]
+    }
+  ],
+  "prompt_template": "Ban la {{role}}.\n\n## Nhiem vu\n{{goal}}\n\n## Ngu canh\n{{context}}\n\n## Rang buoc\n{{constraints}}\n\n## Yeu cau Output\nTra loi theo dinh dang: {{output_format}}\n\nWorkspace: {{workspace_name}} | Builder: {{builder_name}}\nBat dau thuc hien ngay. Suy nghi co he thong va tra loi bang tieng Viet chuyen nghiep.",
+  "output_type": "text"
+}
