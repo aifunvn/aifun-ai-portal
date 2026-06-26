@@ -1,6 +1,8 @@
 import { getBuilders, getBuilder }                 from '../services/builder-registry-service.js';
 import { render as launcherRender, initLauncher, getIcon } from '../components/builder-launcher.js';
 import { can, isBuilderAccessible, canRunBuilder } from '../services/permission-service.js';
+import { listInstalls }                            from '../services/install-service.js';
+import { workspaceStore }                          from '../stores/workspace-store.js';
 
 const ICON_ARR  = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 11 9 7 5 3"/></svg>`;
 const ICON_LOCK = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="8" height="6" rx="1"/><path d="M5 6V4a2 2 0 014 0v2"/></svg>`;
@@ -40,7 +42,27 @@ async function showGrid() {
 
   let schemas;
   try {
-    schemas = await getBuilders();
+    const wsId    = workspaceStore.getWorkspace()?.id ?? 'default';
+    const [all, installs] = await Promise.all([getBuilders(), listInstalls(wsId)]);
+    const installed = new Set(installs);
+    schemas = all.filter((s) => installed.has(s.id));
+    if (schemas.length === 0) {
+      root.innerHTML = `
+        <div class="bld-page-header">
+          <h2 class="bld-page-title">AI Builders</h2>
+          <p class="bld-page-subtitle">Chọn một Builder để tạo tài liệu bằng AI</p>
+        </div>
+        <div class="doc-empty" style="margin-top:24px">
+          <p class="doc-empty-title">Chưa có Builder nào được cài đặt</p>
+          <p class="doc-empty-desc">Vào <a href="#" data-nav="marketplace">Marketplace</a> để cài đặt Builder phù hợp.</p>
+        </div>
+      `;
+      root.querySelector('[data-nav="marketplace"]')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.dispatchEvent(new CustomEvent('aifun:navigate', { detail: 'marketplace' }));
+      });
+      return;
+    }
   } catch {
     root.querySelector('.bld-loading').innerHTML =
       `<p class="bld-load-error">Không thể tải danh sách Builders. Vui lòng thử lại.</p>`;

@@ -1,0 +1,54 @@
+{
+  "id": "sales-builder",
+  "name": "Sales Script Builder",
+  "description": "Tao kich ban ban hang thuyet phuc cho tung doi tuong va kenh ban hang",
+  "category": "Kinh doanh",
+  "icon": "sparkle",
+  "version": "1.0.0",
+  "status": "active",
+  "provider": "mock",
+  "plan": "starter",
+  "fields": [
+    {
+      "id": "product",
+      "label": "San pham / Dich vu",
+      "type": "text",
+      "required": true,
+      "placeholder": "Vi du: AIFUN OS — Phan mem quan ly AI cho doanh nghiep",
+      "validation": { "maxLength": 200 }
+    },
+    {
+      "id": "customer",
+      "label": "Loai khach hang",
+      "type": "select",
+      "required": true,
+      "options": ["Chu doanh nghiep SME", "Giam doc kinh doanh", "Truong phong Marketing", "Ca nhan kinh doanh online", "Khach hang moi"]
+    },
+    {
+      "id": "channel",
+      "label": "Kenh ban hang",
+      "type": "select",
+      "required": true,
+      "options": ["Goi dien thoai", "Gap mat truc tiep", "Zalo / Chat", "Email", "Webinar / Online"]
+    },
+    {
+      "id": "pain_point",
+      "label": "Van de khach hang dang gap",
+      "type": "textarea",
+      "required": true,
+      "placeholder": "Vi du: Mat nhieu thoi gian viet tai lieu, khong co quy trinh chuan, nhan vien moi khong biet lam...",
+      "rows": 3,
+      "validation": { "maxLength": 500 }
+    },
+    {
+      "id": "objection",
+      "label": "Phan bac pho bien can xu ly",
+      "type": "text",
+      "required": false,
+      "placeholder": "Vi du: Gia cao qua, De nay tinh sau, Chua can thiet...",
+      "validation": { "maxLength": 200 }
+    }
+  ],
+  "prompt_template": "Ban la chuyen gia ban hang B2B hang dau Viet Nam voi 10 nam kinh nghiem.\n\nTao kich ban ban hang hoan chinh bang tieng Viet:\n- San pham: {{product}}\n- Khach hang: {{customer}}\n- Kenh ban hang: {{channel}}\n- Van de khach hang: {{pain_point}}\n- Phan bac can xu ly: {{objection}}\n\nKich ban phai co day du:\n1. Mo dau gay an tuong (10 giay dau tien)\n2. Dat cau hoi khai thac nhu cau\n3. Gioi thieu giai phap phu hop\n4. Xu ly phan bac hieu qua\n5. Chot deal bang cau hoi thay the\n6. Buoc tiep theo ro rang\n\nWorkspace: {{workspace_name}} | Builder: {{builder_name}}\nViet bang tieng Viet tu nhien, thuyet phuc.",
+  "output_type": "text"
+}

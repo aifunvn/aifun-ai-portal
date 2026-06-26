@@ -5,6 +5,8 @@ const SCHEMA_URLS = [
   '/src/builders/schemas/prompt-builder.json',
   '/src/builders/schemas/sop-builder.json',
   '/src/builders/schemas/youtube-builder.json',
+  '/src/builders/schemas/email-builder.json',
+  '/src/builders/schemas/sales-builder.json',
 ];
 
 let _cache = null;
