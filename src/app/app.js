@@ -7,7 +7,7 @@ import { render as renderRegister, init as initRegister } from '../auth/register
 import { render as renderForgot,   init as initForgot   } from '../auth/forgot-password.js';
 import { render as renderReset,    init as initReset    } from '../auth/reset-password.js';
 import { render as renderVerify,   init as initVerify   } from '../auth/verify-email.js';
-import { render as renderDashboard   } from '../pages/dashboard.js';
+import { render as renderDashboard, init as initDashboard } from '../pages/dashboard.js';
 import { render as renderBuilders    } from '../pages/builders.js';
 import { render as renderDocuments   } from '../pages/documents.js';
 import { render as renderMarketplace } from '../pages/marketplace.js';
@@ -53,7 +53,7 @@ async function init() {
   router.register('/auth/verify-email',    () => mountAuth(renderVerify(),   initVerify));
 
   // App routes (stores already hydrated — shell subscribers receive data immediately)
-  router.register('/dashboard',   async () => { if (!(await requireAuth())) return; mountPage('/dashboard',   'Dashboard',   renderDashboard()); });
+  router.register('/dashboard',   async () => { if (!(await requireAuth())) return; mountPage('/dashboard',   'Dashboard',   renderDashboard(), initDashboard); });
   router.register('/builders',    async () => { if (!(await requireAuth())) return; mountPage('/builders',    'AI Builders', renderBuilders()); });
   router.register('/documents',   async () => { if (!(await requireAuth())) return; mountPage('/documents',   'Tài liệu',    renderDocuments()); });
   router.register('/marketplace', async () => { if (!(await requireAuth())) return; mountPage('/marketplace', 'Marketplace', renderMarketplace()); });

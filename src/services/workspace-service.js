@@ -36,6 +36,14 @@ function _buildMockWorkspaces(userId) {
       initial: 'A',
       ownerId: userId,
     },
+    {
+      id:      'ws_aifun_002',
+      name:    'Vet AI Workspace',
+      slug:    'vetai',
+      plan:    'starter',
+      initial: 'V',
+      ownerId: null,
+    },
   ];
 }
 

@@ -18,7 +18,7 @@ export async function initShell() {
   await Promise.all([initSidebar(), initTopbar()]);
 }
 
-export function mountPage(path, title, html) {
+export function mountPage(path, title, html, initFn) {
   const root = document.getElementById('v4-root');
   if (!root) return;
 
@@ -31,5 +31,8 @@ export function mountPage(path, title, html) {
   updatePageTitle(title);
 
   const content = document.getElementById('page-content');
-  if (content) content.innerHTML = html;
+  if (content) {
+    content.innerHTML = html;
+    if (initFn) initFn();
+  }
 }
