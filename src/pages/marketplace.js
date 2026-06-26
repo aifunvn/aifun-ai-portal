@@ -143,7 +143,7 @@ function _wireSearch() {
 // ── Init ──────────────────────────────────────────────────────────────────────
 
 export async function initMarketplace() {
-  const page = document.getElementById('page-marketplace');
+  const page = document.getElementById('page-content');
   if (!page) return;
 
   page.innerHTML = `

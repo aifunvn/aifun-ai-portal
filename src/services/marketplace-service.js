@@ -42,7 +42,9 @@ export async function listItems({ query = '', plan = null } = {}) {
     const { data, error } = await q;
     if (error) throw error;
 
-    let items = data ?? [];
+    // RLS can silently return [] for unauthenticated/unauthorized callers — use static fallback
+    let items = (data && data.length > 0) ? data : STATIC_ITEMS;
+    if (plan) items = items.filter((i) => i.plan === plan);
     if (query) {
       const lq = query.toLowerCase();
       items = items.filter(
