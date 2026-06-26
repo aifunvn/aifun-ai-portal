@@ -7,7 +7,7 @@ function formatDate(iso) {
   });
 }
 
-export function render(doc) {
+export function render(doc, { canDelete = true } = {}) {
   const tokenBadge = doc.tokens?.total
     ? `<span class="doc-meta-badge">${doc.tokens.total.toLocaleString('vi-VN')} tokens</span>`
     : '';
@@ -20,7 +20,7 @@ export function render(doc) {
 
   return `
     <div class="doc-view">
-      ${renderToolbar()}
+      ${renderToolbar({ canDelete })}
       <div class="doc-view-header">
         <h2 class="doc-view-title">${doc.title}</h2>
         <div class="doc-view-meta">
@@ -39,7 +39,7 @@ export function render(doc) {
   `;
 }
 
-export function initView(doc, { onBack, onDelete }) {
+export function initView(doc, { onBack, onDelete, canDelete = true }) {
   document.getElementById('doc-toolbar-back')?.addEventListener('click', onBack);
 
   document.getElementById('doc-toolbar-copy')?.addEventListener('click', async () => {

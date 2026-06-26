@@ -19,6 +19,7 @@ export function render() {
       </button>
 
       <div class="sb-user-menu" id="sb-user-menu" role="menu">
+        <div class="sb-user-menu-header" id="um-role-header" aria-hidden="true"></div>
         <button class="sb-user-menu-item" id="um-profile" role="menuitem">
           ${ICON_PROFILE} Hồ sơ cá nhân
         </button>
@@ -62,11 +63,23 @@ export function init() {
   });
 
   userStore.subscribe(({ profile, role }) => {
-    const avatar = document.getElementById('sb-avatar');
-    const name   = document.getElementById('sb-user-name');
-    const email  = document.getElementById('sb-user-email');
+    const avatar  = document.getElementById('sb-avatar');
+    const name    = document.getElementById('sb-user-name');
+    const email   = document.getElementById('sb-user-email');
+    const roleHdr = document.getElementById('um-role-header');
+
     if (avatar) avatar.textContent = profile?.initials ?? '?';
     if (name)   name.textContent   = profile?.fullName ?? 'Người dùng';
     if (email)  email.textContent  = profile?.email    ?? '';
+
+    if (roleHdr) {
+      if (role?.label) {
+        roleHdr.innerHTML = `<span class="um-role-badge">${role.label}</span>`;
+        roleHdr.removeAttribute('aria-hidden');
+      } else {
+        roleHdr.innerHTML = '';
+        roleHdr.setAttribute('aria-hidden', 'true');
+      }
+    }
   });
 }

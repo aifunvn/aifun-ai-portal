@@ -2,6 +2,7 @@ import { workspaceStore }  from '../stores/workspace-store.js';
 import { listDocuments, getDocument, deleteDocument } from '../services/document-service.js';
 import { render as renderList, renderEmpty } from '../components/document-list.js';
 import { render as renderDoc, initView }    from '../components/document-view.js';
+import { can }                              from '../services/permission-service.js';
 
 let _unsub       = null;
 let _searchQuery = '';
@@ -16,6 +17,19 @@ async function showList(workspaceId, query = '') {
   const root = document.getElementById('docs-content');
   if (!root) return;
   _searchQuery = query;
+
+  if (!can('documents:read')) {
+    root.innerHTML = `
+      <div class="doc-page-header">
+        <h2 class="doc-page-title">Tài liệu</h2>
+      </div>
+      <div class="doc-empty" style="margin-top:24px">
+        <p class="doc-empty-title">Bạn không có quyền xem tài liệu</p>
+        <p class="doc-empty-desc">Liên hệ quản trị viên để được cấp quyền.</p>
+      </div>
+    `;
+    return;
+  }
 
   // Show header + search + spinner immediately
   root.innerHTML = `
@@ -74,13 +88,13 @@ async function openDoc(workspaceId, docId) {
   if (!root) return;
 
   const doc = await getDocument(workspaceId, docId);
-  if (!doc) {
-    await showList(workspaceId, _searchQuery);
-    return;
-  }
+  if (!doc) { await showList(workspaceId, _searchQuery); return; }
 
-  root.innerHTML = renderDoc(doc);
+  const canDelete = can('documents:delete');
+
+  root.innerHTML = renderDoc(doc, { canDelete });
   initView(doc, {
+    canDelete,
     onBack:   () => showList(workspaceId, _searchQuery),
     onDelete: async (id) => {
       await deleteDocument(id, workspaceId);

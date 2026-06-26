@@ -340,6 +340,24 @@
   margin: 4px 0;
 }
 
+/* ── Role badge in user menu ──────────────────────────── */
+.sb-user-menu-header {
+  padding: 8px 12px 0;
+}
+
+.um-role-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  background: var(--c-primary-l);
+  color: var(--c-primary);
+  margin-bottom: 4px;
+}
+
 /* ── Mobile ───────────────────────────────────────────── */
 
 @media (max-width: 767px) {
