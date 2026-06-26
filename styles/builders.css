@@ -289,6 +289,17 @@
   color: var(--c-primary);
 }
 
+.btn-danger {
+  background: var(--surface);
+  border-color: var(--c-danger);
+  color: var(--c-danger);
+}
+
+.btn-danger:not(:disabled):hover {
+  background: var(--c-danger);
+  color: #fff;
+}
+
 /* ─── Provider selector ─── */
 .bld-provider-row {
   display: flex;

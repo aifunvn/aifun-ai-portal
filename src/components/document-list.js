@@ -1,5 +1,3 @@
-import { listDocuments } from '../services/document-service.js';
-
 const ICON_DOC = `<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2H4a1 1 0 00-1 1v12a1 1 0 001 1h10a1 1 0 001-1V7l-5-5z"/><polyline points="10 2 10 7 15 7"/></svg>`;
 const ICON_ARR = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 11 9 7 5 3"/></svg>`;
 
@@ -28,20 +26,25 @@ function docRow(doc) {
   `;
 }
 
-export function render(workspaceId, query = '') {
-  const docs = listDocuments(workspaceId, { query });
-
+// docs: Document[] — caller is responsible for fetching and filtering
+export function render(docs = []) {
   if (!docs.length) {
-    const msg = query ? 'Khong tim thay tai lieu phu hop' : 'Chua co tai lieu nao';
-    const sub = query ? '' : '<p class="doc-empty-desc">Tao tai lieu dau tien bang AI Builders</p>';
     return `
       <div class="doc-empty">
         <svg width="42" height="42" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 2H4a1 1 0 00-1 1v12a1 1 0 001 1h10a1 1 0 001-1V7l-5-5z"/><polyline points="10 2 10 7 15 7"/></svg>
-        <p class="doc-empty-title">${msg}</p>
-        ${sub}
+        <p class="doc-empty-title">Chua co tai lieu nao</p>
+        <p class="doc-empty-desc">Tao tai lieu dau tien bang AI Builders</p>
       </div>
     `;
   }
-
   return `<div class="doc-items">${docs.map(docRow).join('')}</div>`;
+}
+
+export function renderEmpty(message = 'Khong tim thay tai lieu phu hop') {
+  return `
+    <div class="doc-empty">
+      <svg width="42" height="42" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 2H4a1 1 0 00-1 1v12a1 1 0 001 1h10a1 1 0 001-1V7l-5-5z"/><polyline points="10 2 10 7 15 7"/></svg>
+      <p class="doc-empty-title">${message}</p>
+    </div>
+  `;
 }

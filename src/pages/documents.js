@@ -1,7 +1,7 @@
-import { workspaceStore } from '../stores/workspace-store.js';
-import { getDocument } from '../services/document-service.js';
-import { render as renderList } from '../components/document-list.js';
-import { render as renderDoc, initView } from '../components/document-view.js';
+import { workspaceStore }  from '../stores/workspace-store.js';
+import { listDocuments, getDocument, deleteDocument } from '../services/document-service.js';
+import { render as renderList, renderEmpty } from '../components/document-list.js';
+import { render as renderDoc, initView }    from '../components/document-view.js';
 
 let _unsub       = null;
 let _searchQuery = '';
@@ -12,11 +12,12 @@ export function render() {
 
 // ─── List view ────────────────────────────────────────────────────────────────
 
-function showList(workspaceId, query = '') {
+async function showList(workspaceId, query = '') {
   const root = document.getElementById('docs-content');
   if (!root) return;
   _searchQuery = query;
 
+  // Show header + search + spinner immediately
   root.innerHTML = `
     <div class="doc-page-header">
       <h2 class="doc-page-title">Tai lieu</h2>
@@ -24,36 +25,67 @@ function showList(workspaceId, query = '') {
     </div>
     <div class="doc-search-wrap">
       <input class="doc-search" id="doc-search" type="search"
-        placeholder="Tim kiem tai lieu..." value="${query}" autocomplete="off">
+        placeholder="Tim kiem tai lieu..." value="${_esc(query)}" autocomplete="off">
     </div>
-    ${renderList(workspaceId, query)}
+    <div class="doc-list-area">
+      <div class="doc-loading"><div class="spinner"></div></div>
+    </div>
   `;
 
-  const searchEl = document.getElementById('doc-search');
-  let _debounce  = null;
-  searchEl?.addEventListener('input', () => {
-    clearTimeout(_debounce);
-    _debounce = setTimeout(() => showList(workspaceId, searchEl.value.trim()), 300);
-  });
+  _wireSearch(workspaceId);
 
-  root.querySelectorAll('.doc-row[data-doc-id]').forEach((row) => {
-    row.addEventListener('click',   () => openDoc(workspaceId, row.dataset.docId));
-    row.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openDoc(workspaceId, row.dataset.docId); }
+  let docs;
+  try {
+    docs = await listDocuments(workspaceId, { query });
+  } catch {
+    docs = [];
+  }
+
+  const listArea = root.querySelector('.doc-list-area');
+  if (!listArea) return; // navigated away
+
+  if (docs.length === 0 && query) {
+    listArea.innerHTML = renderEmpty('Khong tim thay tai lieu phu hop');
+  } else {
+    listArea.innerHTML = renderList(docs);
+    listArea.querySelectorAll('.doc-row[data-doc-id]').forEach((row) => {
+      row.addEventListener('click',   () => openDoc(workspaceId, row.dataset.docId));
+      row.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openDoc(workspaceId, row.dataset.docId); }
+      });
     });
+  }
+}
+
+function _wireSearch(workspaceId) {
+  const searchEl = document.getElementById('doc-search');
+  if (!searchEl) return;
+  let _debounce = null;
+  searchEl.addEventListener('input', () => {
+    clearTimeout(_debounce);
+    _debounce = setTimeout(() => showList(workspaceId, searchEl.value.trim()), 320);
   });
 }
 
 // ─── Document view ────────────────────────────────────────────────────────────
 
-function openDoc(workspaceId, docId) {
-  const doc  = getDocument(workspaceId, docId);
+async function openDoc(workspaceId, docId) {
   const root = document.getElementById('docs-content');
-  if (!doc || !root) return;
+  if (!root) return;
+
+  const doc = await getDocument(workspaceId, docId);
+  if (!doc) {
+    await showList(workspaceId, _searchQuery);
+    return;
+  }
 
   root.innerHTML = renderDoc(doc);
   initView(doc, {
-    onBack: () => showList(workspaceId, _searchQuery),
+    onBack:   () => showList(workspaceId, _searchQuery),
+    onDelete: async (id) => {
+      await deleteDocument(id, workspaceId);
+      await showList(workspaceId, _searchQuery);
+    },
   });
 }
 
@@ -65,4 +97,8 @@ export function init() {
     if (!document.getElementById('docs-content')) return;
     showList(workspace?.id ?? '_default', '');
   });
+}
+
+function _esc(str) {
+  return (str ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 }

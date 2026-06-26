@@ -8,11 +8,14 @@ function formatDate(iso) {
 }
 
 export function render(doc) {
-  const tokenBadge = doc.tokens
+  const tokenBadge = doc.tokens?.total
     ? `<span class="doc-meta-badge">${doc.tokens.total.toLocaleString('vi-VN')} tokens</span>`
     : '';
   const providerBadge = doc.provider
     ? `<span class="doc-meta-badge">${doc.provider}</span>`
+    : '';
+  const docUrlLink = doc.docUrl
+    ? `<a class="doc-meta-badge doc-gdocs-link" href="${doc.docUrl}" target="_blank" rel="noopener">Google Docs ↗</a>`
     : '';
 
   return `
@@ -26,6 +29,7 @@ export function render(doc) {
           <span>${formatDate(doc.createdAt)}</span>
           ${tokenBadge}
           ${providerBadge}
+          ${docUrlLink}
         </div>
       </div>
       <div class="doc-view-body">
@@ -35,7 +39,7 @@ export function render(doc) {
   `;
 }
 
-export function initView(doc, { onBack }) {
+export function initView(doc, { onBack, onDelete }) {
   document.getElementById('doc-toolbar-back')?.addEventListener('click', onBack);
 
   document.getElementById('doc-toolbar-copy')?.addEventListener('click', async () => {
@@ -50,6 +54,13 @@ export function initView(doc, { onBack }) {
 
   document.getElementById('doc-toolbar-export')?.addEventListener('click', () => {
     exportTxt(doc.title, doc.content);
+  });
+
+  document.getElementById('doc-toolbar-delete')?.addEventListener('click', async () => {
+    if (!confirm(`Xoa tai lieu "${doc.title}"?\nHanh dong nay khong the hoan tac.`)) return;
+    const btn = document.getElementById('doc-toolbar-delete');
+    if (btn) { btn.textContent = 'Dang xoa...'; btn.disabled = true; }
+    await onDelete(doc.id);
   });
 }
 

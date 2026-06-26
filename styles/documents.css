@@ -217,6 +217,21 @@
 
 .doc-meta-sep { color: var(--text-3); }
 
+.doc-gdocs-link {
+  color: var(--c-primary);
+  text-decoration: none;
+  border-color: rgba(99, 102, 241, .3);
+}
+
+.doc-gdocs-link:hover { text-decoration: underline; }
+
+/* ─── Loading state ─── */
+.doc-loading {
+  display: flex;
+  justify-content: center;
+  padding: 48px 24px;
+}
+
 .doc-view-body {
   max-height: 65vh;
   overflow-y: auto;
