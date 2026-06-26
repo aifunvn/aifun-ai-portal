@@ -289,6 +289,38 @@
   color: var(--c-primary);
 }
 
+/* ─── Provider selector ─── */
+.bld-provider-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 0 4px;
+}
+
+.bld-provider-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-1);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.bld-provider-sel {
+  flex: 1;
+  padding: 7px 10px;
+  font-size: 13px;
+}
+
+.output-fallback-note {
+  font-size: 12px;
+  color: var(--c-warning);
+  margin: 6px 0 0;
+  padding: 4px 8px;
+  background: rgba(245, 158, 11, .08);
+  border-radius: var(--r-sm);
+  border: 1px solid rgba(245, 158, 11, .2);
+}
+
 .bld-form-actions { margin-top: 4px; }
 
 .bld-form-actions .btn { width: 100%; justify-content: center; padding: 12px 18px; }

@@ -4,7 +4,8 @@ import { workspaceStore } from '../stores/workspace-store.js';
 
 export async function runBuilder(builder, formData, options = {}) {
   const workspace = workspaceStore.getWorkspace();
-  const { content, tokens, provider } = await executePipeline(builder, formData, options);
+  const { content, tokens, provider, model, docUrl, fallback, fallbackReason } =
+    await executePipeline(builder, formData, options);
 
   const doc = saveDocument({
     id:          `doc_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
@@ -16,8 +17,10 @@ export async function runBuilder(builder, formData, options = {}) {
     formData,
     tokens,
     provider,
+    model,
+    docUrl,
     createdAt:   new Date().toISOString(),
   });
 
-  return { content, tokens, doc };
+  return { content, tokens, doc, provider, model, docUrl, fallback, fallbackReason };
 }
