@@ -237,12 +237,8 @@ function _mountPage() {
   _loadWorkspace();
 }
 
-// ── Public exports ────────────────────────────────────────────
-export function render() {
-  return `<div id="stt-root" class="stt-page"></div>`;
-}
-
-export async function init() {
+// ── Init logic (shared by render auto-init and external callers) ──
+function _startSubscription() {
   if (_unsub) { _unsub(); _unsub = null; }
 
   _unsub = workspaceStore.subscribe(({ workspace }) => {
@@ -252,4 +248,17 @@ export async function init() {
     _settings = null;
     _mountPage();
   });
+}
+
+// ── Public exports ────────────────────────────────────────────
+// app.js only imports render() for /settings and does not call init().
+// queueMicrotask ensures _startSubscription runs AFTER mountPage sets innerHTML,
+// so #stt-root exists in the DOM when _mountPage() looks for it.
+export function render() {
+  queueMicrotask(_startSubscription);
+  return `<div id="stt-root"></div>`;
+}
+
+export function init() {
+  _startSubscription();
 }
