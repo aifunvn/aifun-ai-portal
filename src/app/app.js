@@ -49,13 +49,34 @@ async function onAuthStateChange(event) {
   }
 }
 
+async function _safeGetSession() {
+  try {
+    const { data } = await supabase.auth.getSession();
+    return data?.session ?? null;
+  } catch (err) {
+    console.warn('[AIFUN] getSession failed — clearing auth storage:', err.message);
+    try {
+      Object.keys(localStorage)
+        .filter((k) => k.indexOf('sb-') === 0 || k.indexOf('-auth-token') !== -1)
+        .forEach((k) => { try { localStorage.removeItem(k); } catch (_) {} });
+    } catch (_) {}
+    return null;
+  }
+}
+
 async function init() {
   supabase.auth.onAuthStateChange(onAuthStateChange);
 
-  const { data: { session } } = await supabase.auth.getSession();
+  const session = await _safeGetSession();
 
   // Hydrate stores before first route resolves
-  if (session) await _ensureEngine();
+  if (session) {
+    try { await _ensureEngine(); }
+    catch (err) {
+      console.warn('[AIFUN] Engine init failed — continuing without workspace:', err.message);
+      _engineReady = false;
+    }
+  }
 
   // Auth routes
   router.register('/auth/login',           () => mountAuth(renderLogin(),    initLogin));
@@ -80,12 +101,14 @@ async function init() {
   window.addEventListener('aifun:navigate', (e) => { router.navigate(`/${e.detail}`); });
 
   router.init();
+
+  // Signal to v4.html that boot succeeded — cancels the 2-second timeout
+  if (typeof window.__aifunBootReady === 'function') window.__aifunBootReady();
 }
 
-init().catch(() => {
+init().catch((err) => {
+  console.warn('[AIFUN] init() failed — falling back to login:', err.message);
+  if (typeof window.__aifunBootReady === 'function') window.__aifunBootReady();
   const root = document.getElementById('v4-root');
-  if (root && !root.innerHTML.trim()) {
-    root.innerHTML = renderLogin();
-    initLogin();
-  }
+  if (root) { root.innerHTML = renderLogin(); initLogin(); }
 });

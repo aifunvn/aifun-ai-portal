@@ -29,26 +29,77 @@
   </div>
   <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
   <script>
-    // Catch module-level errors (CDN failure, import errors) that bypass init().catch()
+    // ── Pre-bootstrap storage sanity check ────────────────────────
+    // Clears corrupt Supabase auth entries before the module loads.
+    // A malformed JSON token causes getSession() to hang, freezing boot.
+    (function _sanitizeStorage() {
+      try {
+        var keys = Object.keys(localStorage);
+        for (var i = 0; i < keys.length; i++) {
+          var k = keys[i];
+          if (k.indexOf('-auth-token') !== -1 || k.indexOf('sb-') === 0) {
+            try { JSON.parse(localStorage.getItem(k)); }
+            catch (parseErr) {
+              console.warn('[AIFUN] Corrupt storage entry cleared:', k);
+              try { localStorage.removeItem(k); } catch (_) {}
+            }
+          }
+        }
+      } catch (storageErr) {
+        // localStorage blocked (incognito strict mode) — proceed without session
+        console.warn('[AIFUN] localStorage unavailable:', storageErr.message);
+      }
+    })();
+
+    // ── Boot timeout: max 2 s — never leave user with infinite spinner ──
+    var _bootTimer = setTimeout(function() {
+      var boot = document.getElementById('v4-boot');
+      var root = document.getElementById('v4-root');
+      if (boot && root && root.childElementCount <= 1 && root.contains(boot)) {
+        console.warn('[AIFUN] Boot timeout — rendering recovery UI');
+        boot.innerHTML =
+          '<div style="text-align:center;padding:24px;max-width:480px">' +
+          '<div style="font-size:2rem;margin-bottom:12px">&#9200;</div>' +
+          '<p style="font-weight:700;color:#0f172a;margin:0 0 8px">Khoi dong mat qua lau</p>' +
+          '<p style="color:#64748b;font-size:.85rem;margin:0 0 16px">Co the do cache cu hoac ket noi mang cham.</p>' +
+          '<button onclick="localStorage.clear();location.reload()" style="margin-right:8px;padding:8px 16px;background:#ef4444;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.85rem">Xoa cache &amp; tai lai</button>' +
+          '<button onclick="location.reload()" style="padding:8px 16px;background:#6366f1;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.85rem">Thu lai</button>' +
+          '</div>';
+      }
+    }, 2000);
+
+    // Called by app.js when boot succeeds — cancels the timeout
+    window.__aifunBootReady = function() { clearTimeout(_bootTimer); };
+
+    // ── Module-level error handler (parse errors, CDN failures) ──
     window.addEventListener('error', function(e) {
+      clearTimeout(_bootTimer);
+      console.warn('[AIFUN] Module error:', e.message);
       var boot = document.getElementById('v4-boot');
       if (boot) boot.innerHTML =
         '<div style="text-align:center;padding:24px;max-width:480px">' +
-        '<div style="font-size:2rem;margin-bottom:12px;">⚠️</div>' +
-        '<p style="font-weight:700;color:#0f172a;margin:0 0 8px">Không thể tải AIFUN OS V4</p>' +
-        '<p style="color:#64748b;font-size:.85rem;margin:0 0 16px">Lỗi: ' + (e.message || e.filename || 'Module load failed') + '</p>' +
-        '<button onclick="location.reload()" style="padding:8px 20px;background:#6366f1;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.9rem">Thử lại</button>' +
+        '<div style="font-size:2rem;margin-bottom:12px">&#9888;&#65039;</div>' +
+        '<p style="font-weight:700;color:#0f172a;margin:0 0 8px">Khong the tai AIFUN OS V4</p>' +
+        '<p style="color:#64748b;font-size:.85rem;margin:0 0 16px">Loi: ' + (e.message || e.filename || 'Module load failed') + '</p>' +
+        '<button onclick="localStorage.clear();location.reload()" style="margin-right:8px;padding:8px 16px;background:#ef4444;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.85rem">Xoa cache &amp; tai lai</button>' +
+        '<button onclick="location.reload()" style="padding:8px 16px;background:#6366f1;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.9rem">Thu lai</button>' +
         '</div>';
     });
+
+    // ── Unhandled promise rejection ───────────────────────────────
     window.addEventListener('unhandledrejection', function(e) {
+      clearTimeout(_bootTimer);
       var boot = document.getElementById('v4-boot');
-      if (boot && boot.parentNode === document.getElementById('v4-root')) {
+      var root = document.getElementById('v4-root');
+      if (boot && root && root.contains(boot)) {
+        console.warn('[AIFUN] Unhandled rejection during boot:', e.reason);
         boot.innerHTML =
           '<div style="text-align:center;padding:24px;max-width:480px">' +
-          '<div style="font-size:2rem;margin-bottom:12px;">⚠️</div>' +
-          '<p style="font-weight:700;color:#0f172a;margin:0 0 8px">Lỗi khởi động</p>' +
-          '<p style="color:#64748b;font-size:.85rem;margin:0 0 16px">' + (e.reason?.message || String(e.reason) || 'Unknown error') + '</p>' +
-          '<button onclick="location.reload()" style="padding:8px 20px;background:#6366f1;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.9rem">Thử lại</button>' +
+          '<div style="font-size:2rem;margin-bottom:12px">&#9888;&#65039;</div>' +
+          '<p style="font-weight:700;color:#0f172a;margin:0 0 8px">Loi khoi dong</p>' +
+          '<p style="color:#64748b;font-size:.85rem;margin:0 0 16px">' + ((e.reason && e.reason.message) || String(e.reason) || 'Unknown error') + '</p>' +
+          '<button onclick="localStorage.clear();location.reload()" style="margin-right:8px;padding:8px 16px;background:#ef4444;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.85rem">Xoa cache &amp; tai lai</button>' +
+          '<button onclick="location.reload()" style="padding:8px 16px;background:#6366f1;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.9rem">Thu lai</button>' +
           '</div>';
       }
     });
