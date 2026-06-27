@@ -1,6 +1,7 @@
 import { supabase } from '../lib/supabase.js';
 import { userStore } from '../stores/user-store.js';
 import { workspaceStore } from '../stores/workspace-store.js';
+import { safeStorage } from '../utils/safe-storage.js';
 
 const THEME_KEY = 'aifun_theme';
 
@@ -13,7 +14,7 @@ function applyTheme(dark) {
     ? document.documentElement.setAttribute('data-dark', '')
     : document.documentElement.removeAttribute('data-dark');
   updateThemeIcon(dark);
-  localStorage.setItem(THEME_KEY, dark ? 'dark' : 'light');
+  safeStorage.setItem(THEME_KEY, dark ? 'dark' : 'light');
 }
 
 function updateThemeIcon(dark) {
@@ -93,8 +94,8 @@ function closeAllDropdowns() {
 }
 
 export function initTopbar() {
-  // Theme — restore from localStorage
-  if (localStorage.getItem(THEME_KEY) === 'dark') applyTheme(true);
+  // Theme — restore from safeStorage
+  if (safeStorage.getItem(THEME_KEY) === 'dark') applyTheme(true);
 
   document.getElementById('theme-toggle')?.addEventListener('click', () => applyTheme(!isDark()));
 

@@ -1,3 +1,5 @@
+import { safeStorage } from '../utils/safe-storage.js';
+
 const WS_KEY = 'aifun_workspace_id';
 const _subs = new Set();
 let _state = { workspace: null, workspaces: [] };
@@ -9,11 +11,11 @@ function _notify() {
 export const workspaceStore = {
   getWorkspace:  () => _state.workspace,
   getWorkspaces: () => _state.workspaces,
-  getSavedId:    () => localStorage.getItem(WS_KEY),
+  getSavedId:    () => safeStorage.getItem(WS_KEY),
 
   setWorkspace(ws) {
     _state = { ..._state, workspace: ws };
-    ws ? localStorage.setItem(WS_KEY, ws.id) : localStorage.removeItem(WS_KEY);
+    ws ? safeStorage.setItem(WS_KEY, ws.id) : safeStorage.removeItem(WS_KEY);
     _notify();
   },
 
@@ -26,7 +28,7 @@ export const workspaceStore = {
   setAll(list, active) {
     _state = { workspaces: list, workspace: active ?? list[0] ?? null };
     const ws = _state.workspace;
-    ws ? localStorage.setItem(WS_KEY, ws.id) : localStorage.removeItem(WS_KEY);
+    ws ? safeStorage.setItem(WS_KEY, ws.id) : safeStorage.removeItem(WS_KEY);
     _notify();
   },
 

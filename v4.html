@@ -32,22 +32,22 @@
     // ── Pre-bootstrap storage sanity check ────────────────────────
     // Clears corrupt Supabase auth entries before the module loads.
     // A malformed JSON token causes getSession() to hang, freezing boot.
+    // Fully guarded — safe on data: URLs, incognito strict mode, sandboxed iframes.
     (function _sanitizeStorage() {
-      try {
-        var keys = Object.keys(localStorage);
-        for (var i = 0; i < keys.length; i++) {
-          var k = keys[i];
-          if (k.indexOf('-auth-token') !== -1 || k.indexOf('sb-') === 0) {
-            try { JSON.parse(localStorage.getItem(k)); }
-            catch (parseErr) {
-              console.warn('[AIFUN] Corrupt storage entry cleared:', k);
-              try { localStorage.removeItem(k); } catch (_) {}
-            }
+      var keys;
+      try { keys = Object.keys(localStorage); }
+      catch (e) { console.warn('[AIFUN] localStorage unavailable:', e.message); return; }
+      for (var i = 0; i < keys.length; i++) {
+        var k = keys[i];
+        if (k.indexOf('-auth-token') !== -1 || k.indexOf('sb-') === 0) {
+          try {
+            var raw; try { raw = localStorage.getItem(k); } catch (_) { continue; }
+            JSON.parse(raw);
+          } catch (parseErr) {
+            console.warn('[AIFUN] Corrupt storage entry cleared:', k);
+            try { localStorage.removeItem(k); } catch (_) {}
           }
         }
-      } catch (storageErr) {
-        // localStorage blocked (incognito strict mode) — proceed without session
-        console.warn('[AIFUN] localStorage unavailable:', storageErr.message);
       }
     })();
 
@@ -62,7 +62,7 @@
           '<div style="font-size:2rem;margin-bottom:12px">&#9200;</div>' +
           '<p style="font-weight:700;color:#0f172a;margin:0 0 8px">Khoi dong mat qua lau</p>' +
           '<p style="color:#64748b;font-size:.85rem;margin:0 0 16px">Co the do cache cu hoac ket noi mang cham.</p>' +
-          '<button onclick="localStorage.clear();location.reload()" style="margin-right:8px;padding:8px 16px;background:#ef4444;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.85rem">Xoa cache &amp; tai lai</button>' +
+          '<button onclick="try{localStorage.clear()}catch(_){}location.reload()" style="margin-right:8px;padding:8px 16px;background:#ef4444;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.85rem">Xoa cache &amp; tai lai</button>' +
           '<button onclick="location.reload()" style="padding:8px 16px;background:#6366f1;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.85rem">Thu lai</button>' +
           '</div>';
       }
@@ -81,7 +81,7 @@
         '<div style="font-size:2rem;margin-bottom:12px">&#9888;&#65039;</div>' +
         '<p style="font-weight:700;color:#0f172a;margin:0 0 8px">Khong the tai AIFUN OS V4</p>' +
         '<p style="color:#64748b;font-size:.85rem;margin:0 0 16px">Loi: ' + (e.message || e.filename || 'Module load failed') + '</p>' +
-        '<button onclick="localStorage.clear();location.reload()" style="margin-right:8px;padding:8px 16px;background:#ef4444;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.85rem">Xoa cache &amp; tai lai</button>' +
+        '<button onclick="try{localStorage.clear()}catch(_){}location.reload()" style="margin-right:8px;padding:8px 16px;background:#ef4444;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.85rem">Xoa cache &amp; tai lai</button>' +
         '<button onclick="location.reload()" style="padding:8px 16px;background:#6366f1;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.9rem">Thu lai</button>' +
         '</div>';
     });
@@ -98,7 +98,7 @@
           '<div style="font-size:2rem;margin-bottom:12px">&#9888;&#65039;</div>' +
           '<p style="font-weight:700;color:#0f172a;margin:0 0 8px">Loi khoi dong</p>' +
           '<p style="color:#64748b;font-size:.85rem;margin:0 0 16px">' + ((e.reason && e.reason.message) || String(e.reason) || 'Unknown error') + '</p>' +
-          '<button onclick="localStorage.clear();location.reload()" style="margin-right:8px;padding:8px 16px;background:#ef4444;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.85rem">Xoa cache &amp; tai lai</button>' +
+          '<button onclick="try{localStorage.clear()}catch(_){}location.reload()" style="margin-right:8px;padding:8px 16px;background:#ef4444;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.85rem">Xoa cache &amp; tai lai</button>' +
           '<button onclick="location.reload()" style="padding:8px 16px;background:#6366f1;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.9rem">Thu lai</button>' +
           '</div>';
       }

@@ -1,4 +1,5 @@
-import { supabase } from '../lib/supabase.js';
+import { supabase }     from '../lib/supabase.js';
+import { safeStorage }  from '../utils/safe-storage.js';
 import { router } from '../router/router.js';
 import { mountPage } from '../layouts/main-layout.js';
 import { initWorkspaceEngine } from '../services/workspace-service.js';
@@ -55,11 +56,9 @@ async function _safeGetSession() {
     return data?.session ?? null;
   } catch (err) {
     console.warn('[AIFUN] getSession failed — clearing auth storage:', err.message);
-    try {
-      Object.keys(localStorage)
-        .filter((k) => k.indexOf('sb-') === 0 || k.indexOf('-auth-token') !== -1)
-        .forEach((k) => { try { localStorage.removeItem(k); } catch (_) {} });
-    } catch (_) {}
+    safeStorage.keys()
+      .filter((k) => k.indexOf('sb-') === 0 || k.indexOf('-auth-token') !== -1)
+      .forEach((k) => safeStorage.removeItem(k));
     return null;
   }
 }

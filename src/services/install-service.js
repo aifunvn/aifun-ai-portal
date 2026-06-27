@@ -1,5 +1,6 @@
-import { supabase }  from '../lib/supabase.js';
-import { userStore } from '../stores/user-store.js';
+import { supabase }     from '../lib/supabase.js';
+import { userStore }    from '../stores/user-store.js';
+import { safeStorage }  from '../utils/safe-storage.js';
 
 // ── Local persistence (survives page reload, works without auth) ───────────────
 
@@ -10,13 +11,13 @@ function _notify() { _subs.forEach((fn) => fn()); }
 
 function _loadLocal(workspaceId) {
   try {
-    const raw = localStorage.getItem(_LS_KEY(workspaceId));
+    const raw = safeStorage.getItem(_LS_KEY(workspaceId));
     return raw ? new Set(JSON.parse(raw)) : new Set();
   } catch { return new Set(); }
 }
 
 function _saveLocal(workspaceId, set) {
-  try { localStorage.setItem(_LS_KEY(workspaceId), JSON.stringify([...set])); } catch {}
+  try { safeStorage.setItem(_LS_KEY(workspaceId), JSON.stringify([...set])); } catch {}
 }
 
 // ── Public API ────────────────────────────────────────────────────────────────
