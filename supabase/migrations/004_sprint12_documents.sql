@@ -25,7 +25,7 @@ CREATE INDEX IF NOT EXISTS idx_documents_created_at  ON documents (workspace_id,
 
 CREATE TABLE IF NOT EXISTS document_versions (
   id          UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
-  document_id UUID        NOT NULL REFERENCES documents(id) ON DELETE CASCADE,
+  document_id TEXT        NOT NULL REFERENCES documents(id) ON DELETE CASCADE,
   workspace_id TEXT       NOT NULL,
   version     INT         NOT NULL,
   title       TEXT        NOT NULL,
