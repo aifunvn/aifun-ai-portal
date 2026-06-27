@@ -3,19 +3,14 @@ import { can }                   from '../services/permission-service.js';
 import {
   getWorkspaceSettings,
   updateWorkspaceSettings,
-  getProfile,
-  updateProfile,
-  sendPasswordReset,
 } from '../services/settings-service.js';
 import { showToast }             from '../components/toast.js';
 
 // ── Module state ──────────────────────────────────────────────
-let _wsId      = null;
-let _settings  = null;
-let _saving    = false;
-let _profile   = null;
-let _savingPro = false;
-let _unsub     = null;
+let _wsId     = null;
+let _settings = null;
+let _saving   = false;
+let _unsub    = null;
 
 // ── Utilities ─────────────────────────────────────────────────
 function _esc(s) {
@@ -47,10 +42,6 @@ function _renderSkeleton() {
 // ── Workspace tab: render ─────────────────────────────────────
 function _renderWorkspacePanel(s, readOnly) {
   const ro = readOnly ? 'disabled' : '';
-  const footer = readOnly
-    ? '<p class="stt-field-note" style="margin-top:8px">Chỉ Owner và Admin mới có thể thay đổi cài đặt workspace.</p>'
-    : '<div class="stt-actions"><button class="stt-btn stt-btn--ghost" id="stt-cancel-ws" type="button">Huỷ</button><button class="stt-btn stt-btn--primary" id="stt-save-ws" type="button">Lưu thay đổi</button></div>';
-
   return `
     <div class="stt-section">
       <div class="stt-section-title">Thông tin Workspace</div>
@@ -115,7 +106,13 @@ function _renderWorkspacePanel(s, readOnly) {
         </select>
       </div>
 
-      ${footer}
+      ${readOnly
+        ? `<p class="stt-field-note" style="margin-top:8px">Chỉ Owner và Admin mới có thể thay đổi cài đặt workspace.</p>`
+        : `<div class="stt-actions">
+             <button class="stt-btn stt-btn--ghost"    id="stt-cancel-ws" type="button">Huỷ</button>
+             <button class="stt-btn stt-btn--primary"  id="stt-save-ws"   type="button">Lưu thay đổi</button>
+           </div>`
+      }
     </div>`;
 }
 
@@ -172,7 +169,7 @@ async function _saveWorkspace() {
 
   _saving = true;
   const btn = document.getElementById('stt-save-ws');
-  if (btn) { btn.disabled = true; btn.textContent = 'Đang lưu...'; }
+  if (btn) { btn.disabled = true; btn.textContent = 'Đang lưu…'; }
 
   const ok = await updateWorkspaceSettings(_wsId, values);
 
@@ -203,274 +200,16 @@ async function _loadWorkspace() {
   _wireWorkspace();
 }
 
-// ── Profile tab: render ───────────────────────────────────────
-function _renderProfilePanel(p) {
-  const avatarHtml = p.avatarUrl
-    ? '<img id="stt-avatar-img" class="stt-avatar" alt="Avatar">'
-    : '';
-  const initHtml = '<div id="stt-avatar-init" class="stt-avatar stt-avatar--initials" aria-hidden="true"></div>';
-
-  return `
-    <div class="stt-section">
-      <div class="stt-section-title">Thông tin cá nhân</div>
-      <div class="stt-section-desc">Tên hiển thị và ảnh đại diện của bạn</div>
-
-      <div class="stt-avatar-row">
-        <div class="stt-avatar-wrap" id="stt-avatar-wrap">
-          ${avatarHtml}
-          ${initHtml}
-        </div>
-        <div class="stt-avatar-meta">
-          <div class="stt-field" style="margin-bottom:8px">
-            <label class="stt-label" for="stt-avatar-url">URL ảnh đại diện</label>
-            <input
-              id="stt-avatar-url"
-              class="stt-input"
-              type="url"
-              placeholder="https://example.com/avatar.png"
-              autocomplete="off"
-            >
-          </div>
-          <div class="stt-field-note">Nhập URL ảnh và nhấn Preview để xem trước</div>
-          <button class="stt-btn stt-btn--ghost" id="stt-avatar-preview" type="button" style="margin-top:6px">Preview</button>
-        </div>
-      </div>
-
-      <div class="stt-field">
-        <label class="stt-label" for="stt-full-name">
-          Họ và tên
-          <span class="stt-label-hint">bắt buộc</span>
-        </label>
-        <input
-          id="stt-full-name"
-          class="stt-input"
-          type="text"
-          maxlength="80"
-          placeholder="Nguyễn Văn A"
-          autocomplete="name"
-        >
-        <div class="stt-field-error" id="stt-name-pro-err" role="alert" style="display:none"></div>
-      </div>
-    </div>
-
-    <div class="stt-section">
-      <div class="stt-section-title">Thông tin tài khoản</div>
-      <div class="stt-section-desc">Thông tin xác thực từ Supabase Auth — chỉ đọc</div>
-
-      <div class="stt-readonly-row">
-        <span class="stt-label">Email</span>
-        <span class="stt-readonly-value" id="stt-email-display"></span>
-      </div>
-    </div>
-
-    <div class="stt-section">
-      <div class="stt-section-title">Bảo mật</div>
-      <div class="stt-section-desc">Đặt lại mật khẩu qua email</div>
-
-      <div class="stt-pwd-row">
-        <div>
-          <div class="stt-label">Mật khẩu</div>
-          <div class="stt-field-note">Email đặt lại sẽ được gửi đến địa chỉ đăng ký</div>
-        </div>
-        <button class="stt-btn stt-btn--ghost" id="stt-reset-pwd" type="button">Đặt lại mật khẩu</button>
-      </div>
-    </div>
-
-    <div class="stt-section">
-      <div class="stt-actions">
-        <button class="stt-btn stt-btn--ghost" id="stt-cancel-pro" type="button">Huỷ</button>
-        <button class="stt-btn stt-btn--primary" id="stt-save-pro" type="button">Lưu thay đổi</button>
-      </div>
-    </div>`;
-}
-
-// ── Profile tab: wire + load ──────────────────────────────────
-function _updateAvatarPreview(url) {
-  const img    = document.getElementById('stt-avatar-img');
-  const initEl = document.getElementById('stt-avatar-init');
-  if (!initEl) return;
-
-  if (url) {
-    if (!img) {
-      const newImg = document.createElement('img');
-      newImg.id        = 'stt-avatar-img';
-      newImg.className = 'stt-avatar';
-      newImg.alt       = 'Avatar';
-      newImg.addEventListener('error', () => {
-        newImg.style.display = 'none';
-        initEl.style.display = 'flex';
-      });
-      newImg.src = url;
-      const wrap = document.getElementById('stt-avatar-wrap');
-      if (wrap) wrap.insertBefore(newImg, initEl);
-    } else {
-      img.addEventListener('error', () => {
-        img.style.display = 'none';
-        initEl.style.display = 'flex';
-      });
-      img.src = url;
-      img.style.display = '';
-      initEl.style.display = 'none';
-    }
-  } else {
-    if (img) img.style.display = 'none';
-    initEl.style.display = 'flex';
-  }
-}
-
-function _wireProfile() {
-  // Populate fields from _profile
-  const p = _profile;
-  if (!p) return;
-
-  const nameEl  = document.getElementById('stt-full-name');
-  const urlEl   = document.getElementById('stt-avatar-url');
-  const emailEl = document.getElementById('stt-email-display');
-  const initEl  = document.getElementById('stt-avatar-init');
-  const imgEl   = document.getElementById('stt-avatar-img');
-
-  if (nameEl)  nameEl.value       = p.fullName  ?? '';
-  if (urlEl)   urlEl.value        = p.avatarUrl ?? '';
-  if (emailEl) emailEl.textContent = p.email    ?? '';
-
-  // Avatar initial display
-  if (initEl) initEl.textContent = p.initials ?? '';
-
-  if (p.avatarUrl && imgEl) {
-    imgEl.addEventListener('error', () => {
-      imgEl.style.display = 'none';
-      if (initEl) initEl.style.display = 'flex';
-    });
-    imgEl.src = p.avatarUrl;
-    imgEl.style.display = '';
-    if (initEl) initEl.style.display = 'none';
-  } else {
-    if (imgEl)  imgEl.style.display  = 'none';
-    if (initEl) initEl.style.display = 'flex';
-  }
-
-  // Preview button
-  document.getElementById('stt-avatar-preview')?.addEventListener('click', () => {
-    const url = (urlEl?.value ?? '').trim();
-    _updateAvatarPreview(url);
-  });
-
-  // Reset password button
-  document.getElementById('stt-reset-pwd')?.addEventListener('click', async () => {
-    const btn = document.getElementById('stt-reset-pwd');
-    if (btn) { btn.disabled = true; btn.textContent = 'Đang gửi...'; }
-    const ok = await sendPasswordReset();
-    if (btn) { btn.disabled = false; btn.textContent = 'Đặt lại mật khẩu'; }
-    if (ok) {
-      showToast('Email đặt lại mật khẩu đã được gửi', 'success');
-    } else {
-      showToast('Không thể gửi email. Vui lòng thử lại.', 'error');
-    }
-  });
-
-  // Cancel
-  document.getElementById('stt-cancel-pro')?.addEventListener('click', () => {
-    if (nameEl) nameEl.value = _profile?.fullName  ?? '';
-    if (urlEl)  urlEl.value  = _profile?.avatarUrl ?? '';
-    if (initEl) initEl.textContent = _profile?.initials ?? '';
-    if (_profile?.avatarUrl) {
-      _updateAvatarPreview(_profile.avatarUrl);
-    } else {
-      if (imgEl)  imgEl.style.display  = 'none';
-      if (initEl) initEl.style.display = 'flex';
-    }
-  });
-
-  // Save
-  document.getElementById('stt-save-pro')?.addEventListener('click', _saveProfile);
-}
-
-async function _saveProfile() {
-  if (_savingPro) return;
-
-  const nameEl = document.getElementById('stt-full-name');
-  const urlEl  = document.getElementById('stt-avatar-url');
-  const errEl  = document.getElementById('stt-name-pro-err');
-
-  const fullName  = (nameEl?.value ?? '').trim();
-  const avatarUrl = (urlEl?.value  ?? '').trim();
-
-  if (fullName.length < 2) {
-    if (errEl) { errEl.textContent = 'Tên phải có ít nhất 2 ký tự.'; errEl.style.display = 'block'; }
-    nameEl?.focus();
-    return;
-  }
-  if (errEl) errEl.style.display = 'none';
-
-  _savingPro = true;
-  const btn = document.getElementById('stt-save-pro');
-  if (btn) { btn.disabled = true; btn.textContent = 'Đang lưu...'; }
-
-  const ok = await updateProfile({ fullName, avatarUrl });
-
-  _savingPro = false;
-  if (btn) { btn.disabled = false; btn.textContent = 'Lưu thay đổi'; }
-
-  if (ok) {
-    _profile = { ..._profile, fullName, avatarUrl: avatarUrl || null, initials: _calcInitials(fullName) };
-    showToast('Đã lưu thông tin cá nhân', 'success');
-  } else {
-    showToast('Không thể lưu. Vui lòng thử lại.', 'error');
-  }
-}
-
-function _calcInitials(name) {
-  return (name || '')
-    .split(' ')
-    .filter(Boolean)
-    .map((w) => w[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2);
-}
-
-async function _loadProfile() {
-  const panel = document.getElementById('stt-panel-profile');
-  if (!panel) return;
-
-  panel.innerHTML = _renderSkeleton();
-  _profile = await getProfile();
-  if (!_profile) {
-    panel.innerHTML = '<div class="stt-section"><p class="stt-field-note">Không thể tải thông tin. Vui lòng thử lại.</p></div>';
-    return;
-  }
-  panel.innerHTML = _renderProfilePanel(_profile);
-  _wireProfile();
-}
-
-// ── Tab switching ─────────────────────────────────────────────
-let _profileLoaded = false;
-
-function _switchTab(tabName) {
-  document.querySelectorAll('.stt-tab').forEach((btn) => {
-    const isActive = btn.dataset.tab === tabName;
-    btn.classList.toggle('stt-tab--active', isActive);
-    btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
-  });
-  document.querySelectorAll('.stt-panel').forEach((panel) => {
-    panel.classList.toggle('stt-panel--active', panel.id === 'stt-panel-' + tabName);
-  });
-  if (tabName === 'profile' && !_profileLoaded) {
-    _profileLoaded = true;
-    _loadProfile();
-  }
-}
-
 // ── Page shell ────────────────────────────────────────────────
 function _renderShell() {
   return `
     <div class="stt-page">
       <div class="stt-page-header">
-        <h2 class="stt-page-title">Cai dat</h2>
-        <p class="stt-page-subtitle">Quan ly thong tin va cau hinh workspace cua ban</p>
+        <h2 class="stt-page-title">Cài đặt</h2>
+        <p class="stt-page-subtitle">Quản lý thông tin và cấu hình workspace của bạn</p>
       </div>
 
-      <div class="stt-tabs" role="tablist" aria-label="Cai dat">
+      <div class="stt-tabs" role="tablist" aria-label="Cài đặt">
         <button
           class="stt-tab stt-tab--active"
           role="tab"
@@ -480,15 +219,6 @@ function _renderShell() {
           data-tab="workspace"
           type="button"
         >Workspace</button>
-        <button
-          class="stt-tab"
-          role="tab"
-          aria-selected="false"
-          aria-controls="stt-panel-profile"
-          id="stt-tab-profile"
-          data-tab="profile"
-          type="button"
-        >Ho so ca nhan</button>
       </div>
 
       <div
@@ -497,32 +227,17 @@ function _renderShell() {
         role="tabpanel"
         aria-labelledby="stt-tab-workspace"
       ></div>
-
-      <div
-        id="stt-panel-profile"
-        class="stt-panel"
-        role="tabpanel"
-        aria-labelledby="stt-tab-profile"
-      ></div>
     </div>`;
-}
-
-function _wireShell() {
-  document.querySelectorAll('.stt-tab').forEach((btn) => {
-    btn.addEventListener('click', () => _switchTab(btn.dataset.tab));
-  });
 }
 
 function _mountPage() {
   const root = document.getElementById('stt-root');
   if (!root) return;
-  _profileLoaded = false;
   root.innerHTML = _renderShell();
-  _wireShell();
   _loadWorkspace();
 }
 
-// ── Init logic ────────────────────────────────────────────────
+// ── Init logic (shared by render auto-init and external callers) ──
 function _startSubscription() {
   if (_unsub) { _unsub(); _unsub = null; }
 
@@ -531,7 +246,6 @@ function _startSubscription() {
     if (newId === _wsId) return;
     _wsId     = newId;
     _settings = null;
-    _profile  = null;
     _mountPage();
   });
 }
