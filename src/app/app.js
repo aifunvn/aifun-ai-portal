@@ -69,4 +69,10 @@ async function init() {
   router.init();
 }
 
-init();
+init().catch(() => {
+  const root = document.getElementById('v4-root');
+  if (root && !root.innerHTML.trim()) {
+    root.innerHTML = renderLogin();
+    initLogin();
+  }
+});
