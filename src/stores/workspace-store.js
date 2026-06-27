@@ -22,6 +22,14 @@ export const workspaceStore = {
     _notify();
   },
 
+  // Set both workspaces list and active workspace in one notification (avoids double render).
+  setAll(list, active) {
+    _state = { workspaces: list, workspace: active ?? list[0] ?? null };
+    const ws = _state.workspace;
+    ws ? localStorage.setItem(WS_KEY, ws.id) : localStorage.removeItem(WS_KEY);
+    _notify();
+  },
+
   subscribe(fn) {
     _subs.add(fn);
     fn({ ..._state });

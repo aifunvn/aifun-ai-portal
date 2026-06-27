@@ -92,12 +92,10 @@ export async function initWorkspaceEngine() {
     }),
   );
 
-  workspaceStore.setWorkspaces(workspaces);
-
-  // 4. Restore or pick first
+  // 4. Restore or pick first — one notification instead of two
   const savedId = workspaceStore.getSavedId();
   const active  = workspaces.find((w) => w.id === savedId) ?? workspaces[0];
-  workspaceStore.setWorkspace(active);
+  workspaceStore.setAll(workspaces, active);
 
   // 5. Load role + permissions from DB
   const role = await loadRolePermissions(active._roleId ?? 'viewer');

@@ -28,14 +28,25 @@ async function requireAuth() {
   return true;
 }
 
+let _engineReady = false;
+
+async function _ensureEngine() {
+  if (_engineReady) return;
+  _engineReady = true;
+  await initWorkspaceEngine();
+}
+
 async function onAuthStateChange(event) {
   if (event === 'PASSWORD_RECOVERY') { router.navigate('/auth/reset-password'); return; }
   if (event === 'SIGNED_IN') {
-    await initWorkspaceEngine();
+    await _ensureEngine();
     if (router.current()?.startsWith('/auth')) router.navigate('/dashboard');
     return;
   }
-  if (event === 'SIGNED_OUT') { router.navigate('/auth/login'); }
+  if (event === 'SIGNED_OUT') {
+    _engineReady = false;
+    router.navigate('/auth/login');
+  }
 }
 
 async function init() {
@@ -44,7 +55,7 @@ async function init() {
   const { data: { session } } = await supabase.auth.getSession();
 
   // Hydrate stores before first route resolves
-  if (session) await initWorkspaceEngine();
+  if (session) await _ensureEngine();
 
   // Auth routes
   router.register('/auth/login',           () => mountAuth(renderLogin(),    initLogin));
