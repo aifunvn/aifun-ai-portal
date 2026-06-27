@@ -103,7 +103,7 @@ export async function listDocs(workspaceId, {
   else if (sort === 'title_asc')  q = q.order('title',      { ascending: true });
   else if (sort === 'title_desc') q = q.order('title',      { ascending: false });
   else if (sort === 'favorites')  q = q.order('favorite',   { ascending: false }).order('created_at', { ascending: false });
-  else                             q = q.order('pinned',     { ascending: false }).order('created_at', { ascending: false });
+  else                             q = q.order('created_at', { ascending: false });
 
   q = q.range(offset, offset + limit - 1);
 
