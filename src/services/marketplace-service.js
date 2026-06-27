@@ -57,8 +57,14 @@ export async function listItems({ query = '', plan = null } = {}) {
     const { data, error } = await q;
     if (error) throw error;
 
-    // RLS can silently return [] for unauthenticated/unauthorized callers — use static fallback
-    let items = (data && data.length > 0) ? data : STATIC_ITEMS;
+    // Merge: STATIC_ITEMS guarantees all 8 builders are always present.
+    // DB rows overlay STATIC_ITEMS (same id → DB wins). DB-only rows are appended.
+    // This handles the case where DB returns a subset (e.g. migration applied partially).
+    const dbRows  = data ?? [];
+    const dbById  = new Map(dbRows.map((r) => [r.id, r]));
+    const merged  = STATIC_ITEMS.map((s) => dbById.get(s.id) ?? s);
+    dbRows.forEach((r) => { if (!merged.find((s) => s.id === r.id)) merged.push(r); });
+    let items = merged.filter((i) => i.is_active !== false);
     if (plan) items = items.filter((i) => i.plan === plan);
     if (query) {
       const lq = query.toLowerCase();
