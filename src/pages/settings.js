@@ -3,14 +3,19 @@ import { can }                   from '../services/permission-service.js';
 import {
   getWorkspaceSettings,
   updateWorkspaceSettings,
+  getProfile,
+  updateProfile,
+  sendPasswordReset,
 } from '../services/settings-service.js';
 import { showToast }             from '../components/toast.js';
 
 // ── Module state ──────────────────────────────────────────────
-let _wsId     = null;
-let _settings = null;
-let _saving   = false;
-let _unsub    = null;
+let _wsId         = null;
+let _settings     = null;
+let _saving       = false;
+let _profile      = null;
+let _savingPro    = false;
+let _unsub        = null;
 
 // ── Utilities ─────────────────────────────────────────────────
 function _esc(s) {
@@ -200,6 +205,261 @@ async function _loadWorkspace() {
   _wireWorkspace();
 }
 
+// ── Profile tab: render ───────────────────────────────────────
+function _renderProfilePanel(p) {
+  const avatarContent = p.avatarUrl
+    ? `<img id="stt-avatar-img" class="stt-avatar" src="${_esc(p.avatarUrl)}" alt="Avatar"
+           onerror="this.style.display='none';document.getElementById('stt-avatar-init').style.display='flex'">`
+    : '';
+  const initStyle = p.avatarUrl ? 'display:none' : '';
+
+  return `
+    <div class="stt-section">
+      <div class="stt-section-title">Thông tin cá nhân</div>
+      <div class="stt-section-desc">Họ tên và ảnh đại diện hiển thị trong workspace</div>
+
+      <div class="stt-avatar-row">
+        <div style="position:relative;flex-shrink:0">
+          ${avatarContent}
+          <div id="stt-avatar-init" class="stt-avatar" style="${initStyle}" aria-hidden="true">
+            ${_esc(p.initials)}
+          </div>
+        </div>
+        <div class="stt-avatar-info">
+          <div class="stt-avatar-label">${_esc(p.fullName)}</div>
+          <div class="stt-avatar-hint">Nhập URL ảnh bên dưới để cập nhật avatar</div>
+        </div>
+      </div>
+
+      <div class="stt-field">
+        <label class="stt-label" for="stt-full-name">Họ và tên</label>
+        <input
+          id="stt-full-name"
+          class="stt-input"
+          type="text"
+          maxlength="80"
+          placeholder="VD: Nguyễn Văn A"
+          value="${_esc(p.fullName)}"
+          autocomplete="name"
+        >
+        <div class="stt-field-error" id="stt-name-pro-err" role="alert" style="display:none"></div>
+      </div>
+
+      <div class="stt-field">
+        <label class="stt-label" for="stt-avatar-url">URL ảnh đại diện</label>
+        <input
+          id="stt-avatar-url"
+          class="stt-input"
+          type="url"
+          placeholder="https://..."
+          value="${_esc(p.avatarUrl ?? '')}"
+          autocomplete="photo"
+        >
+        <div class="stt-field-error" id="stt-avatar-err" role="alert" style="display:none"></div>
+        <div class="stt-field-note">Hỗ trợ JPG, PNG, WebP. Để trống để dùng chữ viết tắt.</div>
+      </div>
+
+      <div class="stt-actions">
+        <button class="stt-btn stt-btn--ghost"   id="stt-cancel-pro" type="button">Huỷ</button>
+        <button class="stt-btn stt-btn--primary"  id="stt-save-pro"   type="button">Lưu Profile</button>
+      </div>
+    </div>
+
+    <div class="stt-section">
+      <div class="stt-section-title">Email đăng nhập</div>
+      <div class="stt-section-desc">Email được dùng để xác thực tài khoản</div>
+      <div class="stt-field">
+        <label class="stt-label" for="stt-email">Email</label>
+        <div class="stt-readonly-row" id="stt-email" aria-readonly="true">
+          ${_esc(p.email)}
+          <span class="stt-readonly-badge">Không đổi được</span>
+        </div>
+        <div class="stt-field-note">Để thay đổi email, vui lòng liên hệ hỗ trợ.</div>
+      </div>
+    </div>
+
+    <div class="stt-section">
+      <div class="stt-pwd-row">
+        <div class="stt-pwd-info">
+          <div class="stt-pwd-label">Mật khẩu</div>
+          <div class="stt-pwd-hint">Gửi email đặt lại mật khẩu về địa chỉ đã đăng ký</div>
+        </div>
+        <button class="stt-btn stt-btn--ghost" id="stt-reset-pwd" type="button">
+          Đổi mật khẩu
+        </button>
+      </div>
+    </div>`;
+}
+
+// ── Profile tab: avatar live preview ─────────────────────────
+function _wireAvatarPreview() {
+  const urlInput = document.getElementById('stt-avatar-url');
+  if (!urlInput) return;
+
+  urlInput.addEventListener('input', () => {
+    const url = urlInput.value.trim();
+    const imgEl  = document.getElementById('stt-avatar-img');
+    const initEl = document.getElementById('stt-avatar-init');
+
+    if (!url) {
+      if (imgEl)  { imgEl.style.display  = 'none'; }
+      if (initEl) { initEl.style.display = 'flex'; }
+      return;
+    }
+
+    if (!imgEl) {
+      // Create img element if it doesn't exist yet
+      const newImg = document.createElement('img');
+      newImg.id        = 'stt-avatar-img';
+      newImg.className = 'stt-avatar';
+      newImg.alt       = 'Avatar';
+      newImg.onerror   = () => {
+        newImg.style.display = 'none';
+        if (initEl) initEl.style.display = 'flex';
+      };
+      newImg.src = url;
+      initEl?.parentNode?.insertBefore(newImg, initEl);
+      if (initEl) initEl.style.display = 'none';
+    } else {
+      imgEl.src           = url;
+      imgEl.style.display = '';
+      imgEl.onerror       = () => {
+        imgEl.style.display = 'none';
+        if (initEl) initEl.style.display = 'flex';
+      };
+      if (initEl) initEl.style.display = 'none';
+    }
+  });
+}
+
+// ── Profile tab: validate ─────────────────────────────────────
+function _validateProfile() {
+  const nameVal   = (document.getElementById('stt-full-name')?.value ?? '').trim();
+  const avatarVal = (document.getElementById('stt-avatar-url')?.value ?? '').trim();
+  const nameErr   = document.getElementById('stt-name-pro-err');
+  const avatarErr = document.getElementById('stt-avatar-err');
+  const nameInput = document.getElementById('stt-full-name');
+  const avatarInput = document.getElementById('stt-avatar-url');
+
+  let valid = true;
+
+  if (nameVal.length < 2) {
+    if (nameErr)   { nameErr.textContent = 'Họ tên phải có ít nhất 2 ký tự.'; nameErr.style.display = 'block'; }
+    if (nameInput) { nameInput.classList.add('stt-input--error'); nameInput.focus(); }
+    valid = false;
+  } else {
+    if (nameErr)   { nameErr.style.display = 'none'; }
+    if (nameInput) { nameInput.classList.remove('stt-input--error'); }
+  }
+
+  if (avatarVal && !/^https?:\/\/.+/.test(avatarVal)) {
+    if (avatarErr)   { avatarErr.textContent = 'URL không hợp lệ. Phải bắt đầu bằng http:// hoặc https://'; avatarErr.style.display = 'block'; }
+    if (avatarInput) { avatarInput.classList.add('stt-input--error'); }
+    valid = false;
+  } else {
+    if (avatarErr)   { avatarErr.style.display = 'none'; }
+    if (avatarInput) { avatarInput.classList.remove('stt-input--error'); }
+  }
+
+  return valid;
+}
+
+// ── Profile tab: save ─────────────────────────────────────────
+async function _saveProfile() {
+  if (_savingPro) return;
+  if (!_validateProfile()) return;
+
+  const fullName  = (document.getElementById('stt-full-name')?.value  ?? '').trim();
+  const avatarUrl = (document.getElementById('stt-avatar-url')?.value ?? '').trim();
+
+  _savingPro = true;
+  const btn = document.getElementById('stt-save-pro');
+  if (btn) { btn.disabled = true; btn.textContent = 'Đang lưu…'; }
+
+  const ok = await updateProfile({ fullName, avatarUrl: avatarUrl || null });
+
+  _savingPro = false;
+  if (btn) { btn.disabled = false; btn.textContent = 'Lưu Profile'; }
+
+  if (ok) {
+    _profile = { ..._profile, fullName, avatarUrl: avatarUrl || null };
+    showToast('Đã lưu thông tin cá nhân', 'success');
+  } else {
+    showToast('Không thể lưu. Vui lòng thử lại.', 'error');
+  }
+}
+
+// ── Profile tab: cancel (reset to saved) ─────────────────────
+function _resetProfile() {
+  if (!_profile) return;
+  const nameEl   = document.getElementById('stt-full-name');
+  const avatarEl = document.getElementById('stt-avatar-url');
+  if (nameEl)   nameEl.value   = _profile.fullName  ?? '';
+  if (avatarEl) avatarEl.value = _profile.avatarUrl ?? '';
+
+  // Reset avatar preview to saved state
+  const urlInput = document.getElementById('stt-avatar-url');
+  if (urlInput) urlInput.dispatchEvent(new Event('input'));
+
+  const nameErr   = document.getElementById('stt-name-pro-err');
+  const avatarErr = document.getElementById('stt-avatar-err');
+  const nameInput = document.getElementById('stt-full-name');
+  const avatarInput = document.getElementById('stt-avatar-url');
+  if (nameErr)    nameErr.style.display   = 'none';
+  if (avatarErr)  avatarErr.style.display = 'none';
+  if (nameInput)  nameInput.classList.remove('stt-input--error');
+  if (avatarInput) avatarInput.classList.remove('stt-input--error');
+}
+
+// ── Profile tab: password reset ───────────────────────────────
+async function _handlePasswordReset() {
+  const btn = document.getElementById('stt-reset-pwd');
+  if (btn) { btn.disabled = true; btn.textContent = 'Đang gửi…'; }
+
+  const ok = await sendPasswordReset();
+
+  if (btn) { btn.disabled = false; btn.textContent = 'Đổi mật khẩu'; }
+
+  if (ok) {
+    showToast('Email đặt lại mật khẩu đã được gửi. Kiểm tra hộp thư.', 'success');
+  } else {
+    showToast('Không thể gửi email. Vui lòng thử lại.', 'error');
+  }
+}
+
+// ── Profile tab: wire + load ──────────────────────────────────
+function _wireProfile() {
+  document.getElementById('stt-save-pro')?.addEventListener('click', _saveProfile);
+  document.getElementById('stt-cancel-pro')?.addEventListener('click', _resetProfile);
+  document.getElementById('stt-reset-pwd')?.addEventListener('click', _handlePasswordReset);
+  _wireAvatarPreview();
+}
+
+async function _loadProfile() {
+  const panel = document.getElementById('stt-panel-profile');
+  if (!panel) return;
+  panel.innerHTML = _renderSkeleton();
+  _profile = await getProfile();
+  if (!_profile) {
+    panel.innerHTML = `<div class="stt-section"><p class="stt-field-note">Không thể tải thông tin cá nhân.</p></div>`;
+    return;
+  }
+  panel.innerHTML = _renderProfilePanel(_profile);
+  _wireProfile();
+}
+
+// ── Tab switching ─────────────────────────────────────────────
+function _switchTab(targetTab) {
+  document.querySelectorAll('.stt-tab').forEach((t) => {
+    const isActive = t.dataset.tab === targetTab;
+    t.classList.toggle('stt-tab--active', isActive);
+    t.setAttribute('aria-selected', String(isActive));
+  });
+  document.querySelectorAll('.stt-panel').forEach((p) => {
+    p.classList.toggle('stt-panel--active', p.id === `stt-panel-${targetTab}`);
+  });
+}
+
 // ── Page shell ────────────────────────────────────────────────
 function _renderShell() {
   return `
@@ -212,28 +472,45 @@ function _renderShell() {
       <div class="stt-tabs" role="tablist" aria-label="Cài đặt">
         <button
           class="stt-tab stt-tab--active"
-          role="tab"
-          aria-selected="true"
+          role="tab" aria-selected="true"
           aria-controls="stt-panel-workspace"
           id="stt-tab-workspace"
           data-tab="workspace"
           type="button"
         >Workspace</button>
+        <button
+          class="stt-tab"
+          role="tab" aria-selected="false"
+          aria-controls="stt-panel-profile"
+          id="stt-tab-profile"
+          data-tab="profile"
+          type="button"
+        >Profile</button>
       </div>
 
-      <div
-        id="stt-panel-workspace"
-        class="stt-panel stt-panel--active"
-        role="tabpanel"
-        aria-labelledby="stt-tab-workspace"
-      ></div>
+      <div id="stt-panel-workspace" class="stt-panel stt-panel--active"
+           role="tabpanel" aria-labelledby="stt-tab-workspace"></div>
+
+      <div id="stt-panel-profile" class="stt-panel"
+           role="tabpanel" aria-labelledby="stt-tab-profile"></div>
     </div>`;
+}
+
+function _wireShell() {
+  document.querySelectorAll('.stt-tab').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const tab = btn.dataset.tab;
+      _switchTab(tab);
+      if (tab === 'profile' && !_profile) _loadProfile();
+    });
+  });
 }
 
 function _mountPage() {
   const root = document.getElementById('stt-root');
   if (!root) return;
   root.innerHTML = _renderShell();
+  _wireShell();
   _loadWorkspace();
 }
 
