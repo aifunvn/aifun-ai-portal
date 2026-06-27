@@ -1,0 +1,643 @@
+/* ─────────────────────────────────────────────────────────────
+   Settings Page — Sprint 14A
+   Prefix: .stt-*
+   All colours via CSS variables (tokens.css)
+   Dark mode: [data-dark] attribute on <html>
+   Responsive: mobile-first (375px → 640px → 1024px)
+───────────────────────────────────────────────────────────── */
+
+/* ── Page wrapper ─────────────────────────────────────────── */
+.stt-page {
+  padding: 24px 20px;
+  max-width: 780px;
+}
+
+/* ── Page header ──────────────────────────────────────────── */
+.stt-page-header {
+  margin-bottom: 24px;
+}
+
+.stt-page-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-1);
+  margin: 0 0 4px;
+  line-height: 1.2;
+}
+
+.stt-page-subtitle {
+  font-size: 13px;
+  color: var(--text-2);
+  margin: 0;
+}
+
+/* ── Tab bar ──────────────────────────────────────────────── */
+.stt-tabs {
+  display: flex;
+  gap: 2px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 4px;
+  margin-bottom: 24px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.stt-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.stt-tab {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  border-radius: var(--r-sm);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: background var(--tr), color var(--tr);
+  border: none;
+  background: transparent;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.stt-tab:hover {
+  color: var(--text-1);
+  background: var(--surface);
+}
+
+.stt-tab--active {
+  background: var(--surface);
+  color: var(--text-1);
+  font-weight: 600;
+  box-shadow: var(--sh-sm);
+}
+
+.stt-tab--danger {
+  color: var(--c-danger);
+}
+
+.stt-tab--danger:hover {
+  background: #fee2e2;
+  color: var(--c-danger);
+}
+
+[data-dark] .stt-tab--danger:hover {
+  background: rgba(239, 68, 68, .15);
+}
+
+.stt-tab:focus-visible {
+  outline: 3px solid rgba(99, 102, 241, .3);
+  outline-offset: 2px;
+}
+
+/* ── Tab panels ───────────────────────────────────────────── */
+.stt-panel {
+  display: none;
+}
+
+.stt-panel--active {
+  display: block;
+}
+
+/* ── Section card ─────────────────────────────────────────── */
+.stt-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 24px;
+  margin-bottom: 16px;
+  box-shadow: var(--sh-sm);
+}
+
+.stt-section-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-1);
+  margin: 0 0 4px;
+}
+
+.stt-section-desc {
+  font-size: 12px;
+  color: var(--text-2);
+  margin: 0 0 20px;
+}
+
+.stt-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 20px 0;
+}
+
+/* ── Form fields ──────────────────────────────────────────── */
+.stt-field {
+  margin-bottom: 16px;
+}
+
+.stt-field:last-child {
+  margin-bottom: 0;
+}
+
+.stt-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-1);
+  margin-bottom: 6px;
+}
+
+.stt-label-hint {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-3);
+  margin-left: 6px;
+}
+
+.stt-input,
+.stt-textarea,
+.stt-select {
+  display: block;
+  width: 100%;
+  padding: 9px 12px;
+  font-size: 13px;
+  color: var(--text-1);
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-sm);
+  transition: border-color var(--tr), box-shadow var(--tr);
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+.stt-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.stt-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 30px;
+  cursor: pointer;
+}
+
+.stt-input:focus,
+.stt-textarea:focus,
+.stt-select:focus {
+  outline: none;
+  border-color: var(--c-primary);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, .12);
+}
+
+.stt-input:disabled,
+.stt-textarea:disabled,
+.stt-select:disabled {
+  background: var(--bg);
+  color: var(--text-3);
+  cursor: not-allowed;
+}
+
+.stt-input--error,
+.stt-textarea--error {
+  border-color: var(--c-danger);
+}
+
+.stt-input--error:focus,
+.stt-textarea--error:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, .12);
+}
+
+.stt-field-error {
+  font-size: 11px;
+  color: var(--c-danger);
+  margin-top: 4px;
+}
+
+.stt-field-note {
+  font-size: 11px;
+  color: var(--text-3);
+  margin-top: 4px;
+}
+
+/* ── Avatar preview row ───────────────────────────────────── */
+.stt-avatar-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.stt-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--c-primary);
+  color: #fff;
+  font-size: 20px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  object-fit: cover;
+  border: 2px solid var(--border);
+}
+
+.stt-avatar-info {
+  flex: 1;
+}
+
+.stt-avatar-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-1);
+  margin-bottom: 2px;
+}
+
+.stt-avatar-hint {
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+/* ── Read-only row (email) ────────────────────────────────── */
+.stt-readonly-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-sm);
+  font-size: 13px;
+  color: var(--text-2);
+}
+
+.stt-readonly-badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .4px;
+  text-transform: uppercase;
+  color: var(--text-3);
+  background: var(--border);
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+/* ── Plan info row ────────────────────────────────────────── */
+.stt-plan-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.stt-plan-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  background: var(--c-primary-l);
+  color: var(--c-primary);
+}
+
+.stt-plan-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-1);
+}
+
+.stt-plan-detail {
+  font-size: 12px;
+  color: var(--text-2);
+  margin-top: 2px;
+}
+
+/* ── Action row (save / cancel) ───────────────────────────── */
+.stt-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+/* ── Buttons ──────────────────────────────────────────────── */
+.stt-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  border-radius: var(--r-sm);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--tr), border-color var(--tr), opacity var(--tr);
+  border: 1.5px solid transparent;
+  line-height: 1;
+  font-family: inherit;
+}
+
+.stt-btn:focus-visible {
+  outline: 3px solid rgba(99, 102, 241, .3);
+  outline-offset: 2px;
+}
+
+.stt-btn:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+.stt-btn--primary {
+  background: var(--c-primary);
+  border-color: var(--c-primary);
+  color: #fff;
+}
+
+.stt-btn--primary:hover:not(:disabled) {
+  background: var(--c-primary-h);
+  border-color: var(--c-primary-h);
+}
+
+.stt-btn--ghost {
+  background: transparent;
+  border-color: var(--border);
+  color: var(--text-2);
+}
+
+.stt-btn--ghost:hover:not(:disabled) {
+  border-color: var(--text-2);
+  color: var(--text-1);
+}
+
+.stt-btn--danger {
+  background: transparent;
+  border-color: var(--c-danger);
+  color: var(--c-danger);
+}
+
+.stt-btn--danger:hover:not(:disabled) {
+  background: var(--c-danger);
+  color: #fff;
+}
+
+.stt-btn--link {
+  background: transparent;
+  border-color: transparent;
+  color: var(--c-primary);
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.stt-btn--link:hover:not(:disabled) {
+  color: var(--c-primary-h);
+  text-decoration: underline;
+}
+
+/* ── Danger zone section ──────────────────────────────────── */
+.stt-danger-section {
+  background: var(--surface);
+  border: 1.5px solid var(--c-danger);
+  border-radius: var(--r-lg);
+  padding: 24px;
+  margin-bottom: 16px;
+}
+
+.stt-danger-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--c-danger);
+  margin: 0 0 4px;
+}
+
+.stt-danger-desc {
+  font-size: 12px;
+  color: var(--text-2);
+  margin: 0 0 16px;
+}
+
+.stt-danger-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.stt-danger-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.stt-danger-item-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-1);
+  margin-bottom: 2px;
+}
+
+.stt-danger-item-note {
+  font-size: 12px;
+  color: var(--text-3);
+}
+
+/* ── Confirmation dialog overlay ──────────────────────────── */
+.stt-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 20px;
+  animation: stt-fade-in .12s ease;
+}
+
+@keyframes stt-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.stt-dialog {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 28px;
+  width: 100%;
+  max-width: 440px;
+  box-shadow: var(--sh-lg);
+  animation: stt-slide-up .15s ease;
+}
+
+@keyframes stt-slide-up {
+  from { transform: translateY(10px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.stt-dialog-icon {
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+
+.stt-dialog-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-1);
+  margin: 0 0 8px;
+}
+
+.stt-dialog-body {
+  font-size: 13px;
+  color: var(--text-2);
+  margin: 0 0 20px;
+  line-height: 1.6;
+}
+
+.stt-dialog-confirm-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-1);
+  margin-bottom: 6px;
+}
+
+.stt-dialog-confirm-label code {
+  background: var(--bg);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+  color: var(--c-danger);
+}
+
+.stt-dialog-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+/* ── Loading skeleton ─────────────────────────────────────── */
+.stt-skeleton {
+  background: var(--border);
+  border-radius: var(--r-sm);
+  animation: stt-shimmer 1.4s ease infinite;
+}
+
+@keyframes stt-shimmer {
+  0%   { opacity: 1; }
+  50%  { opacity: .4; }
+  100% { opacity: 1; }
+}
+
+.stt-skeleton--line {
+  height: 14px;
+  margin-bottom: 10px;
+}
+
+.stt-skeleton--input {
+  height: 38px;
+  margin-bottom: 16px;
+  border-radius: var(--r-sm);
+}
+
+.stt-skeleton--short {
+  width: 40%;
+}
+
+.stt-skeleton--medium {
+  width: 65%;
+}
+
+.stt-skeleton--full {
+  width: 100%;
+}
+
+/* ── Password reset inline block ──────────────────────────── */
+.stt-pwd-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 0;
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.stt-pwd-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.stt-pwd-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-1);
+  margin-bottom: 2px;
+}
+
+.stt-pwd-hint {
+  font-size: 12px;
+  color: var(--text-3);
+}
+
+/* ── Responsive ───────────────────────────────────────────── */
+@media (min-width: 640px) {
+  .stt-page {
+    padding: 28px 32px;
+  }
+
+  .stt-page-title {
+    font-size: 24px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .stt-page {
+    padding: 32px 40px;
+  }
+
+  .stt-danger-item {
+    align-items: center;
+  }
+}
+
+/* Mobile: stack danger item button below text */
+@media (max-width: 480px) {
+  .stt-danger-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .stt-actions {
+    flex-direction: column-reverse;
+  }
+
+  .stt-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .stt-plan-row {
+    flex-wrap: wrap;
+  }
+
+  .stt-pwd-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .stt-dialog {
+    padding: 20px;
+  }
+}
