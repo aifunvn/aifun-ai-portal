@@ -200,40 +200,52 @@ async function _loadWorkspace() {
   _wireWorkspace();
 }
 
+// ── Tab switching ─────────────────────────────────────────────
+let _profileLoaded = false;
+
+function _switchTab(tabName) {
+  document.querySelectorAll('.stt-tab').forEach(function(btn) {
+    var active = btn.dataset.tab === tabName;
+    btn.classList.toggle('stt-tab--active', active);
+    btn.setAttribute('aria-selected', active ? 'true' : 'false');
+  });
+  document.querySelectorAll('.stt-panel').forEach(function(panel) {
+    panel.classList.toggle('stt-panel--active', panel.id === 'stt-panel-' + tabName);
+  });
+  if (tabName === 'profile' && !_profileLoaded) {
+    _profileLoaded = true;
+    document.getElementById('stt-panel-profile').textContent = 'Ho so ca nhan — coming soon';
+  }
+}
+
 // ── Page shell ────────────────────────────────────────────────
 function _renderShell() {
-  return `
-    <div class="stt-page">
-      <div class="stt-page-header">
-        <h2 class="stt-page-title">Cài đặt</h2>
-        <p class="stt-page-subtitle">Quản lý thông tin và cấu hình workspace của bạn</p>
-      </div>
+  return '<div class="stt-page">'
+    + '<div class="stt-page-header">'
+    + '<h2 class="stt-page-title">Cai dat</h2>'
+    + '<p class="stt-page-subtitle">Quan ly cau hinh workspace</p>'
+    + '</div>'
+    + '<div class="stt-tabs" role="tablist">'
+    + '<button class="stt-tab stt-tab--active" role="tab" aria-selected="true" aria-controls="stt-panel-workspace" id="stt-tab-workspace" data-tab="workspace" type="button">Workspace</button>'
+    + '<button class="stt-tab" role="tab" aria-selected="false" aria-controls="stt-panel-profile" id="stt-tab-profile" data-tab="profile" type="button">Ho so</button>'
+    + '</div>'
+    + '<div id="stt-panel-workspace" class="stt-panel stt-panel--active" role="tabpanel" aria-labelledby="stt-tab-workspace"></div>'
+    + '<div id="stt-panel-profile" class="stt-panel" role="tabpanel" aria-labelledby="stt-tab-profile"></div>'
+    + '</div>';
+}
 
-      <div class="stt-tabs" role="tablist" aria-label="Cài đặt">
-        <button
-          class="stt-tab stt-tab--active"
-          role="tab"
-          aria-selected="true"
-          aria-controls="stt-panel-workspace"
-          id="stt-tab-workspace"
-          data-tab="workspace"
-          type="button"
-        >Workspace</button>
-      </div>
-
-      <div
-        id="stt-panel-workspace"
-        class="stt-panel stt-panel--active"
-        role="tabpanel"
-        aria-labelledby="stt-tab-workspace"
-      ></div>
-    </div>`;
+function _wireShell() {
+  document.querySelectorAll('.stt-tab').forEach(function(btn) {
+    btn.addEventListener('click', function() { _switchTab(btn.dataset.tab); });
+  });
 }
 
 function _mountPage() {
   const root = document.getElementById('stt-root');
   if (!root) return;
+  _profileLoaded = false;
   root.innerHTML = _renderShell();
+  _wireShell();
   _loadWorkspace();
 }
 
