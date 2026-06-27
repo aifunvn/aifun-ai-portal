@@ -4,6 +4,10 @@
 -- Date: 2026-06-27
 -- Tables: workspace_settings
 -- No changes to existing tables (001–006 untouched)
+--
+-- Fix: roles.id is TEXT PRIMARY KEY ('owner','admin','editor','viewer')
+--      workspace_members.role_id is TEXT REFERENCES roles(id)
+--      No column roles.name — compare role_id directly
 -- ============================================================
 
 -- ── workspace_settings ────────────────────────────────────────
@@ -24,8 +28,6 @@ CREATE INDEX IF NOT EXISTS idx_workspace_settings_workspace_id
   ON workspace_settings(workspace_id);
 
 -- ── Auto-update updated_at ─────────────────────────────────────
--- Reuse the trigger function created in migration 002 if it exists,
--- otherwise create it here.
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -41,7 +43,7 @@ CREATE TRIGGER set_workspace_settings_updated_at
 -- ── Row Level Security ─────────────────────────────────────────
 ALTER TABLE workspace_settings ENABLE ROW LEVEL SECURITY;
 
--- Members of a workspace can read its settings
+-- Any workspace member can read settings
 CREATE POLICY "workspace_settings_select"
   ON workspace_settings FOR SELECT
   USING (
@@ -51,26 +53,26 @@ CREATE POLICY "workspace_settings_select"
     )
   );
 
--- Only owner or admin can insert/update workspace settings
+-- Only owner or admin can insert workspace settings
+-- roles.id is TEXT: 'owner' | 'admin' | 'editor' | 'viewer'
 CREATE POLICY "workspace_settings_insert"
   ON workspace_settings FOR INSERT
   WITH CHECK (
     workspace_id IN (
-      SELECT wm.workspace_id FROM workspace_members wm
-      JOIN roles r ON r.id = wm.role_id
-      WHERE wm.user_id = auth.uid()
-        AND r.name IN ('owner', 'admin')
+      SELECT workspace_id FROM workspace_members
+      WHERE user_id = auth.uid()
+        AND role_id IN ('owner', 'admin')
     )
   );
 
+-- Only owner or admin can update workspace settings
 CREATE POLICY "workspace_settings_update"
   ON workspace_settings FOR UPDATE
   USING (
     workspace_id IN (
-      SELECT wm.workspace_id FROM workspace_members wm
-      JOIN roles r ON r.id = wm.role_id
-      WHERE wm.user_id = auth.uid()
-        AND r.name IN ('owner', 'admin')
+      SELECT workspace_id FROM workspace_members
+      WHERE user_id = auth.uid()
+        AND role_id IN ('owner', 'admin')
     )
   );
 
