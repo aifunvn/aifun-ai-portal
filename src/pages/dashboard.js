@@ -8,9 +8,66 @@ import { render as activityTimeline } from '../components/activity-timeline.js';
 import { render as quickActions, init as initQA } from '../components/quick-actions.js';
 import { render as usageChart } from '../components/usage-chart.js';
 
-// Module-level unsub — ensures only one subscription is active even if the user
-// navigates away and back multiple times.
 let _unsub = null;
+
+function _renderAiStats(stats) {
+  if (!stats) {
+    return `
+      <div class="section-header">
+        <span class="section-title">AI Usage — tháng này</span>
+        <button class="section-link" data-nav-to="/history">Xem lịch sử</button>
+      </div>
+      <p class="dash-empty-note">Chưa có dữ liệu. Tạo tài liệu đầu tiên để xem thống kê.</p>
+    `;
+  }
+  const fmtCost = (v) => v < 0.001 ? '$0.00' : `$${v.toFixed(3)}`;
+  const fmtTk   = (v) => v >= 1000 ? `${(v / 1000).toFixed(1)}k` : String(v);
+
+  const topB = stats.topBuilders?.length
+    ? stats.topBuilders.map((b) =>
+        `<div class="ai-stat-row"><span>${b.name}</span><span class="ai-stat-count">${b.count} lần</span></div>`
+      ).join('')
+    : '<p class="dash-empty-note">Chưa có dữ liệu</p>';
+
+  const topP = stats.topProviders?.length
+    ? stats.topProviders.map((p) =>
+        `<div class="ai-stat-row"><span>${p.name}</span><span class="ai-stat-count">${p.count} lần</span></div>`
+      ).join('')
+    : '<p class="dash-empty-note">Chưa có dữ liệu</p>';
+
+  return `
+    <div class="section-header">
+      <span class="section-title">AI Usage — tháng này</span>
+      <button class="section-link" data-nav-to="/history">Xem lịch sử</button>
+    </div>
+    <div class="ai-stats-grid">
+      <div class="ai-stat-card">
+        <div class="ai-stat-value">${stats.monthCount ?? 0}</div>
+        <div class="ai-stat-label">Tổng yêu cầu</div>
+      </div>
+      <div class="ai-stat-card">
+        <div class="ai-stat-value">${fmtTk(stats.monthTokens ?? 0)}</div>
+        <div class="ai-stat-label">Tổng tokens</div>
+      </div>
+      <div class="ai-stat-card">
+        <div class="ai-stat-value">${fmtCost(stats.todayCost ?? 0)}</div>
+        <div class="ai-stat-label">Chi phí hôm nay</div>
+      </div>
+      <div class="ai-stat-card ${(stats.failedCount ?? 0) > 0 ? 'ai-stat-card--warn' : ''}">
+        <div class="ai-stat-value">${stats.failedCount ?? 0}</div>
+        <div class="ai-stat-label">Yêu cầu thất bại</div>
+      </div>
+      <div class="ai-stat-card ai-stat-card--wide">
+        <div class="ai-stat-label ai-stat-label--header">Top Builders</div>
+        ${topB}
+      </div>
+      <div class="ai-stat-card ai-stat-card--wide">
+        <div class="ai-stat-label ai-stat-label--header">Top Providers</div>
+        ${topP}
+      </div>
+    </div>
+  `;
+}
 
 export function render() {
   return `
@@ -24,6 +81,7 @@ export function render() {
       </div>
       <div id="dash-chart"    class="dash-card"></div>
       <div id="dash-builders" class="dash-card"></div>
+      <div id="dash-ai-stats" class="dash-card"></div>
     </div>
   `;
 }
@@ -87,6 +145,9 @@ async function loadAndRender(workspace) {
     </div>
     <div class="builders-grid">${installedBuilders(data.installedBuilders)}</div>
   `;
+
+  const aiStats = $('dash-ai-stats');
+  if (aiStats) aiStats.innerHTML = _renderAiStats(data.aiStats);
 
   // Wire internal nav buttons (builder cards + section links)
   document.querySelectorAll('#dash-content [data-nav-to]').forEach((btn) => {

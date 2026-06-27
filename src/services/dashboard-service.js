@@ -1,5 +1,6 @@
 import { listInstalls }          from './install-service.js';
 import { listItems as listMpItems } from './marketplace-service.js';
+import { getHistoryStats }       from './ai-history-service.js';
 
 // Mock data keyed by workspace ID — replaced with real API calls in Sprint 5
 const NOW = Date.now();
@@ -90,20 +91,24 @@ export async function getDashboardData(workspaceId) {
 
   // Merge real installs so the Builders KPI and card list reflect reality
   try {
-    const [installIds, allItems] = await Promise.all([
+    const [installIds, allItems, aiStats] = await Promise.all([
       listInstalls(workspaceId),
       listMpItems(),
+      getHistoryStats(workspaceId).catch(() => null),
     ]);
     const idSet = new Set(installIds);
     const installedBuilders = allItems
       .filter((i) => idSet.has(i.id))
       .map((i) => ({ id: i.id, name: i.name, docs: 0 }));
 
-    const kpis = base.kpis.map((k) =>
-      k.id === 'builders' ? { ...k, value: installedBuilders.length } : k,
-    );
+    const kpis = base.kpis.map((k) => {
+      if (k.id === 'builders')    return { ...k, value: installedBuilders.length };
+      if (k.id === 'ai-requests') return aiStats ? { ...k, value: aiStats.monthCount } : k;
+      if (k.id === 'tokens')      return aiStats ? { ...k, value: aiStats.monthTokens } : k;
+      return k;
+    });
 
-    return { ...base, kpis, installedBuilders };
+    return { ...base, kpis, installedBuilders, aiStats };
   } catch {
     return base;
   }

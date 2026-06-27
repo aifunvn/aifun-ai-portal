@@ -11,6 +11,7 @@ import { render as renderDashboard, init as initDashboard } from '../pages/dashb
 import { render as renderBuilders, init as initBuilders } from '../pages/builders.js';
 import { render as renderDocuments, init as initDocuments } from '../pages/documents.js';
 import { render as renderMarketplace, initMarketplace } from '../pages/marketplace.js';
+import { render as renderHistory,   init as initHistory   } from '../pages/history.js';
 import { render as renderReports     } from '../pages/reports.js';
 import { render as renderSettings    } from '../pages/settings.js';
 
@@ -57,6 +58,7 @@ async function init() {
   router.register('/builders',    async () => { if (!(await requireAuth())) return; mountPage('/builders',    'AI Builders', renderBuilders(), initBuilders); });
   router.register('/documents',   async () => { if (!(await requireAuth())) return; mountPage('/documents',   'Tai lieu',    renderDocuments(), initDocuments); });
   router.register('/marketplace', async () => { if (!(await requireAuth())) return; mountPage('/marketplace', 'Marketplace', renderMarketplace()); initMarketplace(); });
+  router.register('/history',     async () => { if (!(await requireAuth())) return; mountPage('/history',     'AI History',  renderHistory(), initHistory); });
   router.register('/reports',     async () => { if (!(await requireAuth())) return; mountPage('/reports',     'Báo cáo',     renderReports()); });
   router.register('/settings',    async () => { if (!(await requireAuth())) return; mountPage('/settings',    'Cài đặt',     renderSettings()); });
 
