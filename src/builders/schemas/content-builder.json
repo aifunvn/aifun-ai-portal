@@ -1,0 +1,54 @@
+{
+  "id": "content-builder",
+  "name": "Content Factory",
+  "description": "Bien 1 y tuong thanh noi dung da kenh: Facebook, TikTok, Email, Zalo, YouTube",
+  "category": "Marketing",
+  "icon": "sparkle",
+  "version": "1.0.0",
+  "status": "active",
+  "provider": "mock",
+  "plan": "starter",
+  "fields": [
+    {
+      "id": "topic",
+      "label": "Chu de / Y tuong",
+      "type": "text",
+      "required": true,
+      "placeholder": "Vi du: Ra mat san pham moi, Tips tiet kiem thoi gian...",
+      "validation": { "maxLength": 200 }
+    },
+    {
+      "id": "target_audience",
+      "label": "Doi tuong muc tieu",
+      "type": "text",
+      "required": true,
+      "placeholder": "Vi du: Chu doanh nghiep SME, Gen Z 18-25...",
+      "validation": { "maxLength": 150 }
+    },
+    {
+      "id": "channels",
+      "label": "Kenh phan phoi",
+      "type": "text",
+      "required": false,
+      "placeholder": "Vi du: Facebook, TikTok, Email, Zalo OA",
+      "validation": { "maxLength": 200 }
+    },
+    {
+      "id": "tone",
+      "label": "Giong dieu",
+      "type": "select",
+      "required": false,
+      "options": ["Than thien", "Chuyen nghiep", "Hai huoc", "Truyen cam hung", "Ban hang truc tiep"]
+    },
+    {
+      "id": "cta",
+      "label": "Call to Action",
+      "type": "text",
+      "required": false,
+      "placeholder": "Vi du: Dang ky ngay, Lien he tu van...",
+      "validation": { "maxLength": 150 }
+    }
+  ],
+  "prompt_template": "Tao content package da kenh bang tieng Viet.\n\nCHU DE VA DOI TUONG:\nChu de: {{topic}}\nDoi tuong: {{target_audience}}\nKenh phan phoi: {{channels}}\nGiong dieu: {{tone}}\nCall to Action: {{cta}}\n\nWorkspace: {{workspace_name}} | Nguoi tao: {{user_name}}\n\nYEU CAU:\nViet day du 5 dang noi dung:\n1. Post Facebook dai (800-1000 tu, co hook manh, storytelling, CTA ro rang)\n2. Script TikTok/Reels 60 giay (co hook 3 giay dau, kich ban tung canh)\n3. Email marketing (subject line x2 A/B, preview text, noi dung day du, CTA)\n4. Tin nhan Zalo ngan gon (duoi 300 ky tu, emoji phu hop)\n5. 5 caption ngan cho Stories/Shorts (moi caption duoi 150 ky tu)\n\nTao noi dung day du, sang tao va phu hop voi tung kenh:",
+  "output_type": "document"
+}

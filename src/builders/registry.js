@@ -7,6 +7,9 @@ const SCHEMA_URLS = [
   '/src/builders/schemas/youtube-builder.json',
   '/src/builders/schemas/email-builder.json',
   '/src/builders/schemas/sales-builder.json',
+  '/src/builders/schemas/content-builder.json',
+  '/src/builders/schemas/crm-builder.json',
+  '/src/builders/schemas/webinar-builder.json',
 ];
 
 let _cache = null;

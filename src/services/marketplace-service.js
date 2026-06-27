@@ -27,6 +27,21 @@ export const STATIC_ITEMS = [
     description: 'Tao kich ban ban hang thuyet phuc cho tung doi tuong khach hang',
     category: 'Kinh doanh', plan: 'starter', icon: 'sparkle', is_featured: false, is_active: true,
   },
+  {
+    id: 'content-builder', name: 'Content Factory',
+    description: 'Bien 1 y tuong thanh noi dung da kenh: Facebook, TikTok, Email, Zalo, YouTube',
+    category: 'Marketing', plan: 'starter', icon: 'sparkle', is_featured: false, is_active: true,
+  },
+  {
+    id: 'crm-builder', name: 'CRM AI Assistant',
+    description: 'Phan tich lead, cham diem, de xuat buoc tiep theo toi uu ty le chot sale',
+    category: 'Kinh doanh', plan: 'pro', icon: 'sparkle', is_featured: false, is_active: true,
+  },
+  {
+    id: 'webinar-builder', name: 'Webinar Builder',
+    description: 'Thiet ke webinar ban hang A-Z: kich ban, slide, CTA, email follow-up',
+    category: 'Giao duc', plan: 'pro', icon: 'sparkle', is_featured: false, is_active: true,
+  },
 ];
 
 export async function listItems({ query = '', plan = null } = {}) {
