@@ -217,6 +217,13 @@ async function _loadWorkspace() {
 
   panel.innerHTML = _renderSkeleton();
   _settings = await getWorkspaceSettings(_wsId);
+
+  // workspace_settings row may not exist yet — seed display_name from store
+  if (!_settings.display_name) {
+    const ws = workspaceStore.getWorkspace();
+    if (ws?.name) _settings = { ..._settings, display_name: ws.name };
+  }
+
   panel.innerHTML = _renderWorkspacePanel(_settings, !_canWrite());
   _wireWorkspace();
 }
