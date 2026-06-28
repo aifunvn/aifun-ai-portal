@@ -1,6 +1,21 @@
 import { supabase } from '../lib/supabase.js';
 import { userStore } from '../stores/user-store.js';
 
+export async function updateProfile(userId, { full_name, avatar_url }) {
+  const { data, error } = await supabase
+    .from('user_profiles')
+    .update({ full_name, avatar_url })
+    .eq('id', userId)
+    .select()
+    .single();
+
+  if (error || !data) return false;
+
+  const user = userStore.getUser();
+  userStore.set({ profile: _toProfile(data, user ?? { id: userId, email: data.email ?? '' }) });
+  return true;
+}
+
 export async function loadOrCreateProfile(user) {
   let row;
 

@@ -5,8 +5,8 @@ import {
   updateWorkspaceSettings,
 } from '../services/settings-service.js';
 import { showToast }             from '../components/toast.js';
+import { loadProfile }           from './settings-profile.js';
 
-// ── Module state ──────────────────────────────────────────────
 let _wsId     = null;
 let _settings = null;
 let _saving   = false;
@@ -184,7 +184,6 @@ async function _saveWorkspace() {
   }
 }
 
-// ── Workspace tab: wire + load ────────────────────────────────
 function _wireWorkspace() {
   document.getElementById('stt-save-ws')?.addEventListener('click', _saveWorkspace);
   document.getElementById('stt-cancel-ws')?.addEventListener('click', _resetForm);
@@ -214,7 +213,7 @@ function _switchTab(tabName) {
   });
   if (tabName === 'profile' && !_profileLoaded) {
     _profileLoaded = true;
-    document.getElementById('stt-panel-profile').textContent = 'Ho so ca nhan — coming soon';
+    loadProfile();
   }
 }
 
@@ -222,12 +221,12 @@ function _switchTab(tabName) {
 function _renderShell() {
   return '<div class="stt-page">'
     + '<div class="stt-page-header">'
-    + '<h2 class="stt-page-title">Cai dat</h2>'
-    + '<p class="stt-page-subtitle">Quan ly cau hinh workspace</p>'
+    + '<h2 class="stt-page-title">Cài đặt</h2>'
+    + '<p class="stt-page-subtitle">Quản lý cấu hình workspace và hồ sơ cá nhân</p>'
     + '</div>'
     + '<div class="stt-tabs" role="tablist">'
     + '<button class="stt-tab stt-tab--active" role="tab" aria-selected="true" aria-controls="stt-panel-workspace" id="stt-tab-workspace" data-tab="workspace" type="button">Workspace</button>'
-    + '<button class="stt-tab" role="tab" aria-selected="false" aria-controls="stt-panel-profile" id="stt-tab-profile" data-tab="profile" type="button">Ho so</button>'
+    + '<button class="stt-tab" role="tab" aria-selected="false" aria-controls="stt-panel-profile" id="stt-tab-profile" data-tab="profile" type="button">Hồ sơ</button>'
     + '</div>'
     + '<div id="stt-panel-workspace" class="stt-panel stt-panel--active" role="tabpanel" aria-labelledby="stt-tab-workspace"></div>'
     + '<div id="stt-panel-profile" class="stt-panel" role="tabpanel" aria-labelledby="stt-tab-profile"></div>'
