@@ -644,6 +644,135 @@
 
 /* ── Branding tab ─────────────────────────────────────────────── */
 
+/* Logo upload zone */
+.stt-logo-zone {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 16px;
+  border: 1.5px dashed var(--border);
+  border-radius: var(--r-md);
+  background: var(--bg);
+}
+
+.stt-logo-zone-preview {
+  width: 72px;
+  height: 72px;
+  border-radius: var(--r-md);
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.stt-logo-preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.stt-logo-fallback {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-3);
+  line-height: 1;
+  user-select: none;
+}
+
+.stt-logo-zone-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.stt-logo-zone-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.stt-btn--sm {
+  padding: 5px 12px;
+  font-size: 12px;
+}
+
+.stt-logo-zone-note {
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+.stt-logo-url-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stt-logo-url-label {
+  font-size: 11px;
+  color: var(--text-3);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.stt-input--sm {
+  padding: 5px 10px;
+  font-size: 12px;
+}
+
+/* Brand presets */
+.stt-presets {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.stt-preset {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2.5px solid transparent;
+  cursor: pointer;
+  transition: transform var(--tr), box-shadow var(--tr), border-color var(--tr);
+  outline: none;
+  flex-shrink: 0;
+}
+
+.stt-preset:hover {
+  transform: scale(1.15);
+  box-shadow: var(--sh-md);
+}
+
+.stt-preset:focus-visible {
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, .25);
+}
+
+.stt-preset--active {
+  border-color: var(--text-1);
+  transform: scale(1.1);
+  box-shadow: var(--sh-sm);
+}
+
+@media (max-width: 480px) {
+  .stt-logo-zone {
+    flex-direction: column;
+  }
+
+  .stt-logo-zone-preview {
+    width: 56px;
+    height: 56px;
+  }
+
+  .stt-logo-url-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
 .stt-color-row {
   display: flex;
   align-items: center;
