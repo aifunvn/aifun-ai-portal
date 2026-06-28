@@ -10,6 +10,8 @@ const _DEFAULTS = {
   timezone:     'Asia/Ho_Chi_Minh',
   ai_language:  'vi',
   logo_url:     '',
+  brand_color:  '#6366f1',
+  favicon_url:  '',
   metadata:     {},
 };
 
@@ -147,6 +149,8 @@ function _toSettings(row) {
     timezone:     row.timezone     ?? 'Asia/Ho_Chi_Minh',
     ai_language:  row.ai_language  ?? 'vi',
     logo_url:     row.logo_url     ?? '',
+    brand_color:  row.brand_color  ?? '#6366f1',
+    favicon_url:  row.favicon_url  ?? '',
     metadata:     row.metadata     ?? {},
   };
 }
@@ -176,7 +180,7 @@ function _toProfile(row, user) {
 
 function _cleanPatch(patch) {
   const allowed = {};
-  const fields  = ['display_name', 'description', 'timezone', 'ai_language', 'logo_url'];
+  const fields  = ['display_name', 'description', 'timezone', 'ai_language', 'logo_url', 'brand_color', 'favicon_url'];
   fields.forEach((f) => {
     if (patch[f] !== undefined) allowed[f] = patch[f];
   });

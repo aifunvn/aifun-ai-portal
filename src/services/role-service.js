@@ -15,8 +15,17 @@ const FALLBACK = {
       'settings:read', 'settings:update', 'billing:read', 'admin:read',
     ],
   },
+  // 'member' is the canonical role; 'editor' kept as alias for existing DB rows
   editor: {
-    id: 'editor', label: 'Biên tập viên',
+    id: 'editor', label: 'Member',
+    permissions: [
+      'dashboard:read', 'builders:read', 'builders:run',
+      'documents:read', 'documents:create', 'documents:delete',
+      'marketplace:read', 'settings:read',
+    ],
+  },
+  member: {
+    id: 'member', label: 'Member',
     permissions: [
       'dashboard:read', 'builders:read', 'builders:run',
       'documents:read', 'documents:create', 'documents:delete',

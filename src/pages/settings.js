@@ -6,6 +6,10 @@ import {
 } from '../services/settings-service.js';
 import { showToast }             from '../components/toast.js';
 import { loadProfile }           from './settings-profile.js';
+import { loadBranding }          from './settings-branding.js';
+import { loadMembers }           from './settings-members.js';
+import { renderDangerZone, wireDangerZone } from './settings-danger.js';
+import { applyBrandColor }       from '../services/theme-service.js';
 
 let _wsId     = null;
 let _settings = null;
@@ -113,7 +117,8 @@ function _renderWorkspacePanel(s, readOnly) {
              <button class="stt-btn stt-btn--primary"  id="stt-save-ws"   type="button" disabled>Lưu thay đổi</button>
            </div>`
       }
-    </div>`;
+    </div>
+    ${renderDangerZone(!readOnly)}`;
 }
 
 // ── Workspace tab: form helpers ───────────────────────────────
@@ -209,6 +214,12 @@ function _wireWorkspace() {
   ['stt-timezone', 'stt-ai-language'].forEach((id) => {
     document.getElementById(id)?.addEventListener('change', _updateSaveBtn);
   });
+  if (_canWrite()) {
+    wireDangerZone(_wsId, _settings?.display_name || 'Workspace', () => {
+      _settings = null;
+      _mountPage();
+    });
+  }
 }
 
 async function _loadWorkspace() {
@@ -226,10 +237,15 @@ async function _loadWorkspace() {
 
   panel.innerHTML = _renderWorkspacePanel(_settings, !_canWrite());
   _wireWorkspace();
+  if (_settings.brand_color && _settings.brand_color !== '#6366f1') {
+    applyBrandColor(_settings.brand_color);
+  }
 }
 
 // ── Tab switching ─────────────────────────────────────────────
-let _profileLoaded = false;
+let _profileLoaded  = false;
+let _brandingLoaded = false;
+let _membersLoaded  = false;
 
 function _switchTab(tabName) {
   document.querySelectorAll('.stt-tab').forEach(function(btn) {
@@ -244,6 +260,14 @@ function _switchTab(tabName) {
     _profileLoaded = true;
     loadProfile();
   }
+  if (tabName === 'branding' && !_brandingLoaded && _settings) {
+    _brandingLoaded = true;
+    loadBranding(_wsId, _settings);
+  }
+  if (tabName === 'members' && !_membersLoaded) {
+    _membersLoaded = true;
+    loadMembers();
+  }
 }
 
 // ── Page shell ────────────────────────────────────────────────
@@ -255,9 +279,13 @@ function _renderShell() {
     + '</div>'
     + '<div class="stt-tabs" role="tablist">'
     + '<button class="stt-tab stt-tab--active" role="tab" aria-selected="true" aria-controls="stt-panel-workspace" id="stt-tab-workspace" data-tab="workspace" type="button">Workspace</button>'
+    + '<button class="stt-tab" role="tab" aria-selected="false" aria-controls="stt-panel-branding" id="stt-tab-branding" data-tab="branding" type="button">Thương hiệu</button>'
+    + '<button class="stt-tab" role="tab" aria-selected="false" aria-controls="stt-panel-members" id="stt-tab-members" data-tab="members" type="button">Thành viên</button>'
     + '<button class="stt-tab" role="tab" aria-selected="false" aria-controls="stt-panel-profile" id="stt-tab-profile" data-tab="profile" type="button">Hồ sơ</button>'
     + '</div>'
     + '<div id="stt-panel-workspace" class="stt-panel stt-panel--active" role="tabpanel" aria-labelledby="stt-tab-workspace"></div>'
+    + '<div id="stt-panel-branding" class="stt-panel" role="tabpanel" aria-labelledby="stt-tab-branding"></div>'
+    + '<div id="stt-panel-members" class="stt-panel" role="tabpanel" aria-labelledby="stt-tab-members"></div>'
     + '<div id="stt-panel-profile" class="stt-panel" role="tabpanel" aria-labelledby="stt-tab-profile"></div>'
     + '</div>';
 }
@@ -271,7 +299,9 @@ function _wireShell() {
 function _mountPage() {
   const root = document.getElementById('stt-root');
   if (!root) return;
-  _profileLoaded = false;
+  _profileLoaded  = false;
+  _brandingLoaded = false;
+  _membersLoaded  = false;
   root.innerHTML = _renderShell();
   _wireShell();
   _loadWorkspace();
