@@ -1,0 +1,53 @@
+{
+  "id": "email-builder",
+  "name": "Email Automation Builder",
+  "description": "Tao chuoi email marketing, nurturing tu dong cho tung giai doan khach hang",
+  "category": "Marketing",
+  "icon": "sparkle",
+  "version": "1.0.0",
+  "status": "active",
+  "provider": "mock",
+  "plan": "pro",
+  "fields": [
+    {
+      "id": "email_type",
+      "label": "Loai email",
+      "type": "select",
+      "required": true,
+      "options": ["Welcome email", "Nurturing", "Khuyen mai", "Follow-up", "Re-engagement"]
+    },
+    {
+      "id": "product",
+      "label": "San pham / Dich vu",
+      "type": "text",
+      "required": true,
+      "placeholder": "Vi du: AIFUN OS — Phan mem AI cho doanh nghiep",
+      "validation": { "maxLength": 200 }
+    },
+    {
+      "id": "target",
+      "label": "Doi tuong nhan",
+      "type": "text",
+      "required": true,
+      "placeholder": "Vi du: Chu doanh nghiep SME chua ung dung AI",
+      "validation": { "maxLength": 200 }
+    },
+    {
+      "id": "tone",
+      "label": "Giong van",
+      "type": "select",
+      "required": true,
+      "options": ["Than thien", "Chuyen nghiep", "Cam xuc", "Khan cap"]
+    },
+    {
+      "id": "cta",
+      "label": "Call to action",
+      "type": "text",
+      "required": false,
+      "placeholder": "Vi du: Dang ky dung thu mien phi 14 ngay",
+      "validation": { "maxLength": 150 }
+    }
+  ],
+  "prompt_template": "Ban la chuyen gia email marketing hang dau Viet Nam.\n\nViet mot {{email_type}} hoan chinh bang tieng Viet:\n- San pham / Dich vu: {{product}}\n- Doi tuong nhan: {{target}}\n- Giong van: {{tone}}\n- Call to action: {{cta}}\n\nYeu cau:\n1. Tieu de (subject line) hap dan, tang ty le mo\n2. Noi dung ro rang, cam xuc, thuc day hanh dong\n3. Body email 150-250 tu\n4. Ket thuc bang CTA ro rang va de thuc hien\n\nWorkspace: {{workspace_name}} | Builder: {{builder_name}}\nViet bang tieng Viet chuyen nghiep.",
+  "output_type": "text"
+}

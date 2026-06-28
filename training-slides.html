@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIFUN OS V2 — Tài liệu đào tạo</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #0F172A; color: #F1F5F9; }
+  .presentation { width: 100%; max-width: 960px; margin: 0 auto; padding: 20px; }
+  .nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; gap: 12px; }
+  .nav-dots { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; flex: 1; }
+  .dot { width: 11px; height: 11px; border-radius: 50%; background: #334155; cursor: pointer; transition: .2s; border: none; }
+  .dot.active { background: #3B82F6; transform: scale(1.3); }
+  .dot.done { background: #22C55E; }
+  .nav-btn { background: #1E293B; border: 1px solid #334155; color: #94A3B8; padding: 8px 18px; border-radius: 8px; cursor: pointer; font-size: 13px; transition: .2s; white-space: nowrap; }
+  .nav-btn:hover { background: #334155; color: #F1F5F9; }
+  .slide-counter { color: #64748B; font-size: 12px; min-width: 60px; text-align: center; }
+  .slide { display: none; background: #1E293B; border-radius: 16px; border: 1px solid #334155; padding: 36px; min-height: 500px; animation: fadeIn .3s ease; }
+  .slide.active { display: block; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+  .slide-label { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: #3B82F6; text-transform: uppercase; margin-bottom: 8px; }
+  .slide-heading { font-size: 28px; font-weight: 800; color: #F1F5F9; margin-bottom: 8px; line-height: 1.25; }
+  .slide-sub { font-size: 14px; color: #94A3B8; margin-bottom: 24px; line-height: 1.6; }
+  .cover { text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 460px; }
+  .cover-badge { background: #3B82F6; color: #fff; font-size: 11px; font-weight: 700; padding: 5px 16px; border-radius: 99px; letter-spacing: 1px; margin-bottom: 20px; }
+  .cover-title { font-size: 42px; font-weight: 900; background: linear-gradient(135deg,#3B82F6,#8B5CF6); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom: 8px; }
+  .cover-subtitle { font-size: 16px; color: #94A3B8; margin-bottom: 32px; line-height: 1.6; }
+  .cover-meta { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+  .meta-chip { background: #0F172A; border: 1px solid #334155; border-radius: 8px; padding: 10px 18px; font-size: 13px; color: #CBD5E1; }
+  .meta-chip strong { color: #64748B; display: block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 3px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px,1fr)); gap: 12px; margin-top: 16px; }
+  .card { background: #0F172A; border: 1px solid #334155; border-radius: 10px; padding: 16px; }
+  .card-icon { font-size: 24px; margin-bottom: 8px; }
+  .card-title { font-size: 13px; font-weight: 700; color: #F1F5F9; margin-bottom: 4px; }
+  .card-desc { font-size: 12px; color: #94A3B8; line-height: 1.55; }
+  .card.blue { border-color: #3B82F6; } .card.green { border-color: #22C55E; }
+  .card.purple { border-color: #8B5CF6; } .card.orange { border-color: #F59E0B; }
+  .card.red { border-color: #EF4444; } .card.cyan { border-color: #06B6D4; }
+  .arch { display: flex; align-items: center; gap: 0; margin-top: 24px; flex-wrap: wrap; justify-content: center; }
+  .arch-box { background: #0F172A; border: 2px solid; border-radius: 10px; padding: 14px 18px; text-align: center; min-width: 115px; }
+  .arch-box .ab-icon { font-size: 26px; margin-bottom: 4px; }
+  .arch-box .ab-title { font-size: 12px; font-weight: 700; color: #F1F5F9; }
+  .arch-box .ab-sub { font-size: 10px; color: #64748B; margin-top: 2px; }
+  .arch-arrow { color: #475569; font-size: 22px; padding: 0 8px; flex-shrink: 0; }
+  .tbl { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 12px; }
+  .tbl th { background: #0F172A; color: #64748B; font-weight: 700; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; padding: 9px 10px; text-align: left; border-bottom: 1px solid #334155; }
+  .tbl td { padding: 9px 10px; border-bottom: 1px solid #1E293B; color: #CBD5E1; vertical-align: top; line-height: 1.5; }
+  .tbl tr:hover td { background: rgba(59,130,246,.04); }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 99px; font-size: 10px; font-weight: 700; }
+  .badge.fix { background: rgba(239,68,68,.15); color: #EF4444; }
+  .badge.cfg { background: rgba(245,158,11,.15); color: #F59E0B; }
+  code { background: #0F172A; border: 1px solid #334155; border-radius: 4px; padding: 1px 6px; font-size: 11px; color: #7DD3FC; font-family: monospace; }
+  .ps-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+  .ps-box { border-radius: 8px; padding: 14px 16px; }
+  .ps-box.problem { background: rgba(239,68,68,.08); border: 1px solid rgba(239,68,68,.25); }
+  .ps-box.solution { background: rgba(34,197,94,.08); border: 1px solid rgba(34,197,94,.25); }
+  .ps-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+  .ps-box.problem .ps-label { color: #EF4444; } .ps-box.solution .ps-label { color: #22C55E; }
+  .ps-text { font-size: 12px; color: #CBD5E1; line-height: 1.65; }
+  .codebox { background: #0F172A; border-radius: 8px; padding: 14px 16px; font-family: monospace; font-size: 12px; color: #94A3B8; line-height: 1.8; margin-top: 14px; border: 1px solid #334155; }
+  .result-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-top: 16px; }
+  .stat-card { background: #0F172A; border-radius: 10px; padding: 18px; text-align: center; border: 1px solid #334155; }
+  .stat-num { font-size: 32px; font-weight: 900; color: #3B82F6; }
+  .stat-label { font-size: 11px; color: #64748B; margin-top: 4px; }
+  .checklist { list-style: none; margin-top: 12px; }
+  .checklist li { display: flex; gap: 10px; align-items: flex-start; padding: 9px 0; border-bottom: 1px solid #1E293B; font-size: 13px; color: #CBD5E1; line-height: 1.5; }
+  .check-pass { color: #22C55E; flex-shrink: 0; } .check-warn { color: #F59E0B; flex-shrink: 0; }
+  .timeline { list-style: none; margin-top: 16px; }
+  .tl-item { display: flex; gap: 16px; margin-bottom: 20px; position: relative; }
+  .tl-item:not(:last-child)::before { content:''; position:absolute; left:19px; top:40px; width:2px; height:calc(100% - 8px); background:#334155; }
+  .tl-dot { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 800; color: #fff; flex-shrink: 0; }
+  .bg-blue { background: #1D4ED8; } .bg-green { background: #15803D; } .bg-orange { background: #B45309; } .bg-red { background: #B91C1C; } .bg-purple { background: #6D28D9; }
+  .tl-title { font-size: 14px; font-weight: 700; color: #F1F5F9; margin-bottom: 3px; }
+  .tl-desc { font-size: 12px; color: #94A3B8; line-height: 1.55; }
+  .lesson-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+  .lesson-card { background: #0F172A; border-radius: 10px; padding: 16px; border-left: 3px solid; }
+  .bl { border-color: #3B82F6; } .gl { border-color: #22C55E; } .ol { border-color: #F59E0B; } .pl { border-color: #8B5CF6; }
+  .lesson-num { font-size: 10px; font-weight: 700; color: #64748B; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
+  .lesson-title { font-size: 13px; font-weight: 700; color: #F1F5F9; margin-bottom: 4px; }
+  .lesson-desc { font-size: 12px; color: #94A3B8; line-height: 1.55; }
+  .info-box { background: #0F172A; border-radius: 8px; padding: 12px 14px; font-size: 12px; color: #94A3B8; margin-top: 12px; border: 1px solid #334155; }
+  @media print {
+    body { background: #fff; color: #000; }
+    .nav { display: none; }
+    .slide { display: block !important; page-break-after: always; background: #fff; color: #000; border: 1px solid #ccc; margin-bottom: 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="presentation">
+
+  <div class="nav">
+    <button class="nav-btn" onclick="prevSlide()">← Trước</button>
+    <div class="nav-dots" id="dots"></div>
+    <span class="slide-counter" id="counter">1 / 10</span>
+    <button class="nav-btn" onclick="nextSlide()">Tiếp →</button>
+  </div>
+
+  <!-- S1: Cover -->
+  <div class="slide active" id="s1">
+    <div class="cover">
+      <span class="cover-badge">TÀI LIỆU ĐÀO TẠO NỘI BỘ — AIFUN</span>
+      <div class="cover-title">AIFUN OS V2</div>
+      <div class="cover-subtitle">Hành trình triển khai hệ thống AI Portal<br>từ ý tưởng đến sản phẩm hoạt động thực tế</div>
+      <div class="cover-meta">
+        <div class="meta-chip"><strong>Dự án</strong>portal.aifun.ai.vn</div>
+        <div class="meta-chip"><strong>Ngày hoàn thành</strong>17/06/2026</div>
+        <div class="meta-chip"><strong>Tech Stack</strong>GitHub Pages + GAS + Claude AI</div>
+        <div class="meta-chip"><strong>Kết quả</strong>6 AI Skills hoạt động</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S2: Tổng quan -->
+  <div class="slide" id="s2">
+    <div class="slide-label">Slide 2 — Tổng quan dự án</div>
+    <div class="slide-heading">AIFUN OS là gì?</div>
+    <div class="slide-sub">Nền tảng AI Portal giúp doanh nghiệp SME tự động hóa công việc bằng 6 AI Skills — không cần kỹ thuật, chỉ cần điền form.</div>
+    <div class="grid">
+      <div class="card blue"><div class="card-icon">🌐</div><div class="card-title">Frontend</div><div class="card-desc">GitHub Pages, domain portal.aifun.ai.vn, HTML/CSS/JS thuần, không cần framework hay server</div></div>
+      <div class="card purple"><div class="card-icon">⚙️</div><div class="card-title">Backend (GAS)</div><div class="card-desc">Google Apps Script Web App — xử lý AI, tạo Google Docs, ghi Sheets tự động</div></div>
+      <div class="card green"><div class="card-icon">🤖</div><div class="card-title">AI Engine</div><div class="card-desc">Claude Sonnet 4.6 (Anthropic API) — prompt engineering chuyên biệt cho từng skill</div></div>
+      <div class="card orange"><div class="card-icon">📊</div><div class="card-title">Data Center</div><div class="card-desc">Google Sheets "AIFUN DATA CENTER" — lưu toàn bộ tài liệu đã tạo trong tab GENERATED_DOCUMENTS</div></div>
+      <div class="card red"><div class="card-icon">📁</div><div class="card-title">Storage</div><div class="card-desc">Google Drive — lưu tài liệu dạng Google Docs, hỗ trợ export PDF và Word (.docx)</div></div>
+      <div class="card cyan"><div class="card-icon">👤</div><div class="card-title">User Flow</div><div class="card-desc">Truy cập web → chọn Skill → điền form → nhận tài liệu hoàn chỉnh trong ~2 phút</div></div>
+    </div>
+  </div>
+
+  <!-- S3: Kiến trúc -->
+  <div class="slide" id="s3">
+    <div class="slide-label">Slide 3 — Kiến trúc hệ thống</div>
+    <div class="slide-heading">Luồng hoạt động toàn hệ thống</div>
+    <div class="slide-sub">Từ lúc user bấm nút đến khi nhận tài liệu — 5 bước tự động hoàn toàn, không cần can thiệp thủ công.</div>
+    <div class="arch">
+      <div class="arch-box" style="border-color:#3B82F6"><div class="ab-icon">👤</div><div class="ab-title">User</div><div class="ab-sub">Điền form</div></div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box" style="border-color:#8B5CF6"><div class="ab-icon">🌐</div><div class="ab-title">Frontend</div><div class="ab-sub">portal.aifun.ai.vn</div></div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box" style="border-color:#F59E0B"><div class="ab-icon">⚙️</div><div class="ab-title">GAS API</div><div class="ab-sub">doPost router</div></div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box" style="border-color:#EC4899"><div class="ab-icon">🤖</div><div class="ab-title">Claude AI</div><div class="ab-sub">Tạo nội dung</div></div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box" style="border-color:#22C55E"><div class="ab-icon">📄</div><div class="ab-title">Google Docs</div><div class="ab-sub">Xuất tài liệu</div></div>
+    </div>
+    <div style="text-align:center;margin:12px 0;color:#475569;font-size:18px;">↓ Đồng thời ghi log</div>
+    <div style="text-align:center;">
+      <div class="arch-box" style="border-color:#06B6D4;display:inline-block;"><div class="ab-icon">📊</div><div class="ab-title">Google Sheets</div><div class="ab-sub">GENERATED_DOCUMENTS</div></div>
+    </div>
+    <div class="codebox">
+      <span style="color:#64748B">// Kỹ thuật quan trọng — POST với text/plain để tránh CORS preflight</span><br>
+      Frontend → POST (Content-Type: text/plain) → GAS exec URL → generateDocument → Claude API → DocBuilder → SheetsLogger → JSON response → Frontend hiển thị
+    </div>
+  </div>
+
+  <!-- S4: Cấu trúc file -->
+  <div class="slide" id="s4">
+    <div class="slide-label">Slide 4 — Cấu trúc file dự án</div>
+    <div class="slide-heading">8 file Frontend + 5 file GAS Backend</div>
+    <div class="slide-sub">Toàn bộ portal chạy bằng file tĩnh — không cần server, không cần build tool, deploy bằng GitHub Pages.</div>
+    <table class="tbl">
+      <thead><tr><th>File</th><th>Vai trò</th><th>Điểm quan trọng</th></tr></thead>
+      <tbody>
+        <tr><td><code>index.html</code></td><td>Giao diện chính, layout, navigation tabs</td><td>Load đúng thứ tự: config.js → skill-forms.js → skill-engine.js</td></tr>
+        <tr><td><code>config.js</code></td><td>Cấu hình GAS URL, Spreadsheet ID, Folder ID</td><td>GAS URL phải khớp với deployment đang active trong GAS Console</td></tr>
+        <tr><td><code>skill-forms.js</code></td><td>Định nghĩa form + buildPrompt cho 6 skills</td><td>Phải export <code>getSkillForm()</code> ra <code>window</code> để engine gọi được</td></tr>
+        <tr><td><code>skill-engine.js</code></td><td>Modal UI, gọi GAS API, hiển thị kết quả</td><td>Dùng <code>Content-Type: text/plain</code> — không dùng application/json</td></tr>
+        <tr><td><code>script.js</code></td><td>Dashboard, Prompt Library, navigation logic</td><td>—</td></tr>
+        <tr><td><code>style.css</code></td><td>Global dark theme styles</td><td>—</td></tr>
+        <tr><td><code>skill-modal.css</code></td><td>Styles dành riêng cho skill modal popup</td><td>—</td></tr>
+        <tr><td><code>logo.svg</code></td><td>Logo AIFUN (robot + tên + tagline)</td><td>Dùng <code>&lt;img src="logo.svg"&gt;</code> trong header — không dùng emoji</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box" style="margin-top:12px;">
+      <strong style="color:#3B82F6;">GAS Backend (5 files):</strong>&nbsp;
+      <code>Code.gs</code> (router) · <code>AIProvider.gs</code> (Claude/OpenAI/Gemini) · <code>DocBuilder.gs</code> (tạo Google Docs) · <code>Logger.gs</code> (ghi Sheets) · <code>DocCenter.gs</code> (đọc dữ liệu)
+    </div>
+  </div>
+
+  <!-- S5: 7 lỗi -->
+  <div class="slide" id="s5">
+    <div class="slide-label">Slide 5 — Hành trình debug</div>
+    <div class="slide-heading">7 vấn đề đã gặp & cách giải quyết</div>
+    <div class="slide-sub">Mỗi lỗi là một bài học thực tế — ghi lại để team không phải debug lại từ đầu.</div>
+    <table class="tbl">
+      <thead><tr><th>#</th><th>Vấn đề</th><th>Nguyên nhân gốc</th><th>Giải pháp</th><th>Loại</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Script path 404</td><td>index.html load từ <code>aifun-skill-engine/</code> nhưng file ở thư mục root</td><td>Đổi thành <code>./config.js</code>, <code>./skill-forms.js</code></td><td><span class="badge fix">FIX</span></td></tr>
+        <tr><td>2</td><td><code>getSkillForm</code> undefined</td><td>skill-forms.js bị cắt cụt ở dòng 39, thiếu hàm export ra window</td><td>Viết lại hoàn chỉnh 6 skills + <code>window.getSkillForm = getSkillForm</code></td><td><span class="badge fix">FIX</span></td></tr>
+        <tr><td>3</td><td>Nút không bấm được</td><td><code>type=submit</code> + form <code>onsubmit</code> không fire trên Cốc Cốc browser</td><td>Đổi sang <code>type=button</code> + <code>onclick="SkillEngine._onFormSubmit()"</code></td><td><span class="badge fix">FIX</span></td></tr>
+        <tr><td>4</td><td>Crash khi submit</td><td><code>form.aiOutputSections.map()</code> — field không tồn tại trong SKILL_FORMS</td><td>Check đầy đủ: <code>form && form.aiOutputSections ? ... : fallback</code></td><td><span class="badge fix">FIX</span></td></tr>
+        <tr><td>5</td><td>CORS "Failed to fetch"</td><td><code>Content-Type: application/json</code> trigger OPTIONS preflight, GAS không xử lý được</td><td>Đổi sang <code>Content-Type: text/plain</code> → "simple request", không cần preflight</td><td><span class="badge cfg">CONFIG</span></td></tr>
+        <tr><td>6</td><td>Claude API 404</td><td>Model <code>claude-3-5-sonnet-20241022</code> đã deprecated theo thời gian</td><td>Cập nhật <code>CLAUDE_MODEL = 'claude-sonnet-4-6'</code> trong AIProvider.gs</td><td><span class="badge cfg">CONFIG</span></td></tr>
+        <tr><td>7</td><td>Không ghi được Sheets</td><td><code>openById()</code> lỗi "Illegal ID" nhưng nằm trong try-catch → fail silently</td><td>Đổi sang <code>DriveApp.getFilesByName('AIFUN DATA CENTER')</code></td><td><span class="badge fix">FIX</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- S6: Bài học CORS -->
+  <div class="slide" id="s6">
+    <div class="slide-label">Slide 6 — Bài học kỹ thuật #1</div>
+    <div class="slide-heading">CORS với Google Apps Script</div>
+    <div class="slide-sub">Điểm kỹ thuật quan trọng nhất khi tích hợp GAS với bất kỳ frontend nào ngoài Google.</div>
+    <div class="ps-row">
+      <div class="ps-box problem">
+        <div class="ps-label">❌ Sai — gây CORS error</div>
+        <div class="ps-text">
+          Dùng <code>Content-Type: application/json</code><br>
+          → Browser tự động gửi OPTIONS preflight<br>
+          → GAS không handle được OPTIONS request<br>
+          → Browser block → <strong>"Failed to fetch"</strong>
+        </div>
+      </div>
+      <div class="ps-box solution">
+        <div class="ps-label">✅ Đúng — hoạt động</div>
+        <div class="ps-text">
+          Dùng <code>Content-Type: text/plain</code><br>
+          → Browser coi đây là "simple request"<br>
+          → Không gửi OPTIONS preflight<br>
+          → GAS nhận POST bình thường → <strong>Thành công</strong>
+        </div>
+      </div>
+    </div>
+    <div class="codebox">
+      <span style="color:#64748B">// ✅ Code đúng trong skill-engine.js</span><br>
+      fetch(GAS_URL, {<br>
+      &nbsp;&nbsp;method: <span style="color:#86EFAC">'POST'</span>,<br>
+      &nbsp;&nbsp;headers: { <span style="color:#86EFAC">'Content-Type': 'text/plain'</span> },&nbsp;&nbsp;<span style="color:#64748B">// ← quan trọng</span><br>
+      &nbsp;&nbsp;body: JSON.stringify(payload)<br>
+      })
+    </div>
+    <div class="info-box">
+      <strong style="color:#F59E0B;">⚠️ Lưu ý:</strong> GAS tự thêm <code>Access-Control-Allow-Origin: *</code> vào response — nhưng chỉ khi request là "simple request". Không dùng <code>mode: 'no-cors'</code> vì sẽ không đọc được response.
+    </div>
+  </div>
+
+  <!-- S7: Bài học Sheets -->
+  <div class="slide" id="s7">
+    <div class="slide-label">Slide 7 — Bài học kỹ thuật #2</div>
+    <div class="slide-heading">Truy cập Google Sheets từ GAS</div>
+    <div class="slide-sub"><code>openById()</code> có thể fail silently — gây ra lỗi khó debug nhất trong dự án này.</div>
+    <div class="ps-row">
+      <div class="ps-box problem">
+        <div class="ps-label">❌ Dễ lỗi — openById</div>
+        <div class="ps-text">
+          <code>SpreadsheetApp.openById(id)</code><br>
+          → Lỗi "Illegal spreadsheet id" khi ID bị truncate hoặc account permissions<br>
+          → Nằm trong try-catch → <strong>fail silently</strong><br>
+          → Document vẫn trả về success nhưng không ghi Sheets
+        </div>
+      </div>
+      <div class="ps-box solution">
+        <div class="ps-label">✅ Ổn định — DriveApp</div>
+        <div class="ps-text">
+          <code>DriveApp.getFilesByName('AIFUN DATA CENTER')</code><br>
+          → Tìm file theo tên trong Drive của owner<br>
+          → <code>SpreadsheetApp.open(file)</code><br>
+          → Không phụ thuộc vào Spreadsheet ID cứng
+        </div>
+      </div>
+    </div>
+    <div class="codebox">
+      <span style="color:#64748B">// ✅ Code đúng trong Logger.gs và Mã.gs</span><br>
+      var files = <span style="color:#7DD3FC">DriveApp.getFilesByName</span>(<span style="color:#86EFAC">'AIFUN DATA CENTER'</span>);<br>
+      if (!files.hasNext()) { Logger.log(<span style="color:#86EFAC">'Không tìm thấy file'</span>); return; }<br>
+      var ss    = <span style="color:#7DD3FC">SpreadsheetApp.open</span>(files.next());<br>
+      var sheet = ss.getSheetByName(<span style="color:#86EFAC">'GENERATED_DOCUMENTS'</span>);<br>
+      sheet.appendRow([id, skillTitle, title, docUrl, date, user, prompt, status]);
+    </div>
+    <div class="info-box">
+      <strong style="color:#F59E0B;">⚠️ Quan trọng:</strong> Deploy GAS phải chọn <strong>"Execute as: Tôi (owner)"</strong>. Nếu chọn "Anyone" → GAS chạy với quyền người gọi → không thấy file trong Drive của owner.
+    </div>
+  </div>
+
+  <!-- S8: Kết quả -->
+  <div class="slide" id="s8">
+    <div class="slide-label">Slide 8 — Kết quả đạt được</div>
+    <div class="slide-heading">Hệ thống hoạt động end-to-end</div>
+    <div class="slide-sub">Sau quá trình debug — toàn bộ luồng Frontend → GAS → Claude AI → Google Docs → Google Sheets đã thông.</div>
+    <div class="result-grid">
+      <div class="stat-card"><div class="stat-num">6</div><div class="stat-label">AI Skills trong hệ thống</div></div>
+      <div class="stat-card"><div class="stat-num">7</div><div class="stat-label">Bugs đã fix thành công</div></div>
+      <div class="stat-card"><div class="stat-num">~2'</div><div class="stat-label">Thời gian tạo 1 tài liệu</div></div>
+    </div>
+    <ul class="checklist">
+      <li><span class="check-pass">✅</span>portal.aifun.ai.vn load đúng, logo AIFUN hiển thị</li>
+      <li><span class="check-pass">✅</span>SOP Builder: form → AI xử lý → Google Docs tạo thành công</li>
+      <li><span class="check-pass">✅</span>Preview nội dung, Xem Docs / Tải PDF / Sao chép / Tải Word hoạt động</li>
+      <li><span class="check-pass">✅</span>Google Sheets GENERATED_DOCUMENTS ghi row mới sau mỗi lần tạo (DOC-0001, DOC-0002...)</li>
+      <li><span class="check-pass">✅</span>CORS fix thành công — frontend giao tiếp được với GAS backend</li>
+      <li><span class="check-pass">✅</span>Claude AI model cập nhật lên claude-sonnet-4-6 (model mới nhất)</li>
+      <li><span class="check-warn">🔄</span>5 skills còn lại cần test thực tế: Content Factory, Email, CRM, Webinar, Sales Script</li>
+    </ul>
+  </div>
+
+  <!-- S9: Checklist vận hành -->
+  <div class="slide" id="s9">
+    <div class="slide-label">Slide 9 — Hướng dẫn vận hành</div>
+    <div class="slide-heading">Checklist debug khi có sự cố</div>
+    <div class="slide-sub">Kiểm tra theo đúng thứ tự này — tiết kiệm 80% thời gian debug.</div>
+    <ul class="timeline">
+      <li class="tl-item">
+        <div class="tl-dot bg-blue">1</div>
+        <div class="tl-content">
+          <div class="tl-title">Kiểm tra GAS URL trong config.js</div>
+          <div class="tl-desc">Vào GAS → Triển khai → Quản lý triển khai → Copy URL → So sánh với <code>gasWebAppUrl</code> trong config.js. Nếu khác → cập nhật config.js → push lên GitHub.</div>
+        </div>
+      </li>
+      <li class="tl-item">
+        <div class="tl-dot bg-green">2</div>
+        <div class="tl-content">
+          <div class="tl-title">Chạy test function trong GAS Editor</div>
+          <div class="tl-desc">Mở GAS Editor → chọn hàm <code>testSaveSheets</code> → Run → xem Logs. Nếu success → GAS OK, lỗi nằm ở frontend. Nếu lỗi → fix GAS trước.</div>
+        </div>
+      </li>
+      <li class="tl-item">
+        <div class="tl-dot bg-orange">3</div>
+        <div class="tl-content">
+          <div class="tl-title">Mở Console browser (F12) khi bấm nút</div>
+          <div class="tl-desc">"Failed to fetch" = CORS → kiểm tra Content-Type. "undefined is not a function" = JS file chưa load đúng. Đọc stack trace để xác định file và dòng lỗi.</div>
+        </div>
+      </li>
+      <li class="tl-item">
+        <div class="tl-dot bg-red">4</div>
+        <div class="tl-content">
+          <div class="tl-title">Deploy lại GAS sau mỗi lần sửa code</div>
+          <div class="tl-desc">Sửa bất kỳ file .gs nào → bắt buộc phải: Triển khai → Quản lý → Chỉnh sửa → <strong>Phiên bản mới</strong> → Triển khai. Không deploy = code cũ vẫn chạy.</div>
+        </div>
+      </li>
+      <li class="tl-item">
+        <div class="tl-dot bg-purple">5</div>
+        <div class="tl-content">
+          <div class="tl-title">Hard refresh sau khi push GitHub</div>
+          <div class="tl-desc">GitHub Pages cache ~2 phút. Dùng <strong>Ctrl+Shift+R</strong> để force reload. Vẫn thấy cũ → đợi thêm 2 phút → thử lại. Kiểm tra tab Network trong DevTools để xác nhận file mới.</div>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- S10: Tổng kết -->
+  <div class="slide" id="s10">
+    <div class="slide-label">Slide 10 — Tổng kết & Bước tiếp theo</div>
+    <div class="slide-heading">Bài học & Roadmap phát triển</div>
+    <div class="slide-sub">Những insight quan trọng nhất — áp dụng cho mọi dự án tích hợp AI tiếp theo.</div>
+    <div class="lesson-grid">
+      <div class="lesson-card bl">
+        <div class="lesson-num">Bài học 1</div>
+        <div class="lesson-title">Test từng layer riêng biệt</div>
+        <div class="lesson-desc">Luôn có hàm test độc lập trong GAS (<code>testSaveSheets</code>). Xác định lỗi ở frontend hay backend trước khi debug toàn luồng — tiết kiệm hàng giờ.</div>
+      </div>
+      <div class="lesson-card gl">
+        <div class="lesson-num">Bài học 2</div>
+        <div class="lesson-title">CORS là điểm nghẽn phổ biến</div>
+        <div class="lesson-desc">Bất kỳ API nào không hỗ trợ OPTIONS preflight → dùng <code>Content-Type: text/plain</code>. Nguyên tắc này áp dụng cho GAS và nhiều API khác.</div>
+      </div>
+      <div class="lesson-card ol">
+        <div class="lesson-num">Bài học 3</div>
+        <div class="lesson-title">Silent fail nguy hiểm hơn crash</div>
+        <div class="lesson-desc"><code>try-catch</code> nuốt lỗi mà không báo → hệ thống trông như chạy đúng nhưng không làm gì. Luôn log error và trả về error trong response để frontend biết.</div>
+      </div>
+      <div class="lesson-card pl">
+        <div class="lesson-num">Roadmap tiếp theo</div>
+        <div class="lesson-title">Mở rộng hệ thống</div>
+        <div class="lesson-desc">✅ Test 5 skills còn lại · 📋 Dashboard hiển thị GENERATED_DOCUMENTS · 👤 User authentication · ➕ Thêm skill mới theo yêu cầu · 📱 Tối ưu mobile</div>
+      </div>
+    </div>
+    <div style="margin-top:20px;text-align:center;padding:16px;background:#0F172A;border-radius:10px;border:1px solid #334155;">
+      <div style="font-size:12px;color:#64748B;margin-bottom:6px;">Repository & Domain</div>
+      <div style="font-size:14px;color:#3B82F6;font-weight:700;">github.com/aifunvn/aifun-ai-portal → portal.aifun.ai.vn</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const TOTAL = 10;
+  let current = 1;
+
+  function renderDots() {
+    const c = document.getElementById('dots');
+    c.innerHTML = '';
+    for (let i = 1; i <= TOTAL; i++) {
+      const d = document.createElement('button');
+      d.className = 'dot' + (i === current ? ' active' : (i < current ? ' done' : ''));
+      d.title = 'Slide ' + i;
+      d.onclick = (function(n){ return function(){ goTo(n); }; })(i);
+      c.appendChild(d);
+    }
+    document.getElementById('counter').textContent = current + ' / ' + TOTAL;
+  }
+
+  function goTo(n) {
+    document.getElementById('s' + current).classList.remove('active');
+    current = Math.max(1, Math.min(TOTAL, n));
+    document.getElementById('s' + current).classList.add('active');
+    renderDots();
+    window.scrollTo(0, 0);
+  }
+
+  function nextSlide() { goTo(current + 1); }
+  function prevSlide() { goTo(current - 1); }
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') nextSlide();
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   prevSlide();
+  });
+
+  renderDots();
+</script>
+</body>
+</html>

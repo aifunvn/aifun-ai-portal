@@ -1,0 +1,54 @@
+{
+  "id": "webinar-builder",
+  "name": "Webinar Builder",
+  "description": "Thiet ke webinar ban hang A-Z: kich ban, slide, CTA, email follow-up",
+  "category": "Giao duc",
+  "icon": "sparkle",
+  "version": "1.0.0",
+  "status": "active",
+  "provider": "mock",
+  "plan": "pro",
+  "fields": [
+    {
+      "id": "webinar_topic",
+      "label": "Chu de Webinar",
+      "type": "text",
+      "required": true,
+      "placeholder": "Vi du: 5 bi quyet tang doanh thu 3x trong 90 ngay",
+      "validation": { "maxLength": 200 }
+    },
+    {
+      "id": "product",
+      "label": "San pham / Offer cuoi webinar",
+      "type": "text",
+      "required": true,
+      "placeholder": "Vi du: Khoa hoc X, Phan mem Y, Dich vu Z...",
+      "validation": { "maxLength": 150 }
+    },
+    {
+      "id": "target_audience",
+      "label": "Doi tuong tham du",
+      "type": "text",
+      "required": true,
+      "placeholder": "Vi du: Chu doanh nghiep SME, Sales Manager...",
+      "validation": { "maxLength": 150 }
+    },
+    {
+      "id": "duration",
+      "label": "Thoi luong",
+      "type": "select",
+      "required": false,
+      "options": ["60 phut", "90 phut", "120 phut"]
+    },
+    {
+      "id": "price",
+      "label": "Gia san pham",
+      "type": "text",
+      "required": false,
+      "placeholder": "Vi du: 2.990.000d, $97...",
+      "validation": { "maxLength": 100 }
+    }
+  ],
+  "prompt_template": "Thiet ke Webinar ban hang hoan chinh bang tieng Viet.\n\nTHONG TIN WEBINAR:\nChu de: {{webinar_topic}}\nSan pham ban: {{product}}\nDoi tuong: {{target_audience}}\nThoi luong: {{duration}}\nGia san pham: {{price}}\n\nWorkspace: {{workspace_name}} | Nguoi tao: {{user_name}}\n\nYEU CAU NOI DUNG:\n1. Kich ban chi tiet tung phan:\n   - Hook mo dau (5 phut): cau hoi, thong ke, cam ket\n   - Story / Problem (10 phut): noi dau khach hang\n   - Content chinh (40-60 phut): 3-5 chia se gia tri thuc te\n   - Pitch san pham (15-20 phut): gia tri, chung minh, bao dam\n   - Q&A va chot (10 phut)\n2. Outline 12-15 slide (tieu de + bullet points chinh moi slide)\n3. 3 CTA scripts khac nhau (urgent, value-based, social proof)\n4. Email xac nhan dang ky (subject + noi dung day du)\n5. Email nhac nho 1 ngay truoc (subject + noi dung)\n6. Email follow-up sau webinar voi replay link (subject + noi dung)\n\nTao webinar kit day du, chuyen nghiep, toi uu conversion:",
+  "output_type": "document"
+}

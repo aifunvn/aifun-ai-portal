@@ -1,0 +1,62 @@
+{
+  "id": "youtube-builder",
+  "name": "YouTube Script Builder",
+  "description": "Tao kich ban video YouTube hap dan voi cau truc chuyen nghiep, phu hop thoi luong",
+  "category": "Noi dung",
+  "icon": "video",
+  "version": "1.0.0",
+  "status": "active",
+  "provider": "mock",
+  "plan": "free",
+  "fields": [
+    {
+      "id": "topic",
+      "label": "Chu de video",
+      "type": "text",
+      "required": true,
+      "placeholder": "Vi du: 5 cach su dung AI de tang nang suat lam viec",
+      "validation": { "maxLength": 200 }
+    },
+    {
+      "id": "audience",
+      "label": "Doi tuong khan gia",
+      "type": "text",
+      "required": false,
+      "placeholder": "Vi du: Chu doanh nghiep SME, quan ly cap trung",
+      "validation": { "maxLength": 150 }
+    },
+    {
+      "id": "duration",
+      "label": "Thoi luong video",
+      "type": "select",
+      "required": true,
+      "options": ["5 phut", "10 phut", "15 phut", "20 phut", "30 phut+"]
+    },
+    {
+      "id": "style",
+      "label": "Phong cach trinh bay",
+      "type": "select",
+      "required": true,
+      "options": ["Giang day / Huong dan", "Ke chuyen / Chia se", "Phan tich / Chuyen sau", "Truyen cam hung / Dong luc", "Giai tri / Vui nhon"]
+    },
+    {
+      "id": "key_points",
+      "label": "Y chinh can truyen dat",
+      "type": "textarea",
+      "required": false,
+      "placeholder": "Liet ke 3-5 y chinh ban muon khan gia nho sau khi xem video",
+      "rows": 4,
+      "validation": { "maxLength": 800 }
+    },
+    {
+      "id": "cta",
+      "label": "Call to Action (CTA)",
+      "type": "text",
+      "required": false,
+      "placeholder": "Vi du: Dang ky kenh, Xem video tiep theo, Tai tai lieu mien phi",
+      "validation": { "maxLength": 150 }
+    }
+  ],
+  "prompt_template": "Hay tao kich ban video YouTube chuyen nghiep va hap dan bang tieng Viet.\n\nTHONG TIN VIDEO:\nChu de: {{topic}}\nDoi tuong: {{audience}}\nThoi luong: {{duration}}\nPhong cach: {{style}}\n\nY CHINH CAN TRUYEN DAT:\n{{key_points}}\n\nCALL TO ACTION:\n{{cta}}\n\nWorkspace: {{workspace_name}} | Nguoi tao: {{user_name}}\n\nYEU CAU FORMAT:\n- Phan Mo dau (Hook manh trong 30 giay dau)\n- Gioi thieu ban than va chu de\n- Noi dung chinh chia thanh cac phan ro rang, phu hop thoi luong {{duration}}\n- Tong ket va Call to Action\n- Them goi y cho Video Title va Thumbnail\n- Them goi y Tags SEO (5-10 tags)\n\nTao kich ban day du:",
+  "output_type": "document"
+}

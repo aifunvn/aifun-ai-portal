@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="vi" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AIFUN OS — AI Workspace cho doanh nghiệp Việt Nam">
+  <title>AIFUN OS V4</title>
+  <link rel="icon" href="/favicon.svg">
+  <link rel="stylesheet" href="/styles/tokens.css">
+  <link rel="stylesheet" href="/styles/base.css">
+  <link rel="stylesheet" href="/styles/layout.css">
+  <link rel="stylesheet" href="/styles/sidebar.css">
+  <link rel="stylesheet" href="/styles/topbar.css">
+  <link rel="stylesheet" href="/styles/auth.css">
+  <link rel="stylesheet" href="/styles/dashboard.css">
+  <link rel="stylesheet" href="/styles/builders.css">
+  <link rel="stylesheet" href="/styles/markdown.css">
+  <link rel="stylesheet" href="/styles/documents.css">
+  <link rel="stylesheet" href="/styles/marketplace.css">
+  <link rel="stylesheet" href="/styles/history.css">
+</head>
+<body>
+  <div id="v4-root">
+    <div id="v4-boot" style="display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;gap:12px;font-family:sans-serif;color:#64748b;">
+      <div style="width:36px;height:36px;border:3px solid #e2e8f0;border-top-color:#6366f1;border-radius:50%;animation:spin .8s linear infinite;"></div>
+      <span style="font-size:.9rem;">Đang khởi động AIFUN OS V4…</span>
+    </div>
+  </div>
+  <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+  <script>
+    // Catch module-level errors (CDN failure, import errors) that bypass init().catch()
+    window.addEventListener('error', function(e) {
+      var boot = document.getElementById('v4-boot');
+      if (boot) boot.innerHTML =
+        '<div style="text-align:center;padding:24px;max-width:480px">' +
+        '<div style="font-size:2rem;margin-bottom:12px;">⚠️</div>' +
+        '<p style="font-weight:700;color:#0f172a;margin:0 0 8px">Không thể tải AIFUN OS V4</p>' +
+        '<p style="color:#64748b;font-size:.85rem;margin:0 0 16px">Lỗi: ' + (e.message || e.filename || 'Module load failed') + '</p>' +
+        '<button onclick="location.reload()" style="padding:8px 20px;background:#6366f1;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.9rem">Thử lại</button>' +
+        '</div>';
+    });
+    window.addEventListener('unhandledrejection', function(e) {
+      var boot = document.getElementById('v4-boot');
+      if (boot && boot.parentNode === document.getElementById('v4-root')) {
+        boot.innerHTML =
+          '<div style="text-align:center;padding:24px;max-width:480px">' +
+          '<div style="font-size:2rem;margin-bottom:12px;">⚠️</div>' +
+          '<p style="font-weight:700;color:#0f172a;margin:0 0 8px">Lỗi khởi động</p>' +
+          '<p style="color:#64748b;font-size:.85rem;margin:0 0 16px">' + (e.reason?.message || String(e.reason) || 'Unknown error') + '</p>' +
+          '<button onclick="location.reload()" style="padding:8px 20px;background:#6366f1;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.9rem">Thử lại</button>' +
+          '</div>';
+      }
+    });
+  </script>
+  <script src="/config.js"></script>
+  <script type="module" src="/src/app/app.js"></script>
+</body>
+</html>

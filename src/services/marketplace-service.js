@@ -1,0 +1,110 @@
+import { supabase } from '../lib/supabase.js';
+
+// Static fallback — mirrors the DB seed data
+export const STATIC_ITEMS = [
+  {
+    id: 'prompt-builder', name: 'Prompt Builder',
+    description: 'Tao prompt AI chuyen nghiep de dung voi Claude, GPT va Gemini',
+    category: 'Nang suat', plan: 'free', icon: 'sparkle', is_featured: true, is_active: true,
+  },
+  {
+    id: 'sop-builder', name: 'SOP Builder',
+    description: 'Tao quy trinh chuan (SOP) chuyen nghiep cho doanh nghiep',
+    category: 'Van hanh', plan: 'starter', icon: 'document', is_featured: true, is_active: true,
+  },
+  {
+    id: 'youtube-builder', name: 'YouTube Script Builder',
+    description: 'Tao kich ban video YouTube hap dan voi cau truc chuyen nghiep',
+    category: 'Noi dung', plan: 'pro', icon: 'video', is_featured: false, is_active: true,
+  },
+  {
+    id: 'email-builder', name: 'Email Automation Builder',
+    description: 'Tao chuoi email marketing, nurturing tu dong cho tung giai doan khach hang',
+    category: 'Marketing', plan: 'pro', icon: 'sparkle', is_featured: false, is_active: true,
+  },
+  {
+    id: 'sales-builder', name: 'Sales Script Builder',
+    description: 'Tao kich ban ban hang thuyet phuc cho tung doi tuong khach hang',
+    category: 'Kinh doanh', plan: 'starter', icon: 'sparkle', is_featured: false, is_active: true,
+  },
+  {
+    id: 'content-builder', name: 'Content Factory',
+    description: 'Bien 1 y tuong thanh noi dung da kenh: Facebook, TikTok, Email, Zalo, YouTube',
+    category: 'Marketing', plan: 'starter', icon: 'sparkle', is_featured: false, is_active: true,
+  },
+  {
+    id: 'crm-builder', name: 'CRM AI Assistant',
+    description: 'Phan tich lead, cham diem, de xuat buoc tiep theo toi uu ty le chot sale',
+    category: 'Kinh doanh', plan: 'pro', icon: 'sparkle', is_featured: false, is_active: true,
+  },
+  {
+    id: 'webinar-builder', name: 'Webinar Builder',
+    description: 'Thiet ke webinar ban hang A-Z: kich ban, slide, CTA, email follow-up',
+    category: 'Giao duc', plan: 'pro', icon: 'sparkle', is_featured: false, is_active: true,
+  },
+];
+
+export async function listItems({ query = '', plan = null } = {}) {
+  try {
+    let q = supabase
+      .from('marketplace_items')
+      .select('*')
+      .eq('is_active', true)
+      .order('is_featured', { ascending: false })
+      .order('created_at', { ascending: true });
+    if (plan) q = q.eq('plan', plan);
+
+    const { data, error } = await q;
+    if (error) throw error;
+
+    // Merge: STATIC_ITEMS guarantees all 8 builders are always present.
+    // DB rows overlay STATIC_ITEMS (same id → DB wins). DB-only rows are appended.
+    // This handles the case where DB returns a subset (e.g. migration applied partially).
+    const dbRows  = data ?? [];
+    const dbById  = new Map(dbRows.map((r) => [r.id, r]));
+    const merged  = STATIC_ITEMS.map((s) => dbById.get(s.id) ?? s);
+    dbRows.forEach((r) => { if (!merged.find((s) => s.id === r.id)) merged.push(r); });
+    let items = merged.filter((i) => i.is_active !== false);
+    if (plan) items = items.filter((i) => i.plan === plan);
+    if (query) {
+      const lq = query.toLowerCase();
+      items = items.filter(
+        (i) => i.name.toLowerCase().includes(lq) || i.description?.toLowerCase().includes(lq),
+      );
+    }
+    return items;
+  } catch {
+    let items = STATIC_ITEMS;
+    if (plan)  items = items.filter((i) => i.plan === plan);
+    if (query) {
+      const lq = query.toLowerCase();
+      items = items.filter(
+        (i) => i.name.toLowerCase().includes(lq) || i.description?.toLowerCase().includes(lq),
+      );
+    }
+    return items;
+  }
+}
+
+export async function getItem(id) {
+  try {
+    const { data, error } = await supabase
+      .from('marketplace_items')
+      .select('*')
+      .eq('id', id)
+      .single();
+    if (error) throw error;
+    return data;
+  } catch {
+    return STATIC_ITEMS.find((i) => i.id === id) ?? null;
+  }
+}
+
+export function groupByCategory(items) {
+  return items.reduce((groups, item) => {
+    const cat = item.category ?? 'Khac';
+    if (!groups[cat]) groups[cat] = [];
+    groups[cat].push(item);
+    return groups;
+  }, {});
+}

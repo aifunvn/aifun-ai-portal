@@ -1,0 +1,55 @@
+{
+  "id": "crm-builder",
+  "name": "CRM AI Assistant",
+  "description": "Phan tich lead, cham diem, de xuat buoc tiep theo toi uu ty le chot sale",
+  "category": "Kinh doanh",
+  "icon": "sparkle",
+  "version": "1.0.0",
+  "status": "active",
+  "provider": "mock",
+  "plan": "pro",
+  "fields": [
+    {
+      "id": "lead_name",
+      "label": "Ten khach hang / Cong ty",
+      "type": "text",
+      "required": true,
+      "placeholder": "Vi du: Anh Minh - Cong ty ABC",
+      "validation": { "maxLength": 150 }
+    },
+    {
+      "id": "industry",
+      "label": "Nganh nghe",
+      "type": "text",
+      "required": false,
+      "placeholder": "Vi du: Ban le, San xuat, F&B...",
+      "validation": { "maxLength": 100 }
+    },
+    {
+      "id": "budget",
+      "label": "Ngan sach uoc tinh",
+      "type": "text",
+      "required": false,
+      "placeholder": "Vi du: 50-100 trieu, Chua xac dinh...",
+      "validation": { "maxLength": 100 }
+    },
+    {
+      "id": "stage",
+      "label": "Giai doan hien tai",
+      "type": "select",
+      "required": false,
+      "options": ["Moi tiep can", "Da demo", "Dang thuong luong", "Cho quyet dinh", "Sap chot"]
+    },
+    {
+      "id": "situation",
+      "label": "Tinh trang hien tai",
+      "type": "textarea",
+      "required": true,
+      "placeholder": "Mo ta tinh trang lead: da lien he may lan, phan hoi the nao, vuong mac gi...",
+      "rows": 4,
+      "validation": { "maxLength": 1000 }
+    }
+  ],
+  "prompt_template": "Phan tich CRM va de xuat chien luoc ban hang bang tieng Viet.\n\nTHONG TIN LEAD:\nTen: {{lead_name}}\nNganh nghe: {{industry}}\nNgan sach: {{budget}}\nGiai doan: {{stage}}\n\nTINH TRANG HIEN TAI:\n{{situation}}\n\nWorkspace: {{workspace_name}} | Nguoi tao: {{user_name}}\n\nYEU CAU PHAN TICH:\n1. Diem lead scoring (0-100) voi ly giai cu the\n2. Phan tich BANT (Budget, Authority, Need, Timeline)\n3. 3 buoc hanh dong tiep theo cu the co deadline\n4. Script cuoc goi hoac email tiep theo (viet san, san sang dung)\n5. Du bao xac suat chot sale (%) va ly do\n6. Rui ro can luu y va cach xu ly\n\nTao bao cao CRM day du, thuc te va co the ap dung ngay:",
+  "output_type": "document"
+}

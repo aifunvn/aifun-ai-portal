@@ -1,0 +1,49 @@
+:root {
+  /* Brand */
+  --c-primary:   #6366f1;
+  --c-primary-h: #4f46e5;
+  --c-primary-l: #eef2ff;
+  --c-success:   #10b981;
+  --c-warning:   #f59e0b;
+  --c-danger:    #ef4444;
+
+  /* Surfaces */
+  --surface: #ffffff;
+  --bg:      #f1f5f9;
+  --border:  #e2e8f0;
+
+  /* Text */
+  --text-1: #0f172a;
+  --text-2: #475569;
+  --text-3: #94a3b8;
+
+  /* Radii */
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-xl: 20px;
+
+  /* Shadows */
+  --sh-sm: 0 1px 3px rgba(0, 0, 0, .08);
+  --sh-md: 0 4px 12px rgba(0, 0, 0, .07);
+  --sh-lg: 0 10px 32px rgba(0, 0, 0, .09);
+
+  /* Motion */
+  --tr: .16s ease;
+
+  /* Layout */
+  --sidebar-w:  220px;
+  --topbar-h:   56px;
+}
+
+[data-dark] {
+  --surface: #1e293b;
+  --bg:      #0f172a;
+  --border:  #334155;
+  --text-1:  #f1f5f9;
+  --text-2:  #94a3b8;
+  --text-3:  #64748b;
+  --sh-sm:   0 1px 3px rgba(0, 0, 0, .3);
+  --sh-md:   0 4px 12px rgba(0, 0, 0, .25);
+  --sh-lg:   0 10px 32px rgba(0, 0, 0, .35);
+}

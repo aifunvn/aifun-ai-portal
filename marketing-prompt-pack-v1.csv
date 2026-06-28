@@ -1,0 +1,794 @@
+id,title,category,tool,content,tags,uses,rating
+mkt-001,MKT-001 Kế hoạch Marketing 90 ngày,marketing,Claude,"Bạn là chuyên gia Marketing Strategy với 15 năm kinh nghiệm tăng trưởng doanh nghiệp SME tại Việt Nam.
+
+Hãy xây dựng KẾ HOẠCH MARKETING 90 NGÀY hoàn chỉnh cho doanh nghiệp sau:
+
+THÔNG TIN DOANH NGHIỆP:
+- Tên/ngành: [TÊN DOANH NGHIỆP / NGÀNH]
+- Sản phẩm/dịch vụ chính: [MÔ TẢ SẢN PHẨM]
+- Target khách hàng: [ĐỐI TƯỢNG MỤC TIÊU]
+- Ngân sách marketing/tháng: [NGÂN SÁCH]
+- Mục tiêu doanh thu 90 ngày: [MỤC TIÊU]
+- Điểm mạnh hiện tại: [ĐIỂM MẠNH]
+- Thách thức lớn nhất: [THÁCH THỨC]
+
+YÊU CẦU OUTPUT:
+
+GIAI ĐOẠN 1 - THÁNG 1: NỀN TẢNG (Ngày 1-30)
+- 3 ưu tiên chiến lược
+- Kênh marketing trọng tâm
+- Content plan tuần 1-4
+- KPI cần đạt cuối tháng 1
+- Budget allocation chi tiết
+
+GIAI ĐOẠN 2 - THÁNG 2: TĂNG TỐC (Ngày 31-60)
+- Chiến thuật scale dựa trên data tháng 1
+- Campaign chạy trong tháng
+- Automation cần thiết lập
+- KPI cần đạt cuối tháng 2
+
+GIAI ĐOẠN 3 - THÁNG 3: TỐI ƯU (Ngày 61-90)
+- Tối ưu funnel dựa trên 60 ngày data
+- Kênh/chiến thuật cần nhân rộng
+- Chuẩn bị cho quý tiếp theo
+- KPI tổng kết 90 ngày
+
+DASHBOARD THEO DÕI:
+Tạo bảng: Tuần | Mục tiêu leads | Mục tiêu doanh thu | Kênh trọng tâm | Action items
+
+Format: Rõ ràng, có thể thực thi ngay, kèm tool/resource gợi ý cho từng task.","marketing,planning,90-day,strategy,SME",0,5
+mkt-002,MKT-002 Content Pillar,marketing,Claude,"Bạn là Content Strategist chuyên xây dựng hệ thống nội dung bền vững cho thương hiệu.
+
+Hãy thiết kế HỆ THỐNG CONTENT PILLAR cho:
+
+THÔNG TIN THƯƠNG HIỆU:
+- Thương hiệu: [TÊN THƯƠNG HIỆU]
+- Lĩnh vực: [LĨNH VỰC]
+- Đối tượng khách hàng: [MÔ TẢ ICP]
+- Điều thương hiệu muốn được biết đến: [GIÁ TRỊ CỐT LÕI]
+- Kênh phân phối nội dung: [FACEBOOK / YOUTUBE / TIKTOK / ZALO / EMAIL]
+- Tone of voice: [CHUYÊN NGHIỆP / GẦN GŨI / TRUYỀN CẢM HỨNG]
+
+OUTPUT CẦN TẠO:
+
+PILLAR 1 - BRAND STORY
+- Chủ đề: Câu chuyện thương hiệu, hành trình, con người
+- Tần suất: X lần/tuần
+- 5 ý tưởng nội dung cụ thể
+- Hook template mẫu
+
+PILLAR 2 - EDUCATION
+- Chủ đề: Kiến thức, hướng dẫn, how-to
+- Tần suất: X lần/tuần
+- 5 ý tưởng nội dung cụ thể
+- Hook template mẫu
+
+PILLAR 3 - SOCIAL PROOF
+- Chủ đề: Case study, testimonial, kết quả khách hàng
+- Tần suất: X lần/tuần
+- 5 ý tưởng nội dung cụ thể
+- Hook template mẫu
+
+PILLAR 4 - ENGAGEMENT
+- Chủ đề: Tương tác, câu hỏi, thảo luận, poll
+- Tần suất: X lần/tuần
+- 5 ý tưởng nội dung cụ thể
+
+PILLAR 5 - CONVERSION
+- Chủ đề: Offer, CTA, promotion, sản phẩm
+- Tần suất: X lần/tuần
+- 5 ý tưởng không bị cảm giác bán hàng lộ liễu
+
+CONTENT MIX: Tỉ lệ lý tưởng giữa 5 pillars theo từng kênh
+CONTENT BANK: 30 ý tưởng cụ thể cho 30 ngày đầu","content,pillar,strategy,brand,topics",0,5
+mkt-003,MKT-003 Lịch Content 30 ngày,marketing,Claude,"Bạn là Content Manager chuyên lập lịch nội dung cho thương hiệu Việt Nam.
+
+Tạo LỊCH CONTENT 30 NGÀY hoàn chỉnh cho:
+
+THÔNG TIN:
+- Thương hiệu: [TÊN THƯƠNG HIỆU]
+- Kênh đăng: [FACEBOOK / INSTAGRAM / TIKTOK / ZALO OA]
+- Tần suất: [X bài/tuần]
+- Sự kiện/ngày lễ trong tháng: [LIỆT KÊ]
+- Chương trình đang chạy: [PROMOTION / EVENT]
+- Tone: [PHONG CÁCH VIẾT]
+
+LỊCH THEO TUẦN:
+- Tuần 1: Education + Engagement (warm-up audience)
+- Tuần 2: Education + Social Proof
+- Tuần 3: Social Proof + Soft Conversion
+- Tuần 4: Conversion + Teaser tháng sau
+
+FORMAT BẢNG:
+Ngày | Thứ | Pillar | Chủ đề | Format | Caption (100 chữ) | CTA | Hashtag
+
+CHO MỖI BÀI:
+- Gợi ý ảnh/video concept
+- Caption dùng được ngay
+- 5-10 hashtag phù hợp
+- Thời gian đăng tối ưu
+
+BONUS:
+- 5 bài dự phòng khi thiếu nội dung
+- Template caption tái sử dụng theo từng dạng bài","content-calendar,30-day,schedule,social-media",0,5
+mkt-004,MKT-004 Facebook Viral Post,marketing,Claude,"Bạn là Facebook Copywriter chuyên tạo bài viết viral cho thị trường Việt Nam.
+
+Viết BÀI FACEBOOK VIRAL cho:
+
+THÔNG TIN:
+- Thương hiệu/cá nhân: [TÊN]
+- Chủ đề bài viết: [CHỦ ĐỀ]
+- Mục tiêu: [REACH / ENGAGEMENT / CLICK / SALE]
+- Đối tượng đọc: [MÔ TẢ]
+- Offer/CTA muốn push: [CTA]
+
+PHIÊN BẢN 1 - STORYTELLING
+- Hook 2 dòng đầu gây tò mò/shock/đồng cảm
+- Câu chuyện có arc rõ ràng: Setup > Conflict > Resolution
+- Lesson rút ra và CTA tự nhiên
+- Độ dài: 300-500 chữ
+
+PHIÊN BẢN 2 - LIST POST
+- Hook dạng số liệu hoặc list
+- 5-7 điểm giá trị cao, mỗi điểm 1-2 câu súc tích
+- CTA cuối - độ dài: 200-350 chữ
+
+PHIÊN BẢN 3 - CONTROVERSIAL / OPINION
+- Hook dạng quan điểm mạnh hoặc phản biện
+- Lập luận logic thú vị - invite discussion
+- CTA dạng hỏi ý kiến - độ dài: 200-300 chữ
+
+CHO MỖI PHIÊN BẢN:
+- Gợi ý ảnh thumbnail/concept
+- 10 hashtag tối ưu
+- Thời gian đăng lý tưởng
+- Dự đoán loại tương tác (like/comment/share)","facebook,viral,post,engagement,copywriting",0,5
+mkt-005,MKT-005 Livestream Script,marketing,Claude,"Bạn là Livestream Producer chuyên tối ưu doanh thu từ Facebook Live cho thị trường Việt Nam.
+
+Tạo KỊCH BẢN LIVESTREAM đầy đủ cho:
+
+THÔNG TIN:
+- Thương hiệu: [TÊN]
+- Sản phẩm bán trong live: [SẢN PHẨM + GIÁ]
+- Thời lượng live: [X phút]
+- Offer đặc biệt trong live: [OFFER]
+- Host livestream: [MÔ TẢ NGƯỜI DẪN]
+
+KỊCH BẢN THEO TIMELINE:
+
+[0:00-5:00] MỞ ĐẦU - WARM UP
+- Script chào hỏi, kết nối với người xem
+- Câu hỏi warm-up để tăng comment
+- Preview những gì sẽ xảy ra trong live
+- Tạo kỳ vọng về offer sắp tiết lộ
+
+[5:00-15:00] XÂY DỰNG GIÁ TRỊ
+- Chia sẻ kiến thức/tip hữu ích liên quan sản phẩm
+- Câu hỏi tương tác định kỳ mỗi 3 phút
+- Social proof ngắn (testimonial/case study)
+
+[15:00-25:00] GIỚI THIỆU SẢN PHẨM
+- Demo/giới thiệu sản phẩm
+- Pain point > Solution framework
+- So sánh trước/sau khi dùng
+
+[25:00-35:00] REVEAL OFFER + Q&A
+- Tiết lộ giá gốc > Giá live
+- Giải thích tại sao có offer này
+- Xử lý objections phổ biến + Q&A trực tiếp
+
+[35:00-45:00] CHỐT SALE + CLOSE
+- Recap offer, create urgency (số lượng/thời gian giới hạn)
+- Hướng dẫn đặt hàng + Thank you + CTA follow
+
+CHECKLIST CHUẨN BỊ: Kỹ thuật | Nội dung | Tương tác
+
+SCRIPT XỬ LÝ OBJECTION:
+- Đắt quá: [trả lời]
+- Để suy nghĩ đã: [trả lời]
+- Mình chưa cần: [trả lời]","livestream,script,sales,facebook-live,engagement",0,5
+mkt-006,MKT-006 Webinar Script,marketing,Claude,"Bạn là Webinar Strategist chuyên thiết kế webinar chuyển đổi cao cho thị trường B2B và B2C Việt Nam.
+
+Tạo KỊCH BẢN WEBINAR hoàn chỉnh cho:
+
+THÔNG TIN:
+- Chủ đề webinar: [CHỦ ĐỀ]
+- Đối tượng tham dự: [ICP]
+- Thời lượng: [X phút]
+- Offer cuối webinar: [SẢN PHẨM/KHÓA HỌC/DỊCH VỤ + GIÁ]
+- Host: [TÊN + CREDENTIALS]
+
+KỊCH BẢN 5 PHẦN:
+
+PHẦN 1 - INTRO (10 phút)
+- Script mở đầu tạo rapport và credibility stack
+- Agenda webinar và big promise
+- Quy tắc tham gia (tắt mic, đặt câu hỏi qua chat)
+
+PHẦN 2 - CONTENT VALUE (30-40 phút)
+- Framework/method chính (đặt tên độc đáo)
+- 3-5 bước/pillar cốt lõi
+- Mỗi phần: Concept > Example > Case study > Action step
+- Điểm tương tác: Poll, câu hỏi, chat mỗi 10 phút
+
+PHẦN 3 - BRIDGE TO OFFER (10 phút)
+- Tóm tắt những gì đã học
+- Transition tự nhiên sang sản phẩm
+
+PHẦN 4 - PITCH (15 phút)
+- Story về offer, what's inside (chi tiết từng module)
+- Stack giá trị: Tổng giá trị vs. Giá thực tế
+- Bonus + Guarantee + Urgency/Scarcity + CTA
+
+PHẦN 5 - Q&A (10 phút)
+- Xử lý câu hỏi + Remind CTA
+
+EMAIL SEQUENCE KÈM THEO:
+- Reminder 24h trước
+- Reminder 1h trước
+- Follow-up cho người không tham dự
+- Replay cho người đã tham dự","webinar,script,online,education,sales",0,5
+mkt-007,MKT-007 Landing Page,marketing,Claude,"Bạn là Landing Page Copywriter chuyên tối ưu conversion rate cho thị trường Việt Nam.
+
+Viết LANDING PAGE hoàn chỉnh cho:
+
+THÔNG TIN:
+- Sản phẩm/dịch vụ: [TÊN + MÔ TẢ]
+- Đối tượng mục tiêu: [ICP chi tiết]
+- Offer chính: [GIÁ + ĐÃ BAO GỒM GÌ]
+- Pain point lớn nhất: [PAIN]
+- Kết quả họ muốn đạt: [OUTCOME]
+- Deadline/urgency: [THỜI HẠN NẾU CÓ]
+
+CÁC SECTIONS:
+
+1. HERO SECTION
+- Headline chính (dưới 10 chữ, kết quả rõ ràng)
+- Sub-headline (1-2 câu mở rộng)
+- CTA button text + social proof số ngay dưới CTA
+
+2. PROBLEM SECTION
+- Mô tả vấn đề (empathy) > Agitate > 3-5 bullet pain points
+
+3. SOLUTION SECTION
+- Introduce sản phẩm/dịch vụ
+- Cơ chế hoạt động (The Mechanism) và điểm khác biệt
+
+4. FEATURES & BENEFITS
+- 6-8 tính năng chính + lợi ích tương ứng (Icon + Tiêu đề + mô tả)
+
+5. SOCIAL PROOF
+- 3 testimonials template (short/medium/long)
+- Số liệu thực tế và logos/credentials
+
+6. OFFER STACK
+- Tên offer hấp dẫn, danh sách bao gồm + giá trị từng phần
+- Tổng giá trị vs. Giá thực + Bonus + Deadline
+
+7. FAQ
+- 6-8 câu hỏi phổ biến xử lý objection
+
+8. FINAL CTA
+- Recap lợi ích + CTA mạnh + Risk reversal (guarantee) + P.S. urgency
+
+Format HTML-ready với heading tags rõ ràng","landing-page,copywriting,conversion,sales-page",0,5
+mkt-008,MKT-008 Lead Magnet,marketing,Claude,"Bạn là Growth Marketer chuyên thiết kế lead magnet tạo ra subscribers có giá trị cao.
+
+Thiết kế HỆ THỐNG LEAD MAGNET cho:
+
+THÔNG TIN:
+- Ngành/lĩnh vực: [NGÀNH]
+- Sản phẩm/dịch vụ chính muốn bán: [SẢN PHẨM]
+- Đối tượng thu hút: [ICP]
+- Vấn đề họ đang gặp: [PAIN POINTS]
+- Kênh phân phối: [FACEBOOK / LANDING PAGE / ZALO]
+
+PHẦN 1 - Ý TƯỞNG LEAD MAGNET
+Đề xuất 5 loại phù hợp nhất:
+Tên | Mô tả ngắn | Lý do hiệu quả (x5)
+Chọn 1 tốt nhất và phát triển đầy đủ.
+
+PHẦN 2 - TẠO LEAD MAGNET
+- Tiêu đề hấp dẫn (3 phiên bản A/B test)
+- Mô tả ngắn cho quảng cáo (50 chữ)
+- Mục lục/outline đầy đủ từng phần
+- Yêu cầu thiết kế (màu, font, style)
+
+PHẦN 3 - OPT-IN PAGE
+- Headline trang đăng ký
+- 5 bullet benefits
+- Form CTA text + Thank you page message
+
+PHẦN 4 - DELIVERY SEQUENCE (4 emails)
+- Email 1 (ngay): Giao lead magnet + warm welcome
+- Email 2 (ngày 2): Quick win tip
+- Email 3 (ngày 4): Case study
+- Email 4 (ngày 7): Soft pitch sản phẩm chính
+
+PHẦN 5 - QUẢNG BÁ
+- 3 Facebook post templates để promote
+- Ad copy ngắn (cho chạy quảng cáo)
+- Caption Zalo OA","lead-magnet,freebie,list-building,opt-in,email",0,5
+mkt-009,MKT-009 Email Marketing,marketing,Claude,"Bạn là Email Marketing Specialist với expertise xây dựng chuỗi email tỷ lệ mở cao và chuyển đổi tốt.
+
+Viết CHUỖI 7 EMAIL hoàn chỉnh cho:
+
+THÔNG TIN:
+- Thương hiệu: [TÊN]
+- Sản phẩm/dịch vụ: [MÔ TẢ]
+- Loại chuỗi: [WELCOME / NURTURE / PROMOTION / WIN-BACK]
+- Đối tượng nhận: [MÔ TẢ SEGMENT]
+- Mục tiêu: [GOAL]
+
+EMAIL 1 - WELCOME (Gửi ngay)
+Subject line (3 phiên bản A/B) | Preview text | Body 200-300 chữ | CTA | P.S.
+
+EMAIL 2 - STORY (Ngày 2)
+Subject line | Câu chuyện thương hiệu/founder | Lesson + Value | Soft CTA
+
+EMAIL 3 - VALUE (Ngày 4)
+Subject line | Tip/hướng dẫn hữu ích | Mini case study | CTA
+
+EMAIL 4 - SOCIAL PROOF (Ngày 6)
+Subject line | Testimonial/success story | Kết quả cụ thể | CTA
+
+EMAIL 5 - OBJECTION CRUSHER (Ngày 9)
+Subject line | FAQ format xử lý 3 objections chính | CTA
+
+EMAIL 6 - OFFER (Ngày 12)
+Subject line gây urgency | Introduce offer | Giá trị + Bonus | Strong CTA + Deadline
+
+EMAIL 7 - LAST CHANCE (Ngày 14)
+Subject line scarcity | Recap offer ngắn gọn | Final CTA | Post-deadline plan
+
+FORMAT CHUẨN: Từ | Đến | Subject | Preview | Body | CTA | Chữ ký","email,marketing,automation,sequence,newsletter",0,5
+mkt-010,MKT-010 Zalo Marketing,marketing,Claude,"Bạn là Zalo Marketing Expert chuyên triển khai chiến lược Zalo OA hiệu quả cho doanh nghiệp Việt Nam.
+
+Xây dựng CHIẾN LƯỢC ZALO MARKETING cho:
+
+THÔNG TIN:
+- Doanh nghiệp: [TÊN]
+- Sản phẩm/dịch vụ: [MÔ TẢ]
+- Số follower OA hiện tại: [SỐ LƯỢNG]
+- Mục tiêu: [TĂNG FOLLOWER / DOANH THU / ENGAGEMENT]
+- Ngân sách ZNS/tháng: [NGÂN SÁCH]
+
+PHẦN 1 - CHIẾN LƯỢC OA
+- Profile OA tối ưu (bio, cover, menu 3 cấp)
+- Pinned post strategy + Tần suất đăng bài
+
+PHẦN 2 - 15 BÀI MẪU OA
+Mỗi bài: Tiêu đề | Loại | Nội dung 150-200 chữ | CTA
+- 5 bài giáo dục/tips
+- 3 bài social proof
+- 3 bài sản phẩm
+- 2 bài engagement (poll/quiz)
+- 2 bài promotion
+
+PHẦN 3 - ZNS TEMPLATES (5 loại)
+- Welcome mới follow OA
+- Chăm sóc định kỳ (theo ngành)
+- Flash sale/promotion
+- Nhắc lịch hẹn/sử dụng dịch vụ
+- Birthday/anniversary
+
+PHẦN 4 - ZALO BROADCAST
+- Phân đoạn danh sách gợi ý
+- Template broadcast theo từng segment
+- Tần suất gửi không spam
+
+PHẦN 5 - TĂNG FOLLOWER OA
+- 5 chiến thuật organic + Checklist tối ưu điểm chạm
+- Script nhân viên mời follow","zalo,zns,oa,messaging,vietnam",0,5
+mkt-011,MKT-011 Customer Avatar,marketing,Claude,"Bạn là Customer Research Specialist chuyên xây dựng customer profile sâu sắc cho thị trường Việt Nam.
+
+Xây dựng CUSTOMER AVATAR hoàn chỉnh cho:
+
+THÔNG TIN ĐẦU VÀO:
+- Sản phẩm/dịch vụ: [MÔ TẢ]
+- Ngành/lĩnh vực: [NGÀNH]
+- Khách hàng tiêu biểu hiện tại: [MÔ TẢ NGẮN]
+- Mức giá sản phẩm: [GIÁ]
+
+TẠO 2 AVATAR CHI TIẾT:
+
+AVATAR 1 - KHÁCH HÀNG CHÍNH
+
+NHÂN KHẨU HỌC:
+- Tên giả định, tuổi, giới tính, nghề nghiệp, thu nhập, gia đình, địa điểm
+
+TÂM LÝ HỌC:
+- Giá trị sống, mục tiêu 1 năm tới, nỗi sợ lớn nhất, điều họ tự hào
+
+HÀNH VI ONLINE:
+- Mạng xã hội dùng + giờ cao điểm
+- Loại content xem/chia sẻ, KOL họ follow, group tham gia
+
+PAIN POINTS:
+- Top 3 vấn đề cấp bách nhất
+- Đã thử giải pháp gì (tại sao thất bại)
+- Câu họ hay nói về vấn đề này
+
+BUYING BEHAVIOR:
+- Cách tìm kiếm thông tin
+- Yếu tố quyết định mua, ai ảnh hưởng, objections phổ biến
+- Thời điểm/tâm trạng mua hàng
+
+MESSAGING:
+- Từ ngữ họ dùng (dùng trong copy)
+- Hook phù hợp nhất, kênh tiếp cận, offer format họ response tốt
+
+AVATAR 2 - KHÁCH HÀNG PHỤ (cấu trúc tương tự)
+
+ỨNG DỤNG:
+- 5 headline Facebook Ads cho Avatar 1
+- 5 headline cho Avatar 2
+- Điểm khác biệt messaging giữa 2 avatar","customer-avatar,ICP,persona,targeting,research",0,5
+mkt-012,MKT-012 Competitor Analysis,marketing,Claude,"Bạn là Market Intelligence Analyst chuyên phân tích đối thủ và tìm cơ hội cạnh tranh.
+
+Thực hiện COMPETITOR ANALYSIS cho:
+
+THÔNG TIN:
+- Doanh nghiệp của bạn: [TÊN + SẢN PHẨM]
+- Thị trường: [ĐỊA LÝ + SEGMENT]
+- Đối thủ cần phân tích: [ĐỐI THỦ 1, 2, 3]
+- Điểm mạnh bạn nghĩ mình có: [ĐIỂM MẠNH]
+
+PHẦN 1 - BẢNG SO SÁNH TỔNG QUAN
+Tên đối thủ | Sản phẩm chính | Giá | Target | USP | Điểm mạnh | Điểm yếu | Đánh giá tổng
+
+PHẦN 2 - PHÂN TÍCH CHI TIẾT TỪNG ĐỐI THỦ
+- Định vị thương hiệu và messaging chính
+- Kênh marketing đang dùng + ước tính ngân sách
+- Content strategy (loại content, tần suất)
+- Điểm yếu rõ nhất (khách hàng phàn nàn về gì)
+- Social proof (số đánh giá, rating)
+
+PHẦN 3 - GAP ANALYSIS
+- Khoảng trống thị trường chưa ai fill
+- Segment đối thủ đang bỏ qua
+- Cơ hội về giá/positioning
+
+PHẦN 4 - SWOT SO SÁNH
+SWOT của bạn vs. đối thủ mạnh nhất
+
+PHẦN 5 - CHIẾN LƯỢC ĐỀ XUẤT
+- Positioning statement khác biệt hóa
+- 3 chiến lược cụ thể để vượt từng đối thủ
+- Quick wins trong 30 ngày
+- Messaging chống lại điểm yếu đối thủ
+
+PHẦN 6 - MONITORING PLAN
+- Chỉ số theo dõi đối thủ hàng tuần
+- Tools/cách theo dõi miễn phí","competitor,analysis,market,research,positioning",0,5
+mkt-013,MKT-013 Offer Stack,marketing,Claude,"Bạn là Offer Designer chuyên tạo offer không thể từ chối cho thị trường Việt Nam.
+
+Thiết kế IRRESISTIBLE OFFER STACK cho:
+
+THÔNG TIN:
+- Sản phẩm/dịch vụ chính: [MÔ TẢ]
+- Giá mục tiêu muốn bán: [GIÁ]
+- Đối tượng mua: [ICP]
+- Pain point lớn nhất: [PAIN]
+- Kết quả họ muốn: [OUTCOME]
+- Đối thủ đang bán gì/giá bao nhiêu: [ĐỐI THỦ]
+
+PHẦN 1 - CORE OFFER
+- Tên sản phẩm hấp dẫn hơn
+- Mô tả 1 câu kết quả (không phải tính năng)
+- Giá trị thực sự: [X đồng]
+
+PHẦN 2 - BONUS STACK (6-8 bonus)
+Mỗi bonus: Tên | Mô tả giá trị | Lý do tặng kèm (phải logic) | Giá trị quy đổi
+
+PHẦN 3 - BẢNG GIÁ TRỊ
+Item | Giá trị thực
+Tổng giá trị: X đồng | Bạn đầu tư: Y đồng | Tiết kiệm: Z đồng (X%)
+
+PHẦN 4 - RISK REVERSAL
+- Guarantee mạnh mẽ (30/60/90 ngày)
+- Điều kiện refund rõ ràng
+- Câu guarantee hấp dẫn
+
+PHẦN 5 - URGENCY & SCARCITY
+- Giới hạn số lượng (giải thích tự nhiên)
+- Deadline rõ ràng và bonus hết khi nào
+
+PHẦN 6 - PRICING PSYCHOLOGY
+- Anchoring giá cao trước
+- Payment plan options
+- Compare to cost of NOT buying
+
+PHẦN 7 - PITCH SCRIPT
+Script 2 phút nói về offer (dùng cho live/call/video)","offer,stack,pricing,value,conversion",0,5
+mkt-014,MKT-014 Sales Funnel,marketing,Claude,"Bạn là Sales Funnel Architect chuyên thiết kế hệ thống chuyển đổi tự động cho doanh nghiệp Việt Nam.
+
+Thiết kế SALES FUNNEL hoàn chỉnh cho:
+
+THÔNG TIN:
+- Doanh nghiệp: [TÊN]
+- Sản phẩm/dịch vụ: [MÔ TẢ + GIÁ]
+- Loại bán hàng: [ONLINE / OFFLINE / HYBRID]
+- Đối tượng: [ICP]
+- Tool/platform hiện dùng: [TOOLS]
+- Target: [X leads/tháng, Y doanh thu]
+
+STAGE 1 - AWARENESS (Thu hút)
+- Kênh traffic chính (3-4 kênh) + Content split Organic/Paid
+- Hook messaging cho cold audience
+- KPI: Reach, Impression, CTR
+
+STAGE 2 - INTEREST (Quan tâm)
+- Lead magnet để capture contact
+- Landing page opt-in (brief) + Welcome sequence 3 bước
+- KPI: Opt-in rate, Cost per lead
+
+STAGE 3 - CONSIDERATION (Cân nhắc)
+- Nurture content sequence (7-14 ngày) + Retargeting campaign
+- Social proof touchpoints
+- KPI: Engagement rate, Call-booked rate
+
+STAGE 4 - CONVERSION (Mua hàng)
+- Sales page/call flow + Offer presentation
+- Cart abandonment sequence
+- KPI: Conversion rate, Revenue, AOV
+
+STAGE 5 - RETENTION (Giữ chân)
+- Onboarding sequence + Upsell/cross-sell triggers
+- Referral program + Win-back sequence
+- KPI: LTV, Churn rate, NPS
+
+AUTOMATION MAP: Sơ đồ trigger > action cho từng stage
+TECH STACK: Công cụ theo ngân sách (Miễn phí / 2M / 5M / 10M)
+90-DAY LAUNCH PLAN: Thứ tự triển khai từng phần","funnel,sales,conversion,pipeline,automation",0,5
+mkt-015,MKT-015 Video Sales Letter,marketing,Claude,"Bạn là VSL Copywriter chuyên tạo video sales letter có tỷ lệ chuyển đổi cao.
+
+Viết KỊCH BẢN VSL hoàn chỉnh cho:
+
+THÔNG TIN:
+- Sản phẩm/dịch vụ: [TÊN + MÔ TẢ]
+- Giá: [GIÁ]
+- Đối tượng xem: [ICP]
+- Pain point chính: [PAIN]
+- Big promise: [KẾT QUẢ ĐẠT ĐƯỢC]
+- Thời lượng VSL: [10/15/20 phút]
+- Người đứng video: [TÊN + BACKGROUND]
+
+[PHÚT 0-2] HOOK & PATTERN INTERRUPT
+- Câu mở đầu gây sốc/tò mò (không bán hàng ngay)
+- Xác nhận đây là video dành cho ai
+- Big promise trong 30 giây đầu + Lý do nên xem hết
+
+[PHÚT 2-5] STORY & CREDIBILITY
+- Câu chuyện cá nhân liên quan vấn đề
+- Điểm low > Discovery moment > Credentials tự nhiên
+
+[PHÚT 5-12] CONTENT & MECHANISM
+- Framework/method có tên riêng
+- 3 bước/nguyên lý cốt lõi + Mini case study xuyên suốt
+
+[PHÚT 12-15] TRANSITION TO OFFER
+- Recap giá trị đã chia sẻ
+- Bridge tự nhiên sang sản phẩm
+
+[PHÚT 15-20] OFFER PRESENTATION
+- Tên offer + Bao gồm gì (stack chi tiết)
+- Tổng giá trị vs. Giá thực + Bonus + Deadline + Guarantee
+- CTA mạnh mẽ + FAQ nhanh
+
+VISUAL NOTES:
+- Gợi ý B-roll cho từng phần
+- Slides/text on screen và điểm nhấn cần zoom/highlight","VSL,video,sales-letter,script,conversion",0,5
+mkt-016,MKT-016 YouTube Content,marketing,Claude,"Bạn là YouTube Strategist chuyên phát triển kênh YouTube cho thương hiệu và cá nhân tại Việt Nam.
+
+Tạo CHIẾN LƯỢC YOUTUBE hoàn chỉnh cho:
+
+THÔNG TIN:
+- Kênh/thương hiệu: [TÊN]
+- Lĩnh vực: [TOPIC]
+- Đối tượng: [ICP]
+- Mục tiêu 6 tháng: [X subscribers, Y views]
+- Tần suất upload: [X video/tuần]
+- Format ưu tiên: [SHORT / LONG / MIXED]
+
+PHẦN 1 - CHANNEL STRATEGY
+- Channel positioning (khác biệt với ai)
+- 3-4 content pillars + Channel description tối ưu SEO
+- Playlist structure gợi ý
+
+PHẦN 2 - VIDEO IDEAS BANK (20 video)
+Tiêu đề SEO | Hook | Angle | Target keyword
+- 8 video Education/How-to
+- 5 video Storytelling/Experience
+- 4 video Opinion/Reaction
+- 3 video Collaboration/Interview
+
+PHẦN 3 - SCRIPT MẪU 1 VIDEO
+- Tiêu đề + Thumbnail concept
+- Hook 30 giây (3 phiên bản)
+- Intro 30-60 giây (không dài dòng)
+- Nội dung chính (outline chi tiết)
+- Outro + CTA + B-roll notes
+
+PHẦN 4 - SEO OPTIMIZATION
+- 10 keywords chính, title formula, description template (với timestamps)
+- Tags gợi ý + Thumbnail design principles
+
+PHẦN 5 - GROWTH TACTICS
+- 30-day launch plan cho kênh mới
+- 10 community post ideas
+- Cross-promotion strategy
+- Collab outreach template","youtube,video,seo,content-strategy,channel",0,5
+mkt-017,MKT-017 TikTok Content,marketing,Claude,"Bạn là TikTok Content Strategist chuyên tạo nội dung viral cho thị trường Việt Nam.
+
+Xây dựng CHIẾN LƯỢC TIKTOK cho:
+
+THÔNG TIN:
+- Thương hiệu/cá nhân: [TÊN]
+- Lĩnh vực: [TOPIC]
+- Đối tượng: [ICP + độ tuổi]
+- Mục tiêu: [FOLLOWERS / AWARENESS / SALES / TRAFFIC]
+- Tần suất: [X video/ngày]
+- Account style: [EDUCATIONAL / ENTERTAINMENT / BEHIND-SCENES]
+
+PHẦN 1 - ACCOUNT SETUP
+- Bio tối ưu (150 ký tự), username gợi ý
+- Niche positioning + Profile picture/cover guideline
+
+PHẦN 2 - CONTENT PILLARS
+- 3-4 series video có thể tái sử dụng
+- Naming convention và hook formula cho từng series
+
+PHẦN 3 - 30 VIDEO IDEAS
+Số thứ tự | Hook đầu video | Concept | Hashtags | Âm thanh gợi ý
+- 10 video education (POV/Tips/Hack)
+- 8 video entertainment/relatable
+- 7 video behind-the-scenes/day-in-life
+- 5 video soft selling/product showcase
+
+PHẦN 4 - SCRIPT MẪU 3 VIDEO (60 giây mỗi video)
+- Hook 3 giây đầu (không skip được)
+- Script word-by-word
+- Visual direction (cảnh quay, text overlay, transition)
+- Caption + 10 hashtag + Âm nhạc gợi ý
+
+PHẦN 5 - VIRAL ELEMENTS
+- Trending sound strategy + Duet/Stitch opportunities
+- Comment-section bait + CTA không bị native ad feel
+
+PHẦN 6 - TỐI ƯU THUẬT TOÁN
+- Thời gian đăng tối ưu + Tần suất đăng
+- Cách test và scale video hiệu quả","tiktok,short-video,viral,reels,content",0,5
+mkt-018,MKT-018 SEO Content,marketing,Claude,"Bạn là SEO Content Specialist chuyên tạo nội dung website xếp hạng cao trên Google cho thị trường Việt Nam.
+
+Tạo NỘI DUNG SEO hoàn chỉnh cho:
+
+THÔNG TIN:
+- Website/doanh nghiệp: [TÊN]
+- Lĩnh vực/ngành: [NGÀNH]
+- Đối tượng: [ICP]
+- Trang cần viết: [TRANG CHỦ / BLOG / LANDING PAGE / CATEGORY]
+- Từ khóa muốn target: [KEYWORDS]
+- Đối thủ cần vượt: [ĐỐI THỦ]
+
+PHẦN 1 - KEYWORD RESEARCH
+- 1 primary keyword (search intent rõ ràng)
+- 5-8 secondary keywords liên quan
+- 10 LSI keywords (ngữ nghĩa liên quan)
+- Long-tail keywords có thể rank nhanh (5-10)
+- Phân tích search intent: Informational/Commercial/Transactional
+
+PHẦN 2 - CONTENT OUTLINE
+- H1 (có primary keyword) + Meta title (55-60 ký tự)
+- Meta description (150-160 ký tự) + URL slug
+- Outline H2 > H3 với keyword mapping
+- Độ dài mỗi section + CTA placements
+
+PHẦN 3 - BÀI VIẾT CHUẨN SEO (1500-2500 chữ)
+- Introduction hấp dẫn có hook
+- Body content giá trị thực sự, keyword density tự nhiên (~1-2%)
+- Internal link placeholders + Featured snippet optimization
+- Conclusion + CTA
+
+PHẦN 4 - ON-PAGE CHECKLIST
+- Alt text cho ảnh (3-5 gợi ý)
+- Schema markup gợi ý + Internal linking opportunities
+
+PHẦN 5 - LINK BUILDING IDEAS
+- 5 loại trang web nên xin backlink
+- Outreach email template","SEO,content,keyword,organic,google",0,5
+mkt-019,MKT-019 Content Repurpose,marketing,Claude,"Bạn là Content Repurposing Strategist chuyên nhân bản giá trị từ một content gốc ra nhiều kênh.
+
+Xây dựng HỆ THỐNG CONTENT REPURPOSE cho:
+
+THÔNG TIN:
+- Content gốc: [DÁN NỘI DUNG GỐC hoặc mô tả chủ đề]
+- Loại content gốc: [BLOG / VIDEO / PODCAST / WEBINAR / LIVESTREAM]
+- Kênh đang dùng: [FACEBOOK / YOUTUBE / TIKTOK / ZALO / EMAIL / WEBSITE]
+- Tần suất tạo content gốc: [X lần/tháng]
+
+PHẦN 1 - CONTENT REPURPOSE MAP
+
+DẠNG WRITTEN:
+- Blog post dài (1500+ chữ) — outline
+- 3 Facebook posts (short/medium/long)
+- 1 LinkedIn article — outline
+- 5 tweets/X posts
+- Email newsletter — outline
+- Zalo OA article — outline
+
+DẠNG VISUAL:
+- 1 Infographic — nội dung + structure
+- 5 carousel slides — content từng slide
+- 3 Quote graphics — trích dẫn hay nhất
+
+DẠNG VIDEO/AUDIO:
+- 3 TikTok script 60 giây (3 góc khác nhau)
+- 3 YouTube Shorts — ý tưởng
+- Podcast episode outline
+- Instagram Reels concept
+
+DẠNG TƯƠNG TÁC:
+- 3 poll/quiz cho social media
+- 5 câu hỏi cho community/group
+
+PHẦN 2 - LỊCH PHÂN PHỐI
+Bảng 30 ngày: Ngày | Platform | Format | Content tóm tắt
+
+PHẦN 3 - TRACKING
+- Cách đo hiệu quả từng format
+- Format thường perform tốt nhất theo nền tảng
+
+PHẦN 4 - SOP REPURPOSE
+Quy trình 5 bước chuẩn hóa để team thực hiện","repurpose,content,multi-channel,efficiency,ROI",0,5
+mkt-020,MKT-020 Marketing Dashboard,marketing,Claude,"Bạn là Marketing Analytics Expert chuyên thiết kế hệ thống đo lường và báo cáo marketing.
+
+Thiết kế MARKETING DASHBOARD hoàn chỉnh cho:
+
+THÔNG TIN:
+- Doanh nghiệp: [TÊN]
+- Kênh marketing đang dùng: [FACEBOOK / GOOGLE / YOUTUBE / TIKTOK / ZALO / EMAIL]
+- Mục tiêu kinh doanh: [DOANH THU / LEADS / BRAND AWARENESS]
+- Công cụ báo cáo: [GOOGLE SHEETS / NOTION / LOOKER STUDIO / EXCEL]
+- Người xem dashboard: [CEO / MARKETING MANAGER / TEAM]
+
+PHẦN 1 - KPI FRAMEWORK
+
+NORTH STAR METRIC: 1 chỉ số quan trọng nhất phản ánh sức khỏe marketing
+
+TIER 1 - CEO DASHBOARD (5-7 chỉ số):
+KPI | Công thức | Mục tiêu | Tần suất đo
+- Doanh thu từ marketing
+- ROAS (Return on Ad Spend)
+- CPL (Cost per Lead)
+- Tỷ lệ chuyển đổi Lead > Sale
+- LTV (Customer Lifetime Value)
+
+TIER 2 - MARKETING MANAGER (10-15 chỉ số):
+Chia theo từng kênh với benchmark
+
+TIER 3 - EXECUTION TEAM (20+ chỉ số):
+Daily metrics cho từng nền tảng
+
+PHẦN 2 - DASHBOARD TEMPLATE
+
+WEEKLY REPORT (1 trang):
+- So sánh tuần này vs. tuần trước
+- Top 3 win + Top 3 vấn đề + Action items tuần tới
+
+MONTHLY REPORT (3-5 trang):
+- Executive summary (CEO đọc 2 phút)
+- Performance by channel + Funnel conversion analysis
+- Budget utilization + Recommendations
+
+PHẦN 3 - GOOGLE SHEETS TEMPLATE
+- Tab structure gợi ý + Công thức quan trọng (ROAS, CPL, CPC)
+- Conditional formatting rules + Chart types cho từng metric
+
+PHẦN 4 - AUTOMATED REPORTING
+- Cách setup auto-pull data từ các platform
+- Template email báo cáo hàng tuần
+- Alert khi KPI vượt/dưới ngưỡng
+
+PHẦN 5 - REVIEW CADENCE
+- Daily check (5 phút) | Weekly review (30 phút) | Monthly review (2h) | Quarterly planning","dashboard,KPI,analytics,reporting,metrics",0,5

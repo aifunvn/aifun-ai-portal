@@ -1,0 +1,633 @@
+/* ─── Page shell ─── */
+.doc-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 24px;
+  max-width: 960px;
+}
+
+.doc-page-header { }
+
+.doc-page-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-1);
+  margin: 0 0 4px;
+}
+
+.doc-page-subtitle {
+  font-size: 13px;
+  color: var(--text-2);
+  margin: 0;
+}
+
+/* ─── Search ─── */
+.doc-search-wrap {
+  position: relative;
+}
+
+.doc-search {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-md);
+  font-size: 14px;
+  color: var(--text-1);
+  background: var(--surface);
+  transition: border-color var(--tr), box-shadow var(--tr);
+  font-family: inherit;
+}
+
+.doc-search:focus {
+  outline: none;
+  border-color: var(--c-primary);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, .12);
+}
+
+/* ─── Document list ─── */
+.doc-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.doc-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-lg);
+  cursor: pointer;
+  transition: all var(--tr);
+  text-align: left;
+}
+
+.doc-row:hover {
+  border-color: var(--c-primary);
+  box-shadow: var(--sh-sm);
+}
+
+.doc-row:focus-visible {
+  outline: 3px solid rgba(99, 102, 241, .3);
+  outline-offset: 2px;
+}
+
+.doc-row-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--r-sm);
+  background: var(--c-primary-l);
+  color: var(--c-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.doc-row-body { flex: 1; min-width: 0; }
+
+.doc-row-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-1);
+  margin: 0 0 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.doc-row-meta {
+  font-size: 12px;
+  color: var(--text-3);
+}
+
+.doc-row-arrow {
+  color: var(--text-3);
+  flex-shrink: 0;
+  transition: color var(--tr), transform var(--tr);
+}
+
+.doc-row:hover .doc-row-arrow {
+  color: var(--c-primary);
+  transform: translateX(2px);
+}
+
+/* ─── Empty state ─── */
+.doc-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 64px 24px;
+  color: var(--text-3);
+  text-align: center;
+  background: var(--surface);
+  border: 1.5px dashed var(--border);
+  border-radius: var(--r-lg);
+}
+
+.doc-empty svg      { opacity: .35; }
+.doc-empty-title    { font-size: 15px; font-weight: 600; color: var(--text-2); margin: 0; }
+.doc-empty-desc     { font-size: 13px; color: var(--text-3); margin: 0; }
+
+/* ─── Toolbar ─── */
+.doc-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 20px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.doc-toolbar-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-2);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 0;
+  transition: color var(--tr);
+}
+
+.doc-toolbar-back:hover        { color: var(--c-primary); }
+.doc-toolbar-back:focus-visible { outline: 2px solid var(--c-primary); outline-offset: 2px; border-radius: 4px; }
+
+.doc-toolbar-actions { display: flex; gap: 8px; }
+
+/* ─── Document view ─── */
+.doc-view {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 24px;
+}
+
+.doc-view-header {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.doc-view-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-1);
+  margin: 0 0 10px;
+  line-height: 1.3;
+}
+
+.doc-view-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-3);
+}
+
+.doc-builder-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--c-primary-l);
+  color: var(--c-primary);
+}
+
+.doc-meta-badge {
+  padding: 2px 8px;
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  font-size: 11px;
+  color: var(--text-3);
+  background: var(--bg);
+}
+
+.doc-meta-sep { color: var(--text-3); }
+
+.doc-gdocs-link {
+  color: var(--c-primary);
+  text-decoration: none;
+  border-color: rgba(99, 102, 241, .3);
+}
+
+.doc-gdocs-link:hover { text-decoration: underline; }
+
+/* ─── Loading state ─── */
+.doc-loading {
+  display: flex;
+  justify-content: center;
+  padding: 48px 24px;
+}
+
+.doc-view-body {
+  max-height: 65vh;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+/* ─── Chat output states ─── */
+.co-idle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 48px 24px;
+  color: var(--text-3);
+  text-align: center;
+}
+
+.co-idle svg        { opacity: .3; color: var(--c-primary); }
+.co-idle-title      { font-size: 15px; font-weight: 600; color: var(--text-2); margin: 0; }
+.co-idle-desc       { font-size: 13px; color: var(--text-3); margin: 0; }
+
+.co-thinking {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 48px 24px;
+  color: var(--text-2);
+}
+
+.co-thinking-text   { font-size: 14px; margin: 0; }
+
+.co-error {
+  padding: 20px 24px;
+  background: rgba(239, 68, 68, .06);
+  border-top: 3px solid var(--c-danger);
+}
+
+.co-error-title     { font-weight: 600; color: var(--c-danger); margin: 0 0 4px; font-size: 14px; }
+.co-error-msg       { font-size: 13px; color: var(--text-2); margin: 0; }
+
+.co-ready           { display: flex; flex-direction: column; }
+
+.co-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.co-badge {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--c-success);
+}
+
+.co-tokens {
+  font-size: 12px;
+  color: var(--text-3);
+  background: var(--surface);
+  padding: 2px 8px;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+}
+
+.co-body {
+  padding: 20px;
+  max-height: 420px;
+  overflow-y: auto;
+}
+
+.co-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 14px 20px;
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 640px) {
+  .doc-page     { padding: 16px; gap: 16px; }
+  .doc-page-title { font-size: 18px; }
+  .doc-view     { padding: 16px; }
+  .doc-view-body { max-height: none; }
+  .doc-toolbar  { flex-direction: column; align-items: flex-start; }
+}
+
+/* ─── Dark mode ─── */
+[data-dark] .doc-row          { border-color: var(--border); }
+[data-dark] .doc-view         { border-color: var(--border); }
+[data-dark] .co-error         { background: rgba(239, 68, 68, .08); }
+[data-dark] .co-header        { background: var(--bg); }
+[data-dark] .doc-search       { background: var(--surface); }
+
+/* ═══════════════════════════════════════════════════════════════
+   Sprint 12 — Document Intelligence additions
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ─── Controls bar ─── */
+.doc-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.doc-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.doc-filter-chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.doc-filter-chip {
+  padding: 4px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 99px;
+  font-size: .8rem;
+  font-weight: 500;
+  background: var(--surface);
+  color: var(--text-2);
+  cursor: pointer;
+  transition: all var(--tr);
+}
+
+.doc-filter-chip:hover { border-color: var(--c-primary); color: var(--c-primary); }
+.doc-filter-chip--active { background: var(--c-primary); border-color: var(--c-primary); color: #fff; }
+
+.doc-sort-select {
+  padding: 5px 10px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-sm);
+  font-size: .82rem;
+  color: var(--text-1);
+  background: var(--surface);
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.doc-sort-select:focus { outline: none; border-color: var(--c-primary); }
+
+/* ─── Sections ─── */
+.doc-section { display: flex; flex-direction: column; gap: 8px; }
+
+.doc-section-title {
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  margin: 0;
+  padding: 4px 0;
+}
+
+/* ─── Row badges ─── */
+.doc-row-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.doc-row-badges { display: flex; gap: 3px; flex-shrink: 0; }
+
+.doc-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+}
+
+.doc-badge--pin  { color: var(--c-primary); }
+.doc-badge--fav  { color: var(--c-warning); }
+.doc-badge--sync { color: var(--c-success); }
+
+.doc-meta-dot { color: var(--text-3); margin: 0 2px; }
+
+/* ─── Pagination ─── */
+.doc-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 16px 0 4px;
+}
+
+.doc-page-btn {
+  width: 34px;
+  height: 34px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  color: var(--text-1);
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all var(--tr);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.doc-page-btn:hover:not(:disabled) { border-color: var(--c-primary); color: var(--c-primary); }
+.doc-page-btn:disabled { opacity: .35; cursor: not-allowed; }
+
+.doc-page-info { font-size: .82rem; color: var(--text-2); }
+
+/* ─── View shell (content + metadata sidebar) ─── */
+.doc-view-shell {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.doc-view-main {
+  flex: 1;
+  min-width: 0;
+  transition: flex var(--tr);
+}
+
+/* ─── Metadata sidebar ─── */
+.doc-meta-sidebar {
+  width: 280px;
+  flex-shrink: 0;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 16px;
+  position: sticky;
+  top: 16px;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+}
+
+.meta-section {
+  padding-bottom: 14px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.meta-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+.meta-section-title {
+  font-size: .75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--text-3);
+  margin: 0 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.meta-actions-row {
+  display: flex;
+  gap: 8px;
+}
+
+.meta-icon-btn {
+  width: 34px;
+  height: 34px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  color: var(--text-2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--tr);
+}
+
+.meta-icon-btn:hover { border-color: var(--c-primary); color: var(--c-primary); }
+.meta-icon-btn--active { background: var(--c-warning); border-color: var(--c-warning); color: #fff; }
+.meta-icon-btn--active.meta-icon-btn--pin { background: var(--c-primary); border-color: var(--c-primary); color: #fff; }
+
+.meta-dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 12px;
+  font-size: .8rem;
+  margin: 0;
+}
+
+.meta-dl dt { color: var(--text-3); font-weight: 500; white-space: nowrap; }
+.meta-dl dd { color: var(--text-1); margin: 0; word-break: break-word; }
+.meta-mono  { font-family: monospace; font-size: .75rem; }
+
+.meta-prompt {
+  font-size: .78rem;
+  color: var(--text-2);
+  background: var(--bg);
+  border-radius: var(--r-sm);
+  padding: 8px 10px;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.meta-drive-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.meta-drive-status { font-size: .8rem; font-weight: 500; }
+
+.meta-drive-link { font-size: .8rem !important; padding: 4px 10px !important; }
+
+/* Version history */
+.meta-versions { display: flex; flex-direction: column; gap: 6px; }
+
+.meta-ver-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: .78rem;
+  padding: 5px 8px;
+  border-radius: var(--r-sm);
+  background: var(--bg);
+}
+
+.meta-ver-row--active { background: var(--c-primary-l); }
+
+.meta-ver-num  { font-weight: 700; color: var(--c-primary); min-width: 22px; }
+.meta-ver-date { color: var(--text-2); flex: 1; }
+
+.meta-ver-restore {
+  font-size: .72rem;
+  padding: 2px 8px;
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  background: var(--surface);
+  color: var(--text-2);
+  cursor: pointer;
+}
+.meta-ver-restore:hover { border-color: var(--c-primary); color: var(--c-primary); }
+.meta-ver-current { font-size: .72rem; color: var(--c-success); font-weight: 600; }
+
+.meta-no-versions { font-size: .8rem; color: var(--text-3); margin: 0; }
+
+/* ─── Export dropdown ─── */
+.doc-export-wrap { position: relative; display: inline-flex; }
+
+.doc-export-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-md);
+  box-shadow: var(--sh-md);
+  list-style: none;
+  margin: 0;
+  padding: 4px 0;
+  min-width: 170px;
+  z-index: 200;
+}
+
+.doc-export-menu li {
+  padding: 8px 14px;
+  font-size: .85rem;
+  color: var(--text-1);
+  cursor: pointer;
+  transition: background var(--tr);
+}
+.doc-export-menu li:hover { background: var(--bg); color: var(--c-primary); }
+
+/* ─── Favorite badge ─── */
+.doc-meta-badge--fav { background: #fff8e1; color: #d97706; border-color: #fde68a; }
+
+/* ─── Responsive ─── */
+@media (max-width: 768px) {
+  .doc-view-shell { flex-direction: column; }
+  .doc-meta-sidebar { width: 100%; position: static; max-height: none; }
+}
+
+/* ─── Dark mode additions ─── */
+[data-dark] .doc-filter-chip   { background: #1e293b; }
+[data-dark] .doc-sort-select   { background: #1e293b; color: var(--text-1); }
+[data-dark] .doc-meta-sidebar  { background: #1e293b; }
+[data-dark] .meta-prompt       { background: #0f172a; }
+[data-dark] .meta-ver-row      { background: #0f172a; }
+[data-dark] .doc-export-menu   { background: #1e293b; }
