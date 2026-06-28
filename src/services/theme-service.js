@@ -37,6 +37,17 @@ export function restoreCachedBrandColor() {
   if (cached) applyBrandColor(cached);
 }
 
+// Derive the three brand color variants without touching the DOM
+export function deriveBrandColors(hex) {
+  const valid = /^#[0-9a-f]{6}$/i.test(hex ?? '') ? hex : _DEFAULT;
+  const rgb   = _hexToRgb(valid);
+  return {
+    primary: valid,
+    hover:   rgb ? _toHex(...rgb.map((v) => v * 0.88))               : valid,
+    light:   rgb ? _toHex(...rgb.map((v) => v + (255 - v) * 0.94))   : '#eef2ff',
+  };
+}
+
 // Remove inline overrides — falls back to tokens.css defaults
 export function resetBrandColor() {
   const root = document.documentElement;

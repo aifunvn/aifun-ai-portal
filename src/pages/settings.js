@@ -262,7 +262,8 @@ function _switchTab(tabName) {
   }
   if (tabName === 'branding' && !_brandingLoaded && _settings) {
     _brandingLoaded = true;
-    loadBranding(_wsId, _settings);
+    const _wsNameForBranding = workspaceStore.getWorkspace()?.name ?? 'Workspace';
+    loadBranding(_wsId, _settings, _wsNameForBranding);
   }
   if (tabName === 'members' && !_membersLoaded) {
     _membersLoaded = true;

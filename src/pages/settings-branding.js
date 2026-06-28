@@ -1,6 +1,15 @@
 import { showToast }              from '../components/toast.js';
 import { updateWorkspaceSettings } from '../services/settings-service.js';
 import { applyBrandColor }         from '../services/theme-service.js';
+import {
+  renderLivePreviews,
+  updateAllPreviews,
+  wirePreviews,
+  renderBrowserTab,
+  renderThemeInspector,
+  updateThemeInspector,
+  exportTheme,
+} from './settings-branding-preview.js';
 
 function _esc(s) {
   return (s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
@@ -17,9 +26,10 @@ const _PRESETS = [
 
 // ── Module state ───────────────────────────────────────────────
 let _wsId        = null;
+let _wsName      = 'Workspace';
 let _origState   = {};
 let _saving      = false;
-let _logoDataUrl = null;   // set by FileReader when user uploads a file
+let _logoDataUrl = null;
 
 // ── Helpers ────────────────────────────────────────────────────
 function _effectiveLogo() {
@@ -48,8 +58,9 @@ function _renderPresets(activeColor) {
 
 // ── Render ─────────────────────────────────────────────────────
 function _renderPanel(s) {
-  const color = s.brand_color || '#6366f1';
-  const logo  = s.logo_url   || '';
+  const color   = s.brand_color || '#6366f1';
+  const logo    = s.logo_url    || '';
+  const favicon = s.favicon_url || '';
 
   return `
     <div class="stt-section">
@@ -62,9 +73,7 @@ function _renderPanel(s) {
         </div>
         <div class="stt-logo-zone-body">
           <div class="stt-logo-zone-actions">
-            <label class="stt-btn stt-btn--ghost stt-btn--sm" for="stt-logo-file">
-              Tải lên
-            </label>
+            <label class="stt-btn stt-btn--ghost stt-btn--sm" for="stt-logo-file">Tải lên</label>
             <input type="file" id="stt-logo-file" accept="image/png,image/svg+xml"
               style="display:none" aria-label="Chọn file logo">
             <button class="stt-btn stt-btn--ghost stt-btn--sm" id="stt-logo-remove"
@@ -94,11 +103,9 @@ function _renderPanel(s) {
       <div class="stt-field">
         <label class="stt-label" for="stt-brand-color-hex">Màu tuỳ chỉnh</label>
         <div class="stt-color-row">
-          <input type="color" id="stt-brand-color-picker"
-            class="stt-color-picker" value="${_esc(color)}">
-          <input type="text" id="stt-brand-color-hex"
-            class="stt-input stt-input--hex" value="${_esc(color)}"
-            maxlength="7" placeholder="#6366f1">
+          <input type="color" id="stt-brand-color-picker" class="stt-color-picker" value="${_esc(color)}">
+          <input type="text"  id="stt-brand-color-hex"
+            class="stt-input stt-input--hex" value="${_esc(color)}" maxlength="7" placeholder="#6366f1">
         </div>
         <div class="stt-field-note">Định dạng HEX 6 ký tự, ví dụ: #6366f1</div>
       </div>
@@ -106,32 +113,32 @@ function _renderPanel(s) {
       <div class="stt-field">
         <label class="stt-label" for="stt-favicon-url">URL Favicon</label>
         <input id="stt-favicon-url" class="stt-input" type="url"
-          placeholder="https://example.com/favicon.ico" value="${_esc(s.favicon_url || '')}">
+          placeholder="https://example.com/favicon.ico" value="${_esc(favicon)}">
         <div class="stt-field-note">32×32px ICO hoặc PNG (để trống dùng favicon AIFUN mặc định)</div>
       </div>
     </div>
 
     <div class="stt-section">
       <div class="stt-section-title">Xem trước</div>
-      <div class="stt-section-desc">Cập nhật theo thời gian thực khi bạn chỉnh sửa</div>
-      <div class="stt-brand-preview">
-        <div class="stt-brand-preview-bar" id="stt-preview-bar" style="background:${_esc(color)}">
-          <div class="stt-preview-logo-wrap" id="stt-preview-logo-wrap">
-            ${logo
-              ? `<img src="${_esc(logo)}" alt="Logo" class="stt-preview-logo">`
-              : `<div class="stt-preview-initials">A</div>`
-            }
-          </div>
-          <span class="stt-preview-name">Tên Workspace</span>
-        </div>
-        <div class="stt-brand-preview-caption">Sidebar · Navbar</div>
-      </div>
+      <div class="stt-section-desc">Cập nhật theo thời gian thực — không cần lưu để xem</div>
+      ${renderLivePreviews(color, logo, _wsName, favicon)}
+    </div>
 
-      <div class="stt-actions" style="margin-top:20px">
-        <button class="stt-btn stt-btn--ghost"   id="stt-cancel-brand" type="button">Huỷ</button>
-        <button class="stt-btn stt-btn--primary" id="stt-save-brand"   type="button" disabled>
-          Lưu thương hiệu
+    <div class="stt-section">
+      ${renderThemeInspector(color)}
+    </div>
+
+    <div class="stt-section">
+      <div class="stt-actions stt-actions--spread">
+        <button class="stt-btn stt-btn--ghost" id="stt-export-theme" type="button">
+          ↓ Export theme.json
         </button>
+        <div style="display:flex;gap:8px">
+          <button class="stt-btn stt-btn--ghost"   id="stt-cancel-brand" type="button">Huỷ</button>
+          <button class="stt-btn stt-btn--primary" id="stt-save-brand"   type="button" disabled>
+            Lưu thương hiệu
+          </button>
+        </div>
       </div>
     </div>`;
 }
@@ -157,19 +164,27 @@ function _updateSaveBtn() {
   if (btn) btn.disabled = !_isDirty();
 }
 
-// ── Sync live preview ──────────────────────────────────────────
-function _syncColorPreview(hex) {
-  const bar = document.getElementById('stt-preview-bar');
-  if (bar && /^#[0-9a-f]{6}$/i.test(hex)) bar.style.background = hex;
+// ── Sync all live previews ─────────────────────────────────────
+function _syncAll() {
+  const hex  = document.getElementById('stt-brand-color-hex')?.value ?? '#6366f1';
+  updateAllPreviews(hex, _effectiveLogo(), _wsName);
+  updateThemeInspector(hex);
 }
 
-function _syncLogoPreview(logoSrc) {
-  const wrap = document.getElementById('stt-preview-logo-wrap');
-  if (wrap) {
-    wrap.innerHTML = logoSrc
-      ? `<img src="${_esc(logoSrc)}" alt="Logo" class="stt-preview-logo">`
-      : `<div class="stt-preview-initials">A</div>`;
-  }
+// ── Logo zone helpers ──────────────────────────────────────────
+function _setLogo(logoSrc) {
+  const zonePreview = document.getElementById('stt-logo-zone-preview');
+  const removeBtn   = document.getElementById('stt-logo-remove');
+  if (zonePreview) zonePreview.innerHTML = _renderLogoZoneInner(logoSrc);
+  if (removeBtn)   removeBtn.style.display = logoSrc ? '' : 'none';
+  _syncAll();
+}
+
+function _syncColorInputs(hex) {
+  const picker = document.getElementById('stt-brand-color-picker');
+  const hexEl  = document.getElementById('stt-brand-color-hex');
+  if (picker) picker.value = hex;
+  if (hexEl)  hexEl.value  = hex;
 }
 
 function _syncPresetHighlight(hex) {
@@ -179,59 +194,47 @@ function _syncPresetHighlight(hex) {
   });
 }
 
-// ── Logo zone helpers ──────────────────────────────────────────
-function _setLogo(logoSrc) {
-  const zonePreview = document.getElementById('stt-logo-zone-preview');
-  const removeBtn   = document.getElementById('stt-logo-remove');
-  if (zonePreview) zonePreview.innerHTML = _renderLogoZoneInner(logoSrc);
-  if (removeBtn)   removeBtn.style.display = logoSrc ? '' : 'none';
-  _syncLogoPreview(logoSrc);
-}
-
 // ── Event handlers ─────────────────────────────────────────────
 function _onColorPickerInput() {
   const hex = document.getElementById('stt-brand-color-picker')?.value ?? '';
   const hexEl = document.getElementById('stt-brand-color-hex');
   if (hexEl) hexEl.value = hex;
-  _syncColorPreview(hex);
   _syncPresetHighlight(hex);
+  _syncAll();
   _updateSaveBtn();
 }
 
 function _onHexInput() {
   const hex = document.getElementById('stt-brand-color-hex')?.value ?? '';
-  const picker = document.getElementById('stt-brand-color-picker');
-  if (picker && /^#[0-9a-f]{6}$/i.test(hex)) picker.value = hex;
-  _syncColorPreview(hex);
+  if (/^#[0-9a-f]{6}$/i.test(hex)) {
+    const picker = document.getElementById('stt-brand-color-picker');
+    if (picker) picker.value = hex;
+  }
   _syncPresetHighlight(hex);
+  _syncAll();
   _updateSaveBtn();
 }
 
 function _onPresetClick(color) {
-  const picker = document.getElementById('stt-brand-color-picker');
-  const hexEl  = document.getElementById('stt-brand-color-hex');
-  if (picker) picker.value = color;
-  if (hexEl)  hexEl.value  = color;
-  _syncColorPreview(color);
+  _syncColorInputs(color);
   _syncPresetHighlight(color);
+  _syncAll();
   _updateSaveBtn();
 }
 
 function _onFileChange(e) {
   const file = e.target.files?.[0];
   if (!file) return;
-
   if (file.size > 2 * 1024 * 1024) {
     showToast('File quá lớn. Tối đa 2MB.', 'error');
     e.target.value = '';
     return;
   }
-
   const reader = new FileReader();
   reader.onload = (ev) => {
     _logoDataUrl = ev.target.result;
     const urlEl = document.getElementById('stt-logo-url');
-    if (urlEl) urlEl.value = '';   // clear URL input when file is uploaded
+    if (urlEl) urlEl.value = '';
     _setLogo(_logoDataUrl);
     _updateSaveBtn();
   };
@@ -239,7 +242,7 @@ function _onFileChange(e) {
 }
 
 function _onLogoUrlInput() {
-  _logoDataUrl = null;   // URL input overrides any uploaded file
+  _logoDataUrl = null;
   const fileEl = document.getElementById('stt-logo-file');
   if (fileEl) fileEl.value = '';
   _setLogo(_effectiveLogo());
@@ -260,7 +263,6 @@ function _onLogoRemove() {
 async function _save() {
   if (_saving) return;
   const values = _getValues();
-
   _saving = true;
   const btn = document.getElementById('stt-save-brand');
   if (btn) { btn.disabled = true; btn.textContent = 'Đang lưu…'; }
@@ -272,7 +274,7 @@ async function _save() {
 
   if (ok) {
     _origState   = { ..._origState, ...values };
-    _logoDataUrl = null;   // now persisted — no longer "pending upload"
+    _logoDataUrl = null;
     if (btn) btn.disabled = true;
     applyBrandColor(values.brand_color);
     showToast('Đã lưu thương hiệu workspace', 'success');
@@ -284,22 +286,17 @@ async function _save() {
 
 function _reset() {
   _logoDataUrl = null;
-  const logoEl    = document.getElementById('stt-logo-url');
-  const fileEl    = document.getElementById('stt-logo-file');
-  const colorPick = document.getElementById('stt-brand-color-picker');
-  const colorHex  = document.getElementById('stt-brand-color-hex');
-  const faviconEl = document.getElementById('stt-favicon-url');
-
   const origColor = _origState.brand_color ?? '#6366f1';
-  if (logoEl)    logoEl.value    = _origState.logo_url ?? '';
-  if (fileEl)    fileEl.value    = '';
-  if (colorPick) colorPick.value = origColor;
-  if (colorHex)  colorHex.value  = origColor;
-  if (faviconEl) faviconEl.value = _origState.favicon_url ?? '';
-
-  _setLogo(_origState.logo_url ?? '');
-  _syncColorPreview(origColor);
+  _syncColorInputs(origColor);
   _syncPresetHighlight(origColor);
+  const urlEl    = document.getElementById('stt-logo-url');
+  const fileEl   = document.getElementById('stt-logo-file');
+  const faviconEl = document.getElementById('stt-favicon-url');
+  if (urlEl)    urlEl.value    = _origState.logo_url    ?? '';
+  if (fileEl)   fileEl.value   = '';
+  if (faviconEl) faviconEl.value = _origState.favicon_url ?? '';
+  _setLogo(_origState.logo_url ?? '');
+  _syncAll();
   _updateSaveBtn();
 }
 
@@ -310,21 +307,25 @@ function _wire() {
   document.getElementById('stt-logo-url')?.addEventListener('input', _onLogoUrlInput);
   document.getElementById('stt-logo-file')?.addEventListener('change', _onFileChange);
   document.getElementById('stt-logo-remove')?.addEventListener('click', _onLogoRemove);
-  document.getElementById('stt-favicon-url')?.addEventListener('input', _updateSaveBtn);
+  document.getElementById('stt-favicon-url')?.addEventListener('input', () => { _syncAll(); _updateSaveBtn(); });
   document.getElementById('stt-save-brand')?.addEventListener('click', _save);
   document.getElementById('stt-cancel-brand')?.addEventListener('click', _reset);
-
+  document.getElementById('stt-export-theme')?.addEventListener('click', () => {
+    exportTheme(_getValues(), _wsId, _wsName);
+  });
   document.getElementById('stt-presets')?.addEventListener('click', (e) => {
     const btn = e.target.closest('.stt-preset');
     if (btn?.dataset.color) _onPresetClick(btn.dataset.color);
   });
+  wirePreviews();
 }
 
 // ── Public API ─────────────────────────────────────────────────
-export function loadBranding(wsId, settings) {
+export function loadBranding(wsId, settings, wsName) {
   const panel = document.getElementById('stt-panel-branding');
   if (!panel) return;
   _wsId        = wsId;
+  _wsName      = wsName || 'Workspace';
   _logoDataUrl = null;
   _origState   = {
     logo_url:    settings.logo_url    ?? '',
