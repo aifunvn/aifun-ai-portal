@@ -110,7 +110,7 @@ function _renderWorkspacePanel(s, readOnly) {
         ? `<p class="stt-field-note" style="margin-top:8px">Chỉ Owner và Admin mới có thể thay đổi cài đặt workspace.</p>`
         : `<div class="stt-actions">
              <button class="stt-btn stt-btn--ghost"    id="stt-cancel-ws" type="button">Huỷ</button>
-             <button class="stt-btn stt-btn--primary"  id="stt-save-ws"   type="button">Lưu thay đổi</button>
+             <button class="stt-btn stt-btn--primary"  id="stt-save-ws"   type="button" disabled>Lưu thay đổi</button>
            </div>`
       }
     </div>`;
@@ -124,6 +124,20 @@ function _getFormValues() {
     timezone:     document.getElementById('stt-timezone')?.value     ?? 'Asia/Ho_Chi_Minh',
     ai_language:  document.getElementById('stt-ai-language')?.value  ?? 'vi',
   };
+}
+
+function _isDirty() {
+  if (!_settings) return false;
+  const v = _getFormValues();
+  return v.display_name !== (_settings.display_name ?? '')
+    || v.description  !== (_settings.description  ?? '')
+    || v.timezone     !== (_settings.timezone     ?? 'Asia/Ho_Chi_Minh')
+    || v.ai_language  !== (_settings.ai_language  ?? 'vi');
+}
+
+function _updateSaveBtn() {
+  const btn = document.getElementById('stt-save-ws');
+  if (btn) btn.disabled = !_isDirty();
 }
 
 function _validate(values) {
@@ -160,6 +174,7 @@ function _resetForm() {
   const inputEl = document.getElementById('stt-display-name');
   if (errEl)   errEl.style.display = 'none';
   if (inputEl) inputEl.classList.remove('stt-input--error');
+  _updateSaveBtn();
 }
 
 async function _saveWorkspace() {
@@ -178,6 +193,7 @@ async function _saveWorkspace() {
 
   if (ok) {
     _settings = { ..._settings, ...values };
+    _updateSaveBtn();
     showToast('Đã lưu cài đặt workspace', 'success');
   } else {
     showToast('Không thể lưu. Vui lòng thử lại.', 'error');
@@ -187,6 +203,12 @@ async function _saveWorkspace() {
 function _wireWorkspace() {
   document.getElementById('stt-save-ws')?.addEventListener('click', _saveWorkspace);
   document.getElementById('stt-cancel-ws')?.addEventListener('click', _resetForm);
+  ['stt-display-name', 'stt-description'].forEach((id) => {
+    document.getElementById(id)?.addEventListener('input', _updateSaveBtn);
+  });
+  ['stt-timezone', 'stt-ai-language'].forEach((id) => {
+    document.getElementById(id)?.addEventListener('change', _updateSaveBtn);
+  });
 }
 
 async function _loadWorkspace() {

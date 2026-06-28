@@ -1,6 +1,6 @@
 // ─────────────────────────────────────────────────────────────
 // Reports Page — Sprint 14A placeholder
-// Professional dashboard shell; analytics engine in Sprint 4+
+// Professional dashboard shell; analytics engine in Sprint 15+
 // ─────────────────────────────────────────────────────────────
 
 const _METRICS = [
@@ -96,7 +96,7 @@ export function render() {
           <span style="font-size:15px;font-weight:700;color:var(--text-1)">Analytics Dashboard</span>
         </div>
         <p style="font-size:13px;color:var(--text-2);margin:0 0 16px;line-height:1.6">
-          Module Báo cáo sẽ được xây dựng trong Sprint 4. Dữ liệu phân tích sẽ giúp bạn
+          Module Báo cáo sẽ được xây dựng trong Sprint 15. Dữ liệu phân tích sẽ giúp bạn
           theo dõi ROI khi ứng dụng AI vào quy trình làm việc của doanh nghiệp.
         </p>
         <ul style="list-style:none;padding:0;margin:0">
