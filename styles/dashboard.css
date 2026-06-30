@@ -5,6 +5,43 @@
   gap: 20px;
   padding: 24px;
   max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* ─── Skeleton placeholders (shown until real data arrives) ─── */
+.skel {
+  background: linear-gradient(90deg, var(--border) 25%, var(--bg) 50%, var(--border) 75%);
+  background-size: 200% 100%;
+  animation: skel-shimmer 1.4s ease-in-out infinite;
+  border-radius: var(--r-sm);
+}
+
+@keyframes skel-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.skel-greeting { width: 220px; height: 22px; margin-bottom: 8px; }
+.skel-subtitle { width: 320px; height: 14px; }
+.skel-line     { width: 100%; height: 14px; margin: 10px 0; }
+.skel-icon     { width: 44px; height: 44px; border-radius: var(--r-md); flex-shrink: 0; }
+.skel-value    { width: 60px; height: 22px; margin-bottom: 6px; }
+.skel-label    { width: 90px; height: 12px; }
+.skel-card     { height: 84px; border-radius: var(--r-md); }
+.skel-chart    { width: 100%; height: 180px; border-radius: var(--r-md); }
+
+.kpi-card--skel { box-shadow: none; }
+
+/* Widgets fade in as they swap from skeleton to real content */
+.dash-fade-in { animation: dash-fade-in .25s ease-out; }
+
+@keyframes dash-fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skel, .dash-fade-in { animation: none; }
 }
 
 .dash-greeting {
@@ -145,7 +182,10 @@
   border-radius: var(--r-lg);
   padding: 20px;
   box-shadow: var(--sh-sm);
+  transition: box-shadow var(--tr);
 }
+
+.dash-card:hover { box-shadow: var(--sh-md); }
 
 .section-header {
   display: flex;
@@ -348,6 +388,12 @@
 
 @media (max-width: 480px) {
   .builders-grid { grid-template-columns: 1fr 1fr; }
+  .qa-row  { flex-direction: column; align-items: stretch; }
+  .qa-btn  { justify-content: center; }
+}
+
+@media (max-width: 380px) {
+  .kpi-grid { grid-template-columns: 1fr; }
 }
 
 /* ─── Dark mode overrides ─── */
