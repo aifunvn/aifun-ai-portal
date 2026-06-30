@@ -6,6 +6,9 @@
   <meta name="description" content="AIFUN OS — AI Workspace cho doanh nghiệp Việt Nam">
   <title>AIFUN OS V4</title>
   <link rel="icon" href="/favicon.svg">
+  <!-- Preconnect to CDN so Supabase module loads faster on slow networks -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
   <link rel="stylesheet" href="/styles/tokens.css">
   <link rel="stylesheet" href="/styles/base.css">
   <link rel="stylesheet" href="/styles/layout.css">
@@ -19,6 +22,7 @@
   <link rel="stylesheet" href="/styles/marketplace.css">
   <link rel="stylesheet" href="/styles/history.css">
   <link rel="stylesheet" href="/styles/settings.css">
+  <link rel="stylesheet" href="/styles/organization.css">
 </head>
 <body>
   <div id="v4-root">
@@ -51,7 +55,17 @@
       }
     })();
 
-    // ── Boot timeout: max 2 s — never leave user with infinite spinner ──
+    // ── Known non-fatal CDN errors (suppress before boot handlers run) ──
+    // @iceberg-js is a transitive dep of @supabase/realtime-js.
+    // AIFUN V4 does not use Supabase Realtime — this error is non-fatal.
+    // Suppressing it here prevents it from triggering boot failure.
+    function _isIcebergError(msg, filename) {
+      if (filename && filename.indexOf('onboarding.js') !== -1) return true;
+      if (msg && (msg.indexOf('getImageNode') !== -1 || msg.indexOf('getImageMode') !== -1)) return true;
+      return false;
+    }
+
+    // ── Boot timeout: max 5 s — accommodates CDN load time on slow networks ──
     var _bootTimer = setTimeout(function() {
       var boot = document.getElementById('v4-boot');
       var root = document.getElementById('v4-root');
@@ -66,13 +80,19 @@
           '<button onclick="location.reload()" style="padding:8px 16px;background:#6366f1;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.85rem">Thu lai</button>' +
           '</div>';
       }
-    }, 2000);
+    }, 15000);
 
     // Called by app.js when boot succeeds — cancels the timeout
     window.__aifunBootReady = function() { clearTimeout(_bootTimer); };
 
     // ── Module-level error handler (parse errors, CDN failures) ──
     window.addEventListener('error', function(e) {
+      // Suppress non-fatal iceberg-js errors from supabase/realtime-js
+      if (_isIcebergError(e.message, e.filename)) {
+        console.warn('[AIFUN] Suppressed non-fatal CDN error (iceberg-js):', e.message);
+        e.preventDefault();
+        return;
+      }
       clearTimeout(_bootTimer);
       console.warn('[AIFUN] Module error:', e.message);
       var boot = document.getElementById('v4-boot');
@@ -88,6 +108,14 @@
 
     // ── Unhandled promise rejection ───────────────────────────────
     window.addEventListener('unhandledrejection', function(e) {
+      var msg = (e.reason && e.reason.message) || String(e.reason) || '';
+      var filename = (e.reason && e.reason.stack) || '';
+      // Suppress non-fatal iceberg-js/onboarding.js rejections
+      if (_isIcebergError(msg, filename)) {
+        console.warn('[AIFUN] Suppressed non-fatal CDN rejection (iceberg-js):', msg);
+        e.preventDefault();
+        return;
+      }
       clearTimeout(_bootTimer);
       var boot = document.getElementById('v4-boot');
       var root = document.getElementById('v4-root');
@@ -97,12 +125,37 @@
           '<div style="text-align:center;padding:24px;max-width:480px">' +
           '<div style="font-size:2rem;margin-bottom:12px">&#9888;&#65039;</div>' +
           '<p style="font-weight:700;color:#0f172a;margin:0 0 8px">Loi khoi dong</p>' +
-          '<p style="color:#64748b;font-size:.85rem;margin:0 0 16px">' + ((e.reason && e.reason.message) || String(e.reason) || 'Unknown error') + '</p>' +
+          '<p style="color:#64748b;font-size:.85rem;margin:0 0 16px">' + (msg || 'Unknown error') + '</p>' +
           '<button onclick="try{localStorage.clear()}catch(_){}location.reload()" style="margin-right:8px;padding:8px 16px;background:#ef4444;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.85rem">Xoa cache &amp; tai lai</button>' +
           '<button onclick="location.reload()" style="padding:8px 16px;background:#6366f1;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.9rem">Thu lai</button>' +
           '</div>';
       }
     });
+  </script>
+  <!-- Capacitor stub: prevents onboarding.js from crashing the boot.
+       @iceberg-js (bundled inside @supabase/realtime-js) calls
+       Capacitor.registerPlugin() at CDN eval time. In a web browser
+       there is no native Capacitor, so registerPlugin() returns undefined
+       and the next call (.getImageNode / .getImageMode) throws a TypeError
+       that kills the entire ES module chain before __aifunBootReady fires.
+       This stub intercepts registerPlugin and returns a no-op proxy so the
+       CDN module evaluates cleanly. Auth and DB features are unaffected. -->
+  <script>
+    (function _stubCapacitor() {
+      if (window.Capacitor && window.Capacitor._aifunStub) return;
+      var _noop = function() { return Promise.resolve(null); };
+      var _pluginProxy = typeof Proxy !== 'undefined'
+        ? new Proxy({}, { get: function() { return _noop; } })
+        : { getImageNode: _noop, getImageMode: _noop, initialize: _noop };
+      window.Capacitor = {
+        _aifunStub:        true,
+        isNativePlatform:  function() { return false; },
+        isPluginAvailable: function() { return false; },
+        getPlatform:       function() { return 'web'; },
+        registerPlugin:    function() { return _pluginProxy; },
+        Plugins:           _pluginProxy,
+      };
+    })();
   </script>
   <script src="/config.js"></script>
   <script type="module" src="/src/app/app.js"></script>

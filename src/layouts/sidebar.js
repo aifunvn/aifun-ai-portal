@@ -41,6 +41,12 @@ const NAV_ITEMS = [
     icon: `<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="15" x2="15" y2="15"/><rect x="4" y="9" width="3" height="6" rx="1"/><rect x="8" y="5" width="3" height="10" rx="1"/><rect x="12" y="11" width="3" height="4" rx="1"/></svg>`,
   },
   {
+    path:       '/organization',
+    label:      'Tổ chức',
+    permission: 'settings:read',
+    icon: `<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
+  },
+  {
     path:       '/settings',
     label:      'Cài đặt',
     permission: 'settings:read',
@@ -79,7 +85,11 @@ export function renderSidebar() {
 
 export function updateActiveNav(path) {
   document.querySelectorAll('.sb-item[data-nav-to]').forEach((btn) => {
-    btn.classList.toggle('is-active', btn.dataset.navTo === path);
+    const navTo = btn.dataset.navTo;
+    // Org sub-pages (/organization/members etc.) should keep "Tổ chức" active
+    const isActive = navTo === path ||
+      (navTo === '/organization' && path.startsWith('/organization/'));
+    btn.classList.toggle('is-active', isActive);
   });
 }
 

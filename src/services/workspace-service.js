@@ -1,4 +1,4 @@
-import { supabase }             from '../lib/supabase.js';
+import { supabase, getUserSafe } from '../lib/supabase.js';
 import { workspaceStore }       from '../stores/workspace-store.js';
 import { userStore }            from '../stores/user-store.js';
 import { loadOrCreateProfile }  from './user-profile-service.js';
@@ -67,7 +67,7 @@ function _buildWorkspaceMeta(wsId, plan, profile) {
 // ── Public API ────────────────────────────────────────────────────────────────
 
 export async function initWorkspaceEngine() {
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getUserSafe();
   if (!user) return;
 
   userStore.set({ user });
