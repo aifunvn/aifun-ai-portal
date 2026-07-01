@@ -1,0 +1,395 @@
+/* ── Builder Run — Sprint 18D ───────────────────────────────────────────────
+   All values via CSS custom properties from the V4 design system.
+   Dark mode via [data-dark] on <html>. No hardcoded hex anywhere.
+   Responsive: 640px (stack), 768px (side-by-side), 1024px (wide form).
+   ─────────────────────────────────────────────────────────────────────────── */
+
+/* ── Page shell ─────────────────────────────────────────────────────────── */
+
+.run-page {
+  max-width: 840px;
+  margin: 0 auto;
+  padding: 24px 20px 48px;
+}
+
+.run-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.run-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-2);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 0;
+  transition: color var(--tr, .16s ease);
+  text-decoration: none;
+  margin-bottom: 8px;
+}
+.run-back:hover { color: var(--c-primary); }
+
+.run-hero {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.run-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--r-md);
+  background: var(--c-primary-l);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.run-meta h1 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-1);
+  margin: 0 0 4px;
+}
+
+.run-meta p {
+  font-size: 13px;
+  color: var(--text-2);
+  margin: 0;
+}
+
+.run-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 20px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+.run-badge--published { background: #dcfce7; color: #15803d; }
+.run-badge--draft     { background: var(--c-primary-l); color: var(--c-primary); }
+
+[data-dark] .run-badge--published { background: #14532d; color: #4ade80; }
+[data-dark] .run-badge--draft     { background: #1e1b4b; color: #a5b4fc; }
+
+/* ── Layout: form + output ────────────────────────────────────────────────── */
+
+.run-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+@media (min-width: 768px) {
+  .run-layout {
+    grid-template-columns: 320px 1fr;
+    align-items: start;
+  }
+}
+
+@media (min-width: 1024px) {
+  .run-layout {
+    grid-template-columns: 360px 1fr;
+  }
+}
+
+/* ── Variable form panel ─────────────────────────────────────────────────── */
+
+.run-form-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 20px;
+  box-shadow: var(--sh-sm);
+}
+
+.run-form-panel h2 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-2);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  margin: 0 0 16px;
+}
+
+.run-field {
+  margin-bottom: 14px;
+}
+
+.run-field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-1);
+  margin-bottom: 5px;
+}
+
+.run-field label .run-field-hint {
+  font-weight: 400;
+  color: var(--text-3);
+  font-size: 11px;
+  margin-left: 4px;
+}
+
+.run-input,
+.run-textarea {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--text-1);
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-sm);
+  outline: none;
+  transition: border-color var(--tr), box-shadow var(--tr);
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.run-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.run-input:focus,
+.run-textarea:focus {
+  border-color: var(--c-primary);
+  box-shadow: 0 0 0 3px rgba(99,102,241,.12);
+}
+
+.run-no-vars {
+  font-size: 13px;
+  color: var(--text-3);
+  font-style: italic;
+}
+
+/* ── Action bar ──────────────────────────────────────────────────────────── */
+
+.run-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.run-btn-run {
+  flex: 1;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  background: var(--c-primary);
+  border: none;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: background var(--tr), opacity var(--tr);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.run-btn-run:hover:not(:disabled) { background: var(--c-primary-h); }
+.run-btn-run:disabled { opacity: .55; cursor: not-allowed; }
+
+.run-btn-stop {
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--c-danger);
+  background: #fef2f2;
+  border: 1.5px solid #fecaca;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: background var(--tr);
+  display: none;
+}
+.run-btn-stop:hover  { background: #fee2e2; }
+.run-btn-stop.visible { display: inline-flex; align-items: center; gap: 6px; }
+
+[data-dark] .run-btn-stop { background: #2d1515; border-color: #7f1d1d; }
+[data-dark] .run-btn-stop:hover { background: #3b1f1f; }
+
+/* ── Output panel ────────────────────────────────────────────────────────── */
+
+.run-output-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--sh-sm);
+  display: flex;
+  flex-direction: column;
+  min-height: 320px;
+}
+
+.run-output-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+}
+
+.run-output-header h2 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-2);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  margin: 0;
+}
+
+.run-token-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+.run-token-bar span { white-space: nowrap; }
+
+.run-output-body {
+  flex: 1;
+  padding: 18px;
+  overflow-y: auto;
+  position: relative;
+}
+
+/* ── Output states ───────────────────────────────────────────────────────── */
+
+.run-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 200px;
+  color: var(--text-3);
+  gap: 10px;
+  text-align: center;
+}
+.run-empty svg { opacity: .3; }
+.run-empty p   { font-size: 13px; margin: 0; }
+
+/* Streaming text */
+.run-stream-text {
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--text-1);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Cursor blink while streaming */
+.run-stream-text.run-streaming::after {
+  content: '▋';
+  color: var(--c-primary);
+  animation: run-blink .9s step-end infinite;
+  margin-left: 1px;
+}
+
+@keyframes run-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+/* Loading shimmer */
+.run-loading {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.run-skel {
+  height: 14px;
+  border-radius: 4px;
+  background: linear-gradient(90deg,
+    var(--border) 25%,
+    color-mix(in srgb, var(--border) 60%, transparent) 50%,
+    var(--border) 75%);
+  background-size: 400% 100%;
+  animation: run-shimmer 1.4s ease infinite;
+}
+.run-skel:nth-child(2) { width: 85%; }
+.run-skel:nth-child(3) { width: 70%; }
+
+@keyframes run-shimmer {
+  0%   { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Error state */
+.run-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: var(--r-md);
+  padding: 14px 16px;
+}
+[data-dark] .run-error { background: #2d1515; border-color: #7f1d1d; }
+
+.run-error-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+
+.run-error-body p {
+  font-size: 13px;
+  color: var(--c-danger);
+  margin: 0 0 8px;
+  font-weight: 500;
+}
+
+.run-error-body small {
+  font-size: 12px;
+  color: var(--text-2);
+}
+
+/* Done state extras */
+.run-done-meta {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+.run-done-meta strong { color: var(--text-2); }
+
+/* Copy button */
+.run-copy-btn {
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-2);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: background var(--tr), color var(--tr);
+}
+.run-copy-btn:hover { background: var(--c-primary-l); color: var(--c-primary); }
+.run-copy-btn.copied { color: var(--c-success); border-color: var(--c-success); }
+
+/* ── Mobile tweaks ───────────────────────────────────────────────────────── */
+
+@media (max-width: 639px) {
+  .run-page       { padding: 16px 14px 40px; }
+  .run-hero       { gap: 10px; }
+  .run-icon       { width: 40px; height: 40px; font-size: 18px; }
+  .run-meta h1    { font-size: 17px; }
+  .run-output-panel { min-height: 260px; }
+}

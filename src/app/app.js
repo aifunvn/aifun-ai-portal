@@ -10,6 +10,7 @@ import { render as renderVerify,   init as initVerify   } from '../auth/verify-e
 import { render as renderDashboard, init as initDashboard } from '../pages/dashboard.js';
 import { render as renderBuilders, init as initBuilders } from '../pages/builders.js';
 import { render as renderBuilderStudio, init as initBuilderStudio } from '../pages/builder-studio.js';
+import { render as renderRun,           init as initRun           } from '../pages/builder-run.js';
 import { render as renderDocuments, init as initDocuments } from '../pages/documents.js';
 import { render as renderMarketplace, initMarketplace } from '../pages/marketplace.js';
 import { render as renderHistory,   init as initHistory   } from '../pages/history.js';
@@ -102,6 +103,7 @@ async function init() {
   router.register('/dashboard',   async () => { if (!(await requireAuth())) return; mountPage('/dashboard',   'Dashboard',   renderDashboard(), initDashboard); });
   router.register('/builders',    async () => { if (!(await requireAuth())) return; mountPage('/builders',    'AI Builders', renderBuilders(), initBuilders); });
   router.register('/builder-studio', async () => { if (!(await requireAuth())) return; mountPage('/builder-studio', 'Builder Studio', renderBuilderStudio(), initBuilderStudio); });
+  router.register('/run', async () => { if (!(await requireAuth())) return; const id = new URLSearchParams(window.location.hash.split('?')[1] ?? '').get('builderId') ?? ''; mountPage('/run', 'Run Builder', renderRun(id), () => initRun(id)); });
   router.register('/documents',   async () => { if (!(await requireAuth())) return; mountPage('/documents',   'Tai lieu',    renderDocuments(), initDocuments); });
   router.register('/marketplace', async () => { if (!(await requireAuth())) return; mountPage('/marketplace', 'Marketplace', renderMarketplace()); initMarketplace(); });
   router.register('/history',     async () => { if (!(await requireAuth())) return; mountPage('/history',     'AI History',  renderHistory(), initHistory); });
