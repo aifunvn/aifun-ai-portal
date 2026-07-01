@@ -17,6 +17,12 @@ const NAV_ITEMS = [
     icon: `<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2l1.5 4.5L15 8l-4.5 1.5L9 14 7.5 9.5 3 8l4.5-1.5L9 2z"/></svg>`,
   },
   {
+    path:       '/builder-studio',
+    label:      'Builder Studio',
+    permission: 'builders:read',
+    icon: `<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13l4-4 3 3 5-5"/><path d="M11 4h4v4"/><rect x="2" y="2" width="14" height="14" rx="2"/></svg>`,
+  },
+  {
     path:       '/documents',
     label:      'Tài liệu',
     permission: 'documents:read',
